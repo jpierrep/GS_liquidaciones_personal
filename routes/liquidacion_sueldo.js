@@ -14,13 +14,20 @@ const constants = require('../config/systems_constants')
 var fs = require('fs');
 var request = require('request');
 const http = require('https');
-
+var ejs = require('ejs');
 var pdf = require('html-pdf');
 
 const  io  = require('../index');
 var ficha = ''
+var StatusLiquidacionTemplate={
+  isExecuting:false,
+  percent:0,
+  msgs:[]
+}
 
-var isExecuteLiquidaciones=0
+var StatusLiquidacion=JSON.parse(JSON.stringify(StatusLiquidacionTemplate))
+
+
 
 
 //carga plantilla db
@@ -34,7 +41,7 @@ var templateDB = require('../config/template_liquidacion.json')
 io.on('connection', (socket)=>{
 
  //socket.on('estadoActual')
- socket.emit('getStatus',isExecuteLiquidaciones)
+ socket.emit('getStatus',StatusLiquidacion)
 
   console.log("a user connected via socket!")
   socket.on('disconnect', ()=>{
@@ -45,15 +52,28 @@ io.on('connection', (socket)=>{
       io.emit('chat message', msg)
   })
 
-  socket.on('empieza', (msg)=>{
-    isExecuteLiquidaciones=1
 
-    io.emit('getStatus',isExecuteLiquidaciones)
-    
+  socket.on('getLiquidaciones',async (msg)=>{
+    console.log("se empieza a ejecutar proceso liquidaciones: "+msg)
+    StatusLiquidacion=JSON.parse(JSON.stringify(StatusLiquidacionTemplate))
+    StatusLiquidacion.isExecuting=true
+    io.emit('getStatus',StatusLiquidacion)
+    await getLiquidaciones()
+    StatusLiquidacion.isExecuting=0
+    io.emit('getStatus',StatusLiquidacion)
+   // io.emit('chat message', msg)
+})
+
+
+  socket.on('empieza', (msg)=>{
+    isExecuteLiquStatusLiquidacion.isExecutingidaciones=true
+
+    io.emit('getStatus',StatusLiquidacion)
+
       console.log("EMPIEZA: Message: "+msg)
       setTimeout(function(){
-        isExecuteLiquidaciones=0
-        io.emit('getStatus',isExecuteLiquidaciones)
+        StatusLiquidacion.isExecuting=false
+        io.emit('getStatus',StatusLiquidacion)
          console.log("termina")
        //  io.emit('termina', "chaaau")
       
@@ -62,123 +82,15 @@ io.on('connection', (socket)=>{
   })
 
 
-})
 
 
 
-
-function fillTemplate(templatebase, variablesPersona) {
-
-  //llenamos la templatebase
-  templatebase.forEach(variable => {
-    if (variable.TIPO == "NORMAL" || variable.TIPO == "TOTAL") {
-      let varBuscar = variablesPersona.find(x => x.codVariable == variable.VAR_CODI)
-      if (varBuscar) variable.VAR_VALOR = varBuscar.valor
-      else variable.VAR_VALOR = null
-    }
-
-  })
-
-  //si existe un atributo con offset sin valor en la variable, este espacio no se verá reflejado, por lo que deberá pasarse al atributo anterior con valor en la variable
-  templatebase.forEach((variable, index) => {
-    if (variable.OFFSET > 0 && !variable.VAR_VALOR) {
-      // console.log("hay una",variable)
-      //buscar la anterior en la misma columna con variable.VAR_VALOR>0
-      for (var i = index; i >= 0; i--) {
-        //if (templatebase[i-1].COLUMNA==variable.COLUMNA&&templatebase[i-1].VAR_VALOR&&!templatebase[i-1].OFFSET){
-        if (templatebase[i - 1] && templatebase[i - 1]["COLUMNA"] && templatebase[i - 1].COLUMNA == variable.COLUMNA && templatebase[i - 1].VAR_VALOR && !templatebase[i - 1].OFFSET) {
-
-          templatebase[i - 1].OFFSET = variable.OFFSET
-          //   console.log("encontrado")
-          break;
-        }
-      }
-
-    }
-
-  })
-  //filtramos las variables que tienen dato o son t itulos
-  //si se deben dejar fijas algunas variables, se debe permitir marcador que tome la posicion y la deje fija
-  //luego la pinte como tds de tabla vacios, asi los espacios son fijos
-
-  return templatebase.filter(x => x.TIPO == "TITULO" || ((x.TIPO == "NORMAL" || x.TIPO == "TOTAL") && x.VAR_VALOR))
-
-}
-
-
-function formatTemplate(templateBase) {
-  //pedir el mes y ficha para obtener data
-
-  //get max posicion para saber cuantas filas tendra
-  //hacer un for incremental con posicion paraa iterar por posicion (seran los datos del vector)
-  //ordernar por columna luego para que quede en orden final
-  //buscar el valor de la variable y llenar otros
-
-
-  //formaremos por cada fila de la template un array con el largo de las columnas
-  // por cada columna, ordenaremos las filas de menor a mayor, luego añadiremos los espacios (offset)
-  //teniendo esto haremos merge por posicion ordenada
-
-  //finalmente rellenar con las variables y quitar aquellas que estan vacias
-
-  let maxColumns = Math.max.apply(Math, templateBase.map(x => { return x.COLUMNA }))
-  //let maxColumns=templatebase.map(x=>{return x.COLUMNA})
-  console.log(maxColumns)
-  let arrayOffsets = []
-
-  for (var i = 1; i <= maxColumns; i++) {
-
-    let variablesColumns = templateBase.filter(x => x.COLUMNA == i)
-    let nuevoArregloColumns = []
-
-    //añade los offset a las filas ordenadas de la columna
-    variablesColumns.sort((a, b) => (a.POSICION > b.POSICION) ? 1 : -1).forEach(variable => {
-      //si el arreglo ordenado no tiene saltos de linea se agrega al nuevo arreglo, si no , se añase el salto de lienea ({})
-
-      nuevoArregloColumns.push(variable)
-      if (variable.OFFSET != null) {
-        for (var x = 1; x <= variable.OFFSET; x++) {
-          nuevoArregloColumns.push({})
-        }
-      }
-    })
-    arrayOffsets.push(nuevoArregloColumns)
-  }
-
-  //console.log("arrayOffsets",arrayOffsets)
-  //juntar por index los arreglos offset, para formato final 
-
-  let maxPosicion = Math.max(...arrayOffsets.map(x => { return x.length }))
-  console.log("maxPosicion", maxPosicion)
-  let arrayFormat = []
-  //hacemos merge por posicion
-  for (i = 1; i <= maxPosicion; i++) {
-    let arrayPosicion = []
-    for (var x = 1; x <= maxColumns; x++) {
-
-      if (arrayOffsets[x - 1][i - 1] == undefined) arrayPosicion.push({})
-      else arrayPosicion.push(arrayOffsets[x - 1][i - 1])
-    }
-    arrayFormat.push(arrayPosicion)
-  }
-
-
-
-
-  //console.log("template",templatebase)
-  //console.log("arrayFormat",arrayFormat)
-
-
-
-  return arrayFormat
-
-}
 
 
 
 api.get("/testView", function (req, res) {
 
-  res.render("../views/controla_proceso", { hola: "hola" });
+  res.render("../views/controla_proceso", { hola: "hola"});
 })
 
 
@@ -376,16 +288,19 @@ api.get("/liquidacion_sueldo_cc_pdf/:centro_costo/:mes/:empresa", async function
 
 
 //xxxxx
-api.get("/getLiquidaciones", async function (req, res, next) {
+//api.get("/getLiquidaciones", async function (req, res, next) {
+async function getLiquidaciones(){
 
+  return new Promise(async (resolve, reject) => {
+//http://localhost:3800/liquidacion_sueldo/getLiquidaciones
 
-  let mes = '2019-08-01'
+  let mes = '2020-07-01'
   let empresa = 0
   //Actualizar vacaciones GUARD
   let ccVigentes = (await sequelizeMssql
     .query(`
     SELECT CENCO2_CODI,count(*) as cant
-    FROM [Inteligencias].[dbo].[TEST_APP_VIEW_SOFT_PERSONAL_VIGENTE]
+    FROM [Inteligencias].[dbo].[VIEW_SOFT_PERSONAL_VIGENTE]
     where FECHA_SOFT='`+ mes + `'
     and ESTADO='V'
     and emp_codi=`+ empresa + `
@@ -397,7 +312,7 @@ api.get("/getLiquidaciones", async function (req, res, next) {
         model: VariablesFicha,
         mapToModel: true, // pass true here if you have any mapped fields
         raw: true
-      })).map(x => x.CENCO2_CODI)
+      })).map(x => x.CENCO2_CODI).slice(0,50)  //para control de cantidad de cc para testear
 
   /*
 
@@ -453,7 +368,10 @@ api.get("/getLiquidaciones", async function (req, res, next) {
   for (let i = 0; i < cantIteraciones; i++) {
     let getFilesPromises = ccVigentes.slice(i * batch, (i * batch) + batch).map(async centro_costo => {
       let filename = centro_costo + ".pdf"
-      await getLiquidacionCentroCosto(res, centro_costo, mes, empresa, path + filename)
+      await getLiquidacionCentroCosto(null, centro_costo, mes, empresa, path + filename)
+      StatusLiquidacion.msgs[0]=centro_costo
+      StatusLiquidacion.percent=parseInt((i+1)/ccVigentes.length*100)
+      io.emit('getStatus',StatusLiquidacion)
 
     })
 
@@ -475,10 +393,12 @@ api.get("/getLiquidaciones", async function (req, res, next) {
 
   //await Promise.all(allLiquidaciones)
   console.log("todos los trabajos terminados")
-  return res.status(200).send({ status: "ok" })
-
-
+  //return res.status(200).send({ status: "ok" })
+  resolve()
 })
+}
+
+
 
 
 api.get("/liquidacion_fichas_reliquidadas", async function (req, res, next) {
@@ -921,6 +841,10 @@ api.post("/liquidacion_sueldo_personas_pdf", async function (req, res) {
 
 
 
+}) //cierra socket
+
+
+
 //realiza cruce de datos según ficha
 
 async function getLiquidacionFichaMes(res, ficha, mes, empresa, path) {
@@ -1008,13 +932,6 @@ async function getLiquidacionFichaMes(res, ficha, mes, empresa, path) {
 
 
 
-
-
-
-
-
-
-
 async function getLiquidacionCentroCosto(res, centro_costo, mes, empresa, path) {
 
 
@@ -1044,7 +961,7 @@ async function getLiquidacionCentroCosto(res, centro_costo, mes, empresa, path) 
 
 
     let fichasVigentes = (await sequelizeMssql
-      .query(`select FICHA from [Inteligencias].[dbo].[TEST_APP_VIEW_SOFT_PERSONAL_VIGENTE] where FECHA_SOFT='` + mes + `'  and EMP_CODI=` + empresa + ` and CENCO2_CODI='` + centro_costo + `'`
+      .query(`select FICHA from [Inteligencias].[dbo].[VIEW_SOFT_PERSONAL_VIGENTE] where FECHA_SOFT='` + mes + `'  and EMP_CODI=` + empresa + ` and CENCO2_CODI='` + centro_costo + `'`
         , {
 
           model: VariablesFicha,
@@ -1104,8 +1021,13 @@ async function getLiquidacionCentroCosto(res, centro_costo, mes, empresa, path) 
     await Promise.all(fichasVigentesPromises)
 
 
+    console.log("antes_data") 
+  ejs.renderFile("views/liquidacion_sueldo_multiple - copia.ejs", { templates_persona: templates_persona, empresaDetalle: empresaDetalle, mes },{},async function(err,data){
+if(err)
+console.log(err)
+    //console.log("data",data)
 
-    res.render("../views/liquidacion_sueldo_multiple - copia", { templates_persona: templates_persona, empresaDetalle: empresaDetalle, mes }, async function (err, data) {
+ 
 
       let liquidacionID = "10.010-JEAN-TEST"
       var html = data;
@@ -1143,10 +1065,122 @@ async function getLiquidacionCentroCosto(res, centro_costo, mes, empresa, path) 
 
       //}
 
-    })
+ 
+
+  })
+})
+
+}
+
+
+
+
+function fillTemplate(templatebase, variablesPersona) {
+
+  //llenamos la templatebase
+  templatebase.forEach(variable => {
+    if (variable.TIPO == "NORMAL" || variable.TIPO == "TOTAL") {
+      let varBuscar = variablesPersona.find(x => x.codVariable == variable.VAR_CODI)
+      if (varBuscar) variable.VAR_VALOR = varBuscar.valor
+      else variable.VAR_VALOR = null
+    }
 
   })
 
+  //si existe un atributo con offset sin valor en la variable, este espacio no se verá reflejado, por lo que deberá pasarse al atributo anterior con valor en la variable
+  templatebase.forEach((variable, index) => {
+    if (variable.OFFSET > 0 && !variable.VAR_VALOR) {
+      // console.log("hay una",variable)
+      //buscar la anterior en la misma columna con variable.VAR_VALOR>0
+      for (var i = index; i >= 0; i--) {
+        //if (templatebase[i-1].COLUMNA==variable.COLUMNA&&templatebase[i-1].VAR_VALOR&&!templatebase[i-1].OFFSET){
+        if (templatebase[i - 1] && templatebase[i - 1]["COLUMNA"] && templatebase[i - 1].COLUMNA == variable.COLUMNA && templatebase[i - 1].VAR_VALOR && !templatebase[i - 1].OFFSET) {
+
+          templatebase[i - 1].OFFSET = variable.OFFSET
+          //   console.log("encontrado")
+          break;
+        }
+      }
+
+    }
+
+  })
+  //filtramos las variables que tienen dato o son t itulos
+  //si se deben dejar fijas algunas variables, se debe permitir marcador que tome la posicion y la deje fija
+  //luego la pinte como tds de tabla vacios, asi los espacios son fijos
+
+  return templatebase.filter(x => x.TIPO == "TITULO" || ((x.TIPO == "NORMAL" || x.TIPO == "TOTAL") && x.VAR_VALOR))
+
 }
+
+
+function formatTemplate(templateBase) {
+  //pedir el mes y ficha para obtener data
+
+  //get max posicion para saber cuantas filas tendra
+  //hacer un for incremental con posicion paraa iterar por posicion (seran los datos del vector)
+  //ordernar por columna luego para que quede en orden final
+  //buscar el valor de la variable y llenar otros
+
+
+  //formaremos por cada fila de la template un array con el largo de las columnas
+  // por cada columna, ordenaremos las filas de menor a mayor, luego añadiremos los espacios (offset)
+  //teniendo esto haremos merge por posicion ordenada
+
+  //finalmente rellenar con las variables y quitar aquellas que estan vacias
+
+  let maxColumns = Math.max.apply(Math, templateBase.map(x => { return x.COLUMNA }))
+  //let maxColumns=templatebase.map(x=>{return x.COLUMNA})
+  console.log(maxColumns)
+  let arrayOffsets = []
+
+  for (var i = 1; i <= maxColumns; i++) {
+
+    let variablesColumns = templateBase.filter(x => x.COLUMNA == i)
+    let nuevoArregloColumns = []
+
+    //añade los offset a las filas ordenadas de la columna
+    variablesColumns.sort((a, b) => (a.POSICION > b.POSICION) ? 1 : -1).forEach(variable => {
+      //si el arreglo ordenado no tiene saltos de linea se agrega al nuevo arreglo, si no , se añase el salto de lienea ({})
+
+      nuevoArregloColumns.push(variable)
+      if (variable.OFFSET != null) {
+        for (var x = 1; x <= variable.OFFSET; x++) {
+          nuevoArregloColumns.push({})
+        }
+      }
+    })
+    arrayOffsets.push(nuevoArregloColumns)
+  }
+
+  //console.log("arrayOffsets",arrayOffsets)
+  //juntar por index los arreglos offset, para formato final 
+
+  let maxPosicion = Math.max(...arrayOffsets.map(x => { return x.length }))
+  console.log("maxPosicion", maxPosicion)
+  let arrayFormat = []
+  //hacemos merge por posicion
+  for (i = 1; i <= maxPosicion; i++) {
+    let arrayPosicion = []
+    for (var x = 1; x <= maxColumns; x++) {
+
+      if (arrayOffsets[x - 1][i - 1] == undefined) arrayPosicion.push({})
+      else arrayPosicion.push(arrayOffsets[x - 1][i - 1])
+    }
+    arrayFormat.push(arrayPosicion)
+  }
+
+
+
+
+  //console.log("template",templatebase)
+  //console.log("arrayFormat",arrayFormat)
+
+
+
+  return arrayFormat
+
+}
+
 
 module.exports = api;

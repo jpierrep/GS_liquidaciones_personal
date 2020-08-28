@@ -108,7 +108,7 @@ async function getFichasInfoPromiseMes(fichas, empresa, mes) {
   
                            where per.ficha in (:fichas)
                            `,
-      { replacements: { fichas: fichas }, type: sequelize.QueryTypes.SELECT, raw: true })
+      { replacements: { fichas: fichas }, type: sequelizeMssql.QueryTypes.SELECT, raw: true })
 
 
     resolve(fichasInfo)
