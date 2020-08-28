@@ -29,11 +29,12 @@ var templateDB = require('../config/template_liquidacion.json')
 
 //reference 
 //https://stackoverflow.com/questions/32674391/io-emit-vs-socket-emit
+//https://medium.com/@satheesh1997/simple-chat-server-using-nodejs-socket-io-ce31294926d1 para ejemplo base
 
 io.on('connection', (socket)=>{
 
  //socket.on('estadoActual')
-
+ socket.emit('getStatus',isExecuteLiquidaciones)
 
   console.log("a user connected via socket!")
   socket.on('disconnect', ()=>{
@@ -45,11 +46,16 @@ io.on('connection', (socket)=>{
   })
 
   socket.on('empieza', (msg)=>{
+    isExecuteLiquidaciones=1
+
+    io.emit('getStatus',isExecuteLiquidaciones)
+    
       console.log("EMPIEZA: Message: "+msg)
       setTimeout(function(){
-          
+        isExecuteLiquidaciones=0
+        io.emit('getStatus',isExecuteLiquidaciones)
          console.log("termina")
-         io.emit('termina', "chaaau")
+       //  io.emit('termina', "chaaau")
       
       }, 5000);
      

@@ -56,6 +56,17 @@
         
             });
 
+                 
+         socket.on('getStatus', function(msg){
+            //    $("#messages").append('<li class="list-group-item">'+msg+'</li>');
+            //console.log("Termina "+msg)
+            console.log("getStatus",msg)
+          if(msg==0)
+            $("[name='loader']").hide()
+            else
+            $("[name='loader']").show()
+            });
+
 
 
      </script>
