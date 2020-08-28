@@ -1,0 +1,360 @@
+<!doctype html>
+<html>
+<head>  <!-- deben estar creada la carpeta de ruta estatica public en el app.js -->
+	<!--<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous"> -->
+	<!-- <link rel="stylesheet" href="/boostrap/css/bootstrap.min.css" >-->
+
+ <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous"> 
+
+	<!-- <script src="/boostrap/js/bootstrap.min.js"></script> -->
+<!-- 	<script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script> -->
+<!-- 	<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script> -->
+<!-- 	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script> -->
+	
+
+</head>
+    <style>
+        html {
+ zoom: 0.65; 
+}
+body {
+  height:100vh;
+ 
+}
+        table
+	{mso-displayed-decimal-separator:"\,";
+	mso-displayed-thousand-separator:"\.";}
+    /* 
+    columna 1
+    */
+
+    td{padding-top:1px;
+	padding-right:1px;
+	padding-left:1px;
+	mso-ignore:padding;
+	color:windowtext;
+	font-size:10.0pt;
+	font-weight:400;
+	font-style:normal;
+	text-decoration:none;
+	font-family:Arial, sans-serif;
+	mso-font-charset:0;
+	mso-number-format:General;
+	text-align:left;
+	vertical-align:bottom;
+	mso-background-source:auto;
+	mso-pattern:auto;
+	white-space:nowrap;}
+
+
+
+
+
+    .xl6731828
+	{padding-top:1px;
+	padding-right:1px;
+	padding-left:1px;
+	mso-ignore:padding;
+	font-size:10.0pt;
+	font-weight:400;
+	font-style:normal;
+	text-decoration:none;
+	font-family:Arial, sans-serif;
+	mso-font-charset:0;
+	mso-number-format:General;
+	text-align:right;
+	vertical-align:bottom;
+	mso-background-source:auto;
+	mso-pattern:auto;
+	white-space:nowrap;}
+    
+
+	
+    </style>
+
+    <body>
+		<!--	
+		
+		<div class="container">
+					<div class="row " style="text-align: center">
+					  <div class="col-xs-6">
+						One of three columns
+					  </div>
+					  <div class="col-xs-6">
+						One of three columns
+					  </div>
+	
+					</div>
+				  </div>
+				  -->
+
+
+	<!-- Control the column width, and how they should appear on different devices -->
+				<!--
+			<div class="fluid-container">
+
+
+				
+				
+					<div class="row" style="display:flex">
+					  <div class="col-" style="background-color:yellow;">50%</div>
+					  <div class="col-4" style="background-color:orange;">50%</div>
+					</div>
+					<br>
+					<div class="row">
+							<div class="col-xs-4" style="background-color:yellow;">33.33%</div>
+							<div class="col-xs-4" style="background-color:orange;">33.33%</div>
+							<div class="col-xs-4" style="background-color:yellow;">33.33%</div>
+						  </div>
+				</div>
+				<button type="button" class="btn btn-primary">Primary</button>
+				<button type="button" class="btn btn-success">Success</button> 
+			-->
+			<% for (var x = 0;x < templates_persona.length;x++){ %>
+ <div id="FORMATO SUELDOS_31828" align=center >
+        <table border=0 cellpadding=0 cellspacing=0 width=940 style='border-collapse:
+		collapse;table-layout:fixed;width:706pt'>
+		
+ <col width=311 style='mso-width-source:userset;mso-width-alt:11373;width:233pt'>
+ <col class=xl6631828 width=117 style='mso-width-source:userset;mso-width-alt:
+ 4278;width:88pt'>
+ <col width=2 style='mso-width-source:userset;mso-width-alt:73;width:2pt'>
+ <col width=105 style='mso-width-source:userset;mso-width-alt:3840;width:79pt'>
+ <col width=52 style='mso-width-source:userset;mso-width-alt:1901;width:39pt'>
+ <col width=285 style='mso-width-source:userset;mso-width-alt:10422;width:214pt'>
+ <col class=xl6631828 width=68 style='mso-width-source:userset;mso-width-alt:
+ 2486;width:51pt'>
+ <tr class=xl6531828 height=17 style='height:12.75pt'>
+  <td height=17 class=xl7731828 width=311 style='height:12.75pt;width:233pt'><%= empresaDetalle['NOMBRE'] %></td>
+  <td class=xl6731828 width=117 style='width:88pt'></td>
+  <td class=xl6831828 width=2 style='width:2pt'></td>
+  <td class=xl6831828 width=105 style='width:79pt'></td>
+  <td class=xl6831828 width=52 style='width:39pt'></td>
+  <td class=xl6831828 width=285 style='width:214pt'></td>
+  <td class=xl6731828 width=68 style='width:51pt'></td>
+ </tr>
+
+
+ <% 	
+ //fecha De hoy
+ var f = new Date();
+  var fechaActual=addCharDate(f.getDate()) + "-"+ addCharDate((f.getMonth()+1))+ "-" +f.getFullYear(); 
+  
+function   addCharDate(char){
+ if (char<10 ){
+	 return '0'+char
+ }
+ return char
+
+}
+
+//fecha mes softland
+var mesSoftland=mes.substr(5,2)+"-"+mes.substr(0,4)
+
+
+  %>
+
+
+ <tr class=xl6531828 height=17 style='height:12.75pt'>
+  <td height=17 class=xl7731828 style='height:12.75pt'><%= empresaDetalle['RUT'] %></td>
+  <td class=xl6731828></td>
+  <td class=xl6831828></td>
+  <td class=xl6831828></td>
+  <td class=xl6831828>FECHA :</td>
+  <td class=xl6931828><%=fechaActual %></td>
+  <td class=xl6831828></td>
+ </tr>
+ <tr class=xl6531828 height=17 style='height:12.75pt'>
+  <td height=17 class=xl7131828 align=center style='height:12.75pt'><span
+  style='mso-spacerun:yes'> </span></td>
+  <td class=xl6731828></td>
+  <td class=xl6831828></td>
+  <td class=xl6831828></td>
+  <td class=xl6831828>MES:</td>
+  <td class=xl7231828><%=mesSoftland %></td>
+  <td class=xl6831828></td>
+ </tr>
+ <tr class=xl6531828 height=17 style='height:12.75pt'>
+		<td height=17 class=xl7431828 style='height:12.75pt'></td>
+
+	   </tr>
+	   <tr class=xl6531828 height=17 style='height:12.75pt'>
+			<td height=17 class=xl7431828 style='height:12.75pt'></td>
+	
+		   </tr>
+		
+			
+
+ <tr class=xl6531828 height=17 style='height:12.75pt'>
+        <td height=17 class=xl7131828 align=center style='height:12.75pt'><span
+        style='mso-spacerun:yes'> </span></td>
+        <td class=xl7331828 colspan=3 style="font-weight: bold;"> LIQUIDACION DE SUELDOS</td>
+        <td class=xl6831828></td>
+        <td class=xl6831828></td>
+        <td class=xl6731828></td>
+	   </tr>
+	   <tr class=xl6531828 height=17 style='height:12.75pt'>
+			<td height=17 class=xl7431828 style='height:12.75pt'></td>
+	
+		   </tr>
+		   <tr class=xl6531828 height=17 style='height:12.75pt'>
+				<td height=17 class=xl7431828 style='height:12.75pt'></td>
+		
+			   </tr>
+       <tr class=xl6531828 height=17 style='height:12.75pt'>
+        <td height=17 class=xl7431828 style='height:12.75pt'><span
+        style='mso-spacerun:yes'> </span></td>
+        <td class=xl6731828></td>
+        <td class=xl6831828></td>
+        <td class=xl7431828></td>
+        <td class=xl6831828></td>
+        <td class=xl6831828></td>
+        <td class=xl6731828></td>
+       </tr>
+       <tr class=xl6531828 height=17 style='height:12.75pt'>
+        <td height=17 class=xl7431828 style='height:12.75pt'>FICHA:</td>
+        <td class=xl7431828><%= templates_persona[x].persona['FICHA'] %></td>
+        <td class=xl6831828></td>
+        <td class=xl7431828>NOMBRE:</td>
+        <td class=xl7431828><%= templates_persona[x].persona['NOMBRES'] %></td>
+        <td class=xl6831828></td>
+        <td class=xl6731828></td>
+       </tr>
+       <tr class=xl6531828 height=17 style='height:12.75pt'>
+        <td height=17 class=xl7431828 style='height:12.75pt'></td>
+        <td class=xl6831828></td>
+        <td class=xl7431828 ></td>
+        <td class=xl7431828 >R.U.N.:</td>
+        <td ><%= templates_persona[x].persona['RUT'] %></td>
+        <td ><span style='mso-spacerun:yes'>    </span>:</td>
+        <td ></td>
+	   </tr>
+	   <tr class=xl6531828 height=17 style='height:12.75pt'>
+			<td height=17 class=xl7431828 style='height:12.75pt'>AFP:</td>
+			<td class=xl7431828><%= templates_persona[x].persona['AFP_NOMBRE'] %></td>
+			<td class=xl6831828></td>
+			<td class=xl7431828>C.C.:</td>
+			<td class=xl7431828><%=templates_persona[x].persona['CENCO2_DESC'].toUpperCase() %></td>
+			<td class=xl6831828></td>
+			<td class=xl6731828></td>
+		   </tr>
+		   <tr class=xl6531828 height=17 style='height:12.75pt'>
+				<td height=17 class=xl7431828 style='height:12.75pt'>ISAPRE:</td>
+				<td class=xl7431828><%= templates_persona[x].persona['ISAPRE_NOMBRE'] %></td>
+				<td class=xl6831828></td>
+				<td class=xl7431828>AREA NEG.:</td>
+				<td class=xl7431828><%= templates_persona[x].persona['AREA_DESC'] %></td>
+				<td class=xl6831828></td>
+				<td class=xl6731828></td>
+			   </tr>
+			   <% 	if (templates_persona[x].persona['CANT_CARGAS']>0){ %>
+				<tr class=xl6531828 height=17 style='height:12.75pt'>
+						<td height=17 class=xl7431828 style='height:12.75pt'>Nº CARGAS FAM.:</td>
+						<td class=xl7431828><%= templates_persona[x].persona['CANT_CARGAS:'] %></td>
+						<td class=xl6831828></td>
+						<td class=xl7431828></td>
+						<td class=xl7431828></td>
+						<td class=xl6831828></td>
+						<td class=xl6731828></td>
+					   </tr>
+				
+				<% }  %>  
+			   <tr class=xl6531828 height=17 style='height:12.75pt'>
+					<td height=17 class=xl7431828 style='height:12.75pt'>FORMA DE PAGO:</td>
+					<td class=xl7431828><%= templates_persona[x].persona['TIPO_PAGO'] %></td>
+					<td class=xl6831828></td>
+					<td class=xl7431828>Nº CUENTA: </td>
+					<td class=xl7431828></td>
+					<td class=xl6831828></td>
+					<td class=xl6731828></td>
+				   </tr>
+		   <tr class=xl6531828 height=17 style='height:12.75pt'>
+				<td height=17 class=xl7431828 style='height:12.75pt'></td>
+	
+			   </tr>
+		   <tr class=xl6531828 height=17 style='height:12.75pt'>
+				<td height=17 class=xl7431828 style='height:12.75pt'></td>
+
+			   </tr>
+		
+	
+
+        
+	   <% for (var i = 0;i < templates_persona[x].template.length;i++){ %>
+	
+		<tr  height=17 style='height:12.75pt'>
+			<% for (var j = 0;j <= 1 ;j++){ %>
+
+				<% 	if (!templates_persona[x].template[i][j].VAR_NOMBRE){ %>
+					<td></td>
+					<td ></td>
+					<td></td>
+					<td ></td>
+					<td ></td>
+					<% }  %>  
+
+				<% 	if (templates_persona[x].template[i][j].TIPO=='NORMAL'){ %>
+                <td ><%= templates_persona[x].template[i][j].VAR_NOMBRE %></td>
+                <td class=xl6731828><%= templates_persona[x].template[i][j].VAR_VALOR %></td>
+                <td ></td>
+                <td ></td>
+				<td ></td>
+				
+				<% }  %>  
+				<%  if (templates_persona[x].template[i][j].TIPO=='TOTAL'){  %>
+					<td style="font-weight: bold;"><%= templates_persona[x].template[i][j].VAR_NOMBRE %></td>
+					<td class=xl6731828 style="border-top: 1.5pt solid "><%= templates_persona[x].template[i][j].VAR_VALOR %></td>
+					<td ></td>
+					<td ></td>
+					<td ></td>
+					<% }  %>  
+
+					<% if (templates_persona[x].template[i][j].TIPO=='TITULO'){  %>
+						<td style="font-weight: bold;"><%= templates_persona[x].template[i][j].VAR_NOMBRE %></td>
+						<td></td>
+						<td ></td>
+						<td ></td>
+						<td ></td>
+						<% }  %>  
+
+						
+
+				<% }  %>  
+				
+
+               </tr>
+			   
+					 
+					   <% } %>  
+					   <tr class=xl6531828 height=17 style='height:12.75pt'>
+						<td height=17 class=xl7431828 style='height:12.75pt'></td>
+				
+					   </tr>
+					   <tr class=xl6531828 height=17 style='height:100.75pt'>
+						<td height=17 class=xl7431828 style='height:12.75pt'></td>
+				
+					   </tr>
+
+
+
+					   <tr class=xl6531828 height=17 style='height:12.75pt'>
+						<td height=17 class=xl7131828 align=center style='height:12.75pt'><span
+						style='mso-spacerun:yes'> </span></td>
+						<td class=xl6831828></td>
+						<td class=xl7331828 colspan=3 style="border-top: 1.5pt solid ">FIRMA DEL TRABAJADOR</td>
+					
+						<td class=xl6831828></td>
+						<td class=xl6731828></td>
+					   </tr>
+			  </table>
+			 
+                      
+            </div>
+    <!--salto de pagina antes-->
+            <!--  <div style="page-break-before:always;">MAMAMAAAAAAAA</div>-->
+   
+
+		</body>
+		<div style="page-break-after:always;"></div>
+		<% } %>
+</html>

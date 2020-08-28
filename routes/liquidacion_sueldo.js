@@ -17,10 +17,47 @@ const http = require('https');
 
 var pdf = require('html-pdf');
 
+const  io  = require('../index');
 var ficha = ''
+
+var isExecuteLiquidaciones=0
+
 
 //carga plantilla db
 var templateDB = require('../config/template_liquidacion.json')
+
+
+//reference 
+//https://stackoverflow.com/questions/32674391/io-emit-vs-socket-emit
+
+io.on('connection', (socket)=>{
+
+ //socket.on('estadoActual')
+
+
+  console.log("a user connected via socket!")
+  socket.on('disconnect', ()=>{
+      console.log("a user disconnected!")
+  })
+  socket.on('chat message', (msg)=>{
+      console.log("Message: "+msg)
+      io.emit('chat message', msg)
+  })
+
+  socket.on('empieza', (msg)=>{
+      console.log("EMPIEZA: Message: "+msg)
+      setTimeout(function(){
+          
+         console.log("termina")
+         io.emit('termina', "chaaau")
+      
+      }, 5000);
+     
+  })
+
+
+})
+
 
 
 
@@ -130,6 +167,15 @@ function formatTemplate(templateBase) {
   return arrayFormat
 
 }
+
+
+
+api.get("/testView", function (req, res) {
+
+  res.render("../views/controla_proceso", { hola: "hola" });
+})
+
+
 
 api.get("/:ficha/:mes/:empresa", async function (req, res) {
   //http://192.168.0.130:3800/liquidacion_sueldo/JUZCFLPM70/2019-05-01/0
@@ -428,6 +474,7 @@ api.get("/getLiquidaciones", async function (req, res, next) {
 
 })
 
+
 api.get("/liquidacion_fichas_reliquidadas", async function (req, res, next) {
   let empresa = 0
   let mes = '2019-05-01'
@@ -623,7 +670,8 @@ api.get("/liquidacion_persona_pdf/:ficha/:mes/:empresa", async function (req, re
 
   let ficha = req.params.ficha
   let mes = req.params.mes
-  let empresa = 0
+  //let empresa = 0
+  let empresa =req.params.empresa
   let empresaDetalle = constants.EMPRESAS.find(x => x.ID == empresa)
 
   console.log(ficha, mes, empresa)

@@ -10,7 +10,7 @@ var app=express();
   //cargar rutas
   
  
-  var liquidacion_sueldo=require('./routes/liquidacion_sueldo')
+  
 
   //var follow_routes=require('./routes/follow');
 
@@ -35,10 +35,10 @@ var app=express();
 
 
 
-app.use('/liquidacion_sueldo',liquidacion_sueldo)
 
 //ruta para archivos estaticos js,css, etc
 app.use(express.static('public'))
+
 
 
 

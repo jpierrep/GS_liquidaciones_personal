@@ -29,6 +29,7 @@
     "read-excel-file": "^2.0.2",
     "s": "^0.1.1",
     "sequelize": "^5.5.0",
+    "socket.io": "^2.3.0",
     "tedious": "^6.1.0"
   }
 }
