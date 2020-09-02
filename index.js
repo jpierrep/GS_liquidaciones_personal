@@ -41,6 +41,7 @@ var ip='localhost';
     var liquidacion_sueldo=require('./routes/liquidacion_sueldo')
     
      app.use('/liquidacion_sueldo',liquidacion_sueldo)
+     console.log("Holaa")
     
     
    

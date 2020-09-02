@@ -38,7 +38,7 @@ var app=express();
 
 //ruta para archivos estaticos js,css, etc
 app.use(express.static('public'))
-
+console.log("public")
 
 
 
