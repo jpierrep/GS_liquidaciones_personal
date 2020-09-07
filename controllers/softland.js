@@ -107,6 +107,7 @@ async function getFichasInfoPromiseMes(fichas, empresa, mes) {
                            (SELECT ficha,count(*) as cant_cargas  FROM `+ empresaDetalle + `.softland.sw_cargas where  '` + mes + `' between vigDesde and vigHasta	group by ficha) cargas  on cargas.ficha=per.ficha
   
                            where per.ficha in (:fichas)
+                           order by CENCO2_CODI asc,NOMBRES asc
                            `,
       { replacements: { fichas: fichas }, type: sequelizeMssql.QueryTypes.SELECT, raw: true })
 

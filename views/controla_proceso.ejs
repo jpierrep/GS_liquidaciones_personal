@@ -1,18 +1,20 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <!-- Required meta tags -->
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+<head>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-    <title>Procesos</title>
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z"
+    crossorigin="anonymous">
+
+  <title>Procesos</title>
 
 
-    <style>
-      .progress-bar-vertical {
+  <style>
+    .progress-bar-vertical {
       width: 20px;
       min-height: 100px;
       display: flex;
@@ -21,9 +23,10 @@
       float: left;
     }
         </style>
-  </head>
-  <body>
-     <!--
+</head>
+
+<body>
+  <!--
     <h1>Listado Procesos</h1>
     
 
@@ -41,8 +44,8 @@
     <span id="cc-status">   </span>
 
 -->
-     
-    <!--
+
+  <!--
       <div class="row">
           <div class="col-1">Liquidaciones: </div> 
           <div class="col-1"> <button type="button" id="empieza" class="btn btn-primary">Empieza</button> </div>
@@ -65,116 +68,252 @@
       </div>
       
       -->
-      <div class="container">
-          <div class="row">
-              <div class="col-sm-12">
-                <div class="card">
-                  <div class="card-body">
-                    <h5 class="card-title">Liquidaciones</h5>
-                    <p class="card-text">Genera archivos de liquidaciones del mes actual.</p>
-                    <div class="row">
-                        <div class="col-1"> 
-                        <button type="button" id="empieza" class="btn btn-primary">Ejecutar</button>
-                      </div>
-                        <div class="col-8 " style="padding:10px;margin: auto">
-                           
-                            <div name="loader" class=" progress"  >
-                                <div id='ProgressLiquidaciones' class="progress-bar progress-bar-striped progress-bar-animated " role="progressbar" aria-valuenow="5" aria-valuemin="0" aria-valuemax="100" style="width: 5%">5%</div>
-                              
-                              </div>
-                            
-                            
-                        </div>
-                        <div class="col-1"> 
-                            <span  name=" loader " id="cc-status">   </span>
-                          </div>
-                      </div>
-                  
-                   
-                     
-                    </div>
+  <div class="container">
+    <div class="row">
 
-                  </div>
+      <div class="col-sm-12">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">Liquidaciones</h5>
+            <p class="card-text">Genera archivos de liquidaciones del mes actual.</p>
+            <div class="row">
+              <div class="col-1">
+                <button type="button" id="liquidacion-empieza" class="btn btn-primary">Ejecutar</button>
+              </div>
+              <div class="col-8 " style="padding:10px;margin: auto">
+
+                <div name="liquidacion-loader" class=" progress">
+                  <div id='liquidacion-progress' class="progress-bar progress-bar-striped progress-bar-animated " role="progressbar"
+                    aria-valuenow="5" aria-valuemin="0" aria-valuemax="100" style="width: 5%">5%</div>
+
                 </div>
-             
-              <div class="col-sm-12">
-                <div class="card">
-                  <div class="card-body">
-                    <h5 class="card-title">Reliquidaciones</h5>
-                    <p class="card-text">Genera liquidaciones del personal reliquidado.</p>
-                    <a href="#" class="btn btn-primary">Ejecutar</a>
-                  </div>
-                </div>
+
+              </div>
+              <div class="col-1">
+                <span name=" liquidacion-loader " id="liquidacion-cc-status"> </span>
               </div>
             </div>
-     
-       </div>
-   
-
-        
-
-   
-
-    <!-- Optional JavaScript -->
-    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js" integrity="sha512-v8ng/uGxkge3d1IJuEo6dJP8JViyvms0cly9pnbfRxT6/31c3dRWxIiwGnMSWwZjHKOuY3EVmijs7k1jz/9bLA==" crossorigin="anonymous"></script>
-
-    <script>
-        var socket = io();
-     
-        $("[name='loader']").hide()
-        $("[name='loader']").hide()
-
-        $('#empieza').click(function(){
-              console.log("Empieza")
-             
-              $("[name='loader']").show()
-          
-            //  socket.emit('empieza', "holaaa");
-              socket.emit("getLiquidaciones","holaaaa");
-
-          
-
-            });
-     
-            socket.on('termina', function(msg){
-            //    $("#messages").append('<li class="list-group-item">'+msg+'</li>');
-            console.log("Termina "+msg)
-            $("[name='loader']").hide()
-          
-        
-            });
-
-                 
-         socket.on('getStatus', function(data){
-            //    $("#messages").append('<li class="list-group-item">'+msg+'</li>');
-            //console.log("Termina "+msg)
-            console.log("getStatus",data)
-          if(!data.isExecuting){
-            $("[name='loader']").hide()
-            $('#empieza').attr("disabled", false);
-            }
-         
-            else{
-            $("[name='loader']").show()
-            $('#empieza').attr("disabled", true);
-            $('#cc-status').text(data.msgs[0]) 
-            $('#ProgressLiquidaciones').attr('style',"width:"+ data.percent+"%")
-             $('#ProgressLiquidaciones').attr('aria-valuenow',data.percent)
-             $('#ProgressLiquidaciones').text(data.percent+"%")
-          }
-        }
-            );
 
 
- 
 
-     </script>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="col-sm-12">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">Reliquidaciones</h5>
+            <p class="card-text">Genera liquidaciones del personal reliquidado del mes anterior.</p>
+            <div class="row">
+              <div class="col-1">
+                <button type="button" id="reliquidacion-empieza" class="btn btn-primary">Ejecutar</button>
+              </div>
+              <div class="col-8 " style="padding:10px;margin: auto">
+
+                <div name="reliquidacion-loader" class=" progress">
+                  <div id='reliquidacion-progress' class="progress-bar progress-bar-striped progress-bar-animated "
+                    role="progressbar" aria-valuenow="5" aria-valuemin="0" aria-valuemax="100" style="width: 5%">5%</div>
+
+                </div>
+
+              </div>
+              <div class="col-1">
+                <span name=" reliquidacion-loader " id="reliquidacion-cc-status"> </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Button trigger modal -->
+  <button id="log-modal-button" type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalCenter">
+    Launch demo modal
+  </button>
+
+  <!-- Modal -->
+  <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLongTitle">Modal title</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+
+          <ul class="list-group">
+          <!--  ESTE ITEM SE CARGARA AUTOMATICO CON LOS LOGS DEL SERVIDOR
+            <li class="list-group-item active">Cras justo odio</li>
+            <li class='list-group-item'>
+              <a class='ui-all' tabindex='-1'>
+                Canada
+              </a>
+            </li>
+-->
+          </ul>
+
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary">Save changes</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
 
-  </body>
+
+
+
+
+  <!-- Optional JavaScript -->
+  <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+    crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN"
+    crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV"
+    crossorigin="anonymous"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js" integrity="sha512-v8ng/uGxkge3d1IJuEo6dJP8JViyvms0cly9pnbfRxT6/31c3dRWxIiwGnMSWwZjHKOuY3EVmijs7k1jz/9bLA=="
+    crossorigin="anonymous"></script>
+
+  <script>
+    var socket = io();
+    $(document).ready(function () {
+      //saveFile("Example.txt", "data:attachment/text", "Hello, world.");
+      //socket.emit("getFile","holaaaa");
+    //esto hace que se dupliquen los archivos pues se llama al getFilename que carga lista de archivos
+    //  socket.emit("getFileName", "holaaaa");
+
+
+      var countries = ['United States', 'Canada', 'Argentina', 'Armenia'];
+
+  
+      console.log(countries)
+    });
+
+    //   $("[name='loader']").hide()
+    //   $("[name='loader']").hide()
+
+
+    $('#log-modal-button').click(function () {
+
+      socket.emit("getFileName", "holaaaa");
+
+
+    });
+
+    $('#liquidacion-empieza').click(function () {
+      $("[name='liquidacion-loader']").show()
+      socket.emit("getLiquidaciones", "holaaaa");
+
+    });
+
+    $('#reliquidacion-empieza').click(function () {
+      $("[name='reliquidacion-loader']").show()
+      socket.emit("getReliquidaciones", "holaaaa");
+
+    });
+
+
+
+    //ojo que para reconocer los elementos dinamicos se debe usar el on click y no click como funcion
+
+    $(".list-group").on("click", "li", function () {
+      console.log($(this).text());
+
+      //getFile y el nombre del archivo
+
+       socket.emit("getFile",$(this).text());
+    });
+
+    socket.on('sendfile', function (data) {
+      saveFile("data.txt", "data:attachment/text", data);
+    })
+
+
+
+    socket.on('sendFileNames', function (data) {
+
+      console.log(data) //listado de archivos array
+      //crear listado selector jquery con los archivos
+      //https://stackoverflow.com/questions/5881033/how-to-generate-ul-li-list-from-string-array-using-jquery
+      
+      countries = data
+      var cList = $('ul.list-group').append(
+        countries.map(country =>
+          $("<li class='list-group-item'>").append($("<a class='ui-all' tabindex='-1'> ").text(country))
+        )
+      );
+
+    })
+
+
+
+    socket.on('getStatusLiquidacion', function (data) {
+      //    $("#messages").append('<li class="list-group-item">'+msg+'</li>');
+      //console.log("Termina "+msg)
+
+      if (!data.isExecuting) {
+        $("[name='liquidacion-loader']").hide()
+        $('#liquidacion-empieza').attr("disabled", false);
+      }
+
+      else {
+        $("[name='liquidacion-loader']").show()
+        $('#liquidacion-empieza').attr("disabled", true);
+        $('#liquidacion-cc-status').text(data.msgs[0])
+        $('#liquidacion-progress').attr('style', "width:" + data.percent + "%")
+        $('#liquidacion-progress').attr('aria-valuenow', data.percent)
+        $('#liquidacion-progress').text(data.percent + "%")
+      }
+    });
+
+
+    socket.on('getStatusReliquidacion', function (data) {
+      //    $("#messages").append('<li class="list-group-item">'+msg+'</li>');
+      //console.log("Termina "+msg)
+
+      if (!data.isExecuting) {
+        $("[name='reliquidacion-loader']").hide()
+        $('#reliquidacion-empieza').attr("disabled", false);
+      }
+
+      else {
+        $("[name='reliquidacion-loader']").show()
+        $('#reliquidacion-empieza').attr("disabled", true);
+        $('#reliquidacion-cc-status').text(data.msgs[0])
+        $('#reliquidacion-progress').attr('style', "width:" + data.percent + "%")
+        $('#reliquidacion-progress').attr('aria-valuenow', data.percent)
+        $('#reliquidacion-progress').text(data.percent + "%")
+      }
+    });
+
+
+
+
+    function saveFile(name, type, data) {
+      if (data !== null && navigator.msSaveBlob)
+        return navigator.msSaveBlob(new Blob([data], { type: type }), name);
+      var a = $("<a style='display: none;'/>");
+      var url = window.URL.createObjectURL(new Blob([data], { type: type }));
+      a.attr("href", url);
+      a.attr("download", name);
+      $("body").append(a);
+      a[0].click();
+      window.URL.revokeObjectURL(url);
+      a.remove();
+    }
+  </script>
+
+</body>
+
 </html>

@@ -11,7 +11,7 @@ const VariablesFicha = sequelizeMssql.import('../models/soft_variables_ficha');
 var SoftlandController = require('../controllers/softland');
 var api = express.Router();
 const constants = require('../config/systems_constants')
-var fs = require('fs');
+const fs = require('fs');
 var request = require('request');
 const http = require('https');
 var ejs = require('ejs');
@@ -21,13 +21,18 @@ const io = require('../index');
 var ficha = ''
 
 var StatusLiquidacionTemplate = {
+ 
   isExecuting: false,
   percent: 0,
   msgs: []
 }
 
+
+let pathLogs='data-logs/'
+
+
 var StatusLiquidacion = JSON.parse(JSON.stringify(StatusLiquidacionTemplate))
-var StatusReLiquidacion = JSON.parse(JSON.stringify(StatusLiquidacionTemplate))
+var StatusReliquidacion = JSON.parse(JSON.stringify(StatusLiquidacionTemplate))
 
 
 console.log("liquidacion")
@@ -50,65 +55,66 @@ var templateDB = require('../config/template_liquidacion.json')
 io.on('connection', (socket) => {
 
   //socket.on('estadoActual')
-  socket.emit('getStatus', StatusLiquidacion)
-  socket.emit('getStatus', StatusReLiquidacion)
+  socket.emit('getStatusLiquidacion', StatusLiquidacion)
+  socket.emit('getStatusReliquidacion', StatusReliquidacion)
+
   console.log("a user connected via socket!")
   socket.on('disconnect', () => {
     console.log("a user disconnected!")
-  })
-  socket.on('chat message', (msg) => {
-    console.log("Message: " + msg)
-    io.emit('chat message', msg)
-  })
+  });
+
 
 
   socket.on('getLiquidaciones', async (msg) => {
 
-
     console.log("se empieza a ejecutar proceso liquidaciones: " + msg)
+
     StatusLiquidacion = JSON.parse(JSON.stringify(StatusLiquidacionTemplate))
     StatusLiquidacion.isExecuting = true
-    io.emit('getStatus', StatusLiquidacion)
-    await getLiquidaciones()
-    StatusLiquidacion.isExecuting = 0
-    io.emit('getStatus', StatusLiquidacion)
-    // io.emit('chat message', msg)
-  })
 
-  socket.on('getReLiquidaciones', async (msg) => {
+    io.emit('getStatusLiquidacion', StatusLiquidacion)
+    await getLiquidaciones("Liquidacion")
+    StatusLiquidacion.isExecuting = 0
+    io.emit('getStatusLiquidacion', StatusLiquidacion)
+ 
+  });
+
+
+
+  socket.on("getFile",function(fileName){
+    //lee un archivo segun parametro de nombre
+//let filedata=fs.readFileSync(pathLogs+'/liquida-01-01-01-019191.txt')
+let filedata=fs.readFileSync(pathLogs+'/'+fileName)
+ socket.emit("sendfile", filedata.toString()); 
+
+ 
+});
+
+
+socket.on("getFileName",async (proceso) => {
+  //obtiene el listado de archivos del log
+  //theString.match(/^.*abc$/) //filter proceso
+  let archivos=fs.readdirSync(pathLogs)
+   socket.emit("sendFileNames", archivos); 
+  console.log(archivos)
+  
+   
+  });
+
+
+
+  socket.on('getReliquidaciones', async (msg) => {
 
 
     console.log("se empieza a ejecutar proceso Reliquidaciones: " + msg)
-    StatusReLiquidacion = JSON.parse(JSON.stringify(StatusLiquidacionTemplate))
-    StatusReLiquidacion.isExecuting = true
-    io.emit('getStatus', StatusReLiquidacion)
-    await getLiquidaciones()
-    StatusReLiquidacion.isExecuting = 0
-    io.emit('getStatus', StatusReLiquidacion)
-    // io.emit('chat message', msg)
-  })
+    StatusReliquidacion = JSON.parse(JSON.stringify(StatusLiquidacionTemplate))
+    StatusReliquidacion.isExecuting = true
+    io.emit('getStatusReliquidacion', StatusReliquidacion)
+    await getLiquidaciones("Reliquidacion")
+    StatusReliquidacion.isExecuting = 0
+    io.emit('getStatusReliquidacion', StatusReliquidacion)
 
-
-  socket.on('empieza', (msg) => {
-    isExecuteLiquStatusLiquidacion.isExecutingidaciones = true
-
-    io.emit('getStatus', StatusLiquidacion)
-
-    console.log("EMPIEZA: Message: " + msg)
-    setTimeout(function () {
-      StatusLiquidacion.isExecuting = false
-      io.emit('getStatus', StatusLiquidacion)
-      console.log("termina")
-      //  io.emit('termina', "chaaau")
-
-    }, 5000);
-
-  })
-
-
-
-
-
+  });
 
 
 
@@ -313,9 +319,33 @@ console.log("he")
 
   //yyyyyyyy
   //api.get("/getLiquidaciones", async function (req, res, next) {
-  async function getLiquidaciones() {
+  async function getLiquidaciones(tipoProceso) {
+  
+    
+    let dataValidar=[] //[{ficha:ficha1,valor:valorLiquidoficha1}]
+    let empresa = 0
+
+     //tipo:"Liquidacion","Reliquidacion"
+     let variableValidar=''
+     let mesProceso=''
+     let pathArchivos=''
 
 
+   if(tipoProceso=="Liquidacion"){
+     //extraer mes actual
+     //extraer variable liquidacion
+
+     variableValidar='H303'
+     mesProceso='2020-08-01'
+     pathArchivos="dataTest/testLiquidaciones/"
+
+   }if(tipoProceso=="Reliquidacion"){
+
+    variableValidar='H068'
+    mesProceso='2020-07-01'
+    pathArchivos="dataTest/testReliquidaciones/"
+
+   }
 
     return new Promise(async (resolve, reject) => {
       //http://localhost:3800/liquidacion_sueldo/getLiquidaciones
@@ -332,19 +362,13 @@ console.log("he")
 
 
 
-
-
-      let mes = '2020-07-01'
-      let empresa = 0
-
-
       let fichasVigentes = (await sequelizeMssql
         .query(`
   select distinct ficha
   FROM [SISTEMA_CENTRAL].[dbo].[sw_variablepersona]
   where 
-   emp_codi=0 and fecha='2020-07-01' 
-   and codVariable='H303' and valor>0
+   emp_codi=0 and fecha='`+mesProceso+`'
+   and codVariable='`+variableValidar+`' and valor>0
 
 `
           , {
@@ -352,7 +376,7 @@ console.log("he")
             model: VariablesFicha,
             mapToModel: true, // pass true here if you have any mapped fields
             raw: true
-          })).map(x => x.ficha)//.slice(0,50)  //para control de cantidad de cc para testear
+          })).map(x => x.ficha).slice(0,10)  //para control de cantidad de la cantidad de fichas que se generaran
 
 
 
@@ -365,7 +389,7 @@ console.log("he")
   
    where 
    emp_codi=`+ empresa + `
-   and fecha='`+ mes + `'
+   and fecha='`+ mesProceso + `'
    and codVariable in (
    'P010','P053','P052','P050','P041','H001','H007','H008','H002','H003'
    ,'H016','H030','H031','H029','H024','H013','H074','H020','H043','H050'
@@ -374,6 +398,7 @@ console.log("he")
    ,'H300','D003','D020','D004','D021','D100','D005','D007','D006','D022'
    ,'D030','D031','D040','D050','D061','D064','D065','D070','D080','D090'
    ,'D091','D009','D101','D104','H303'
+   
    )
 `
           , {
@@ -385,7 +410,7 @@ console.log("he")
       //.map(x => x.CENCO2_CODI)//.slice(0,50)  //para control de cantidad de cc para testear
 
 
-      let infoPersonas = (await SoftlandController.getFichasInfoPromiseMes(fichasVigentes, empresa, mes))
+      let infoPersonas = (await SoftlandController.getFichasInfoPromiseMes(fichasVigentes, empresa, mesProceso))
 
 
       //distinct cc
@@ -394,7 +419,7 @@ console.log("he")
       }
 
 
-      let distinctCC = infoPersonas.map(x => { return x.CENCO2_CODI }).filter(unique)//.slice(0, 100)
+      let distinctCC = infoPersonas.map(x => { return x.CENCO2_CODI }).filter(unique)//.slice(0, 3)
     //distinctCC = ["165-001"]
   //   distinctCC = ["129-001"]
   //distinctCC = ["162-009"]
@@ -459,12 +484,13 @@ console.log("he")
 
             // console.log(persona)
             //se añade la infor de una persona //CAMBIAR A LA PERSONA CORRESPONDIENTE (BUSCAR EN INFOPERSONA)
-            templates_persona.push({ ficha: ficha, persona: persona, template: template })
+            //se pasa filled template pues ahí se pueden recorrer la data para validar, template viene formateada con columnasy es mas dificil recorrer
+            templates_persona.push({ ficha: ficha, persona: persona, template: template,data:filledTemplate })
 
           })
             console.log("antes_data")
 
-            ejs.renderFile("views/liquidacion_sueldo_multiple - copia.ejs", { templates_persona: templates_persona, empresaDetalle: empresaDetalle, mes }, {}, function (err, data) {
+            ejs.renderFile("views/liquidacion_sueldo_multiple - copia.ejs", { templates_persona: templates_persona, empresaDetalle: empresaDetalle,mes: mesProceso }, {}, function (err, data) {
               if (err)
                 console.log(err)
               //console.log("data",data)
@@ -480,9 +506,23 @@ console.log("he")
                 //    stream.pipe(res);
                 if (stream && !err) {
 
-                  stream.pipe(fs.createWriteStream("dataTest/testLiquidaciones/" + centro_costo + ".pdf"));
+                  stream.pipe(fs.createWriteStream(pathArchivos + centro_costo + ".pdf"));
                   // stream.pipe(res);
+                  
 
+                  //recorre todas las personas (ficha) y busca la variable a validar (H303 ) liquido a pago , para luego validar con la data de base, con ello
+                  //sabemos si se ejecutó completamente el proceso
+                
+                  
+                
+                  templates_persona.forEach(persona=>{
+                    let ficha=persona.ficha
+                   console.log(persona["data"])
+                    let monto= persona["data"].find(x=>x["VAR_CODI"]=="H303")["VAR_VALOR"]
+                    
+                    dataValidar.push({ficha:ficha,monto:monto})
+                  })
+               
                   resolves()
                  
                 
@@ -492,11 +532,18 @@ console.log("he")
                 } else {
                   rejects()
                   console.log("error en stream, " + centro_costo,err)
-                  // stream.pipe(res);
-                  StatusLiquidacion.msgs[0] = "falloo el centro "+  centro_costo +" "+err
-                 // StatusLiquidacion.percent = parseInt((i + 1) / distinctCC.length * 100)
-                  io.emit('getStatus', StatusLiquidacion)
-
+          
+                   if(tipoProceso=="Liquidacion"){ 
+                    StatusLiquidacion.msgs[0] = "falloo el centro "+  centro_costo +" "+err
+                    // StatusLiquidacion.percent = parseInt((i + 1) / distinctCC.length * 100)
+                     io.emit('getStatusLiquidacion', StatusLiquidacion)
+                    } if(tipoProceso=="Reliquidacion"){ 
+                      StatusReliquidacion.msgs[0] = "falloo el centro "+  centro_costo +" "+err
+                      // StatusLiquidacion.percent = parseInt((i + 1) / distinctCC.length * 100)
+                       io.emit('getStatusReliquidacion', StatusReliquidacion)
+                      }
+              
+              
                 }
 
 
@@ -520,10 +567,17 @@ console.log("he")
 
           //   await Promise.all(getFilesPromises)
           console.log("todos los trabajos terminados iteracion ", i)
-          //aca esta ok, asi que emitimos evento     
+          //aca esta ok, asi que emitimos evento    
+          if(tipoProceso=="Liquidacion"){ 
           StatusLiquidacion.msgs[0] = centro_costo
           StatusLiquidacion.percent = parseInt((i + 1) / distinctCC.length * 100)
-          io.emit('getStatus', StatusLiquidacion)
+          io.emit('getStatusLiquidacion', StatusLiquidacion)
+          } if(tipoProceso=="Reliquidacion"){ 
+            StatusReliquidacion.msgs[0] = centro_costo
+            StatusReliquidacion.percent = parseInt((i + 1) / distinctCC.length * 100)
+            io.emit('getStatusReliquidacion', StatusReliquidacion)
+            }
+          
           //termina
        
       }
@@ -531,6 +585,22 @@ console.log("he")
 
       //await Promise.all(allLiquidaciones)
       console.log("todos los trabajos terminados aa")
+  
+      //efectua validacion
+
+     // console.log("eeee",dataVariablesPersona.filter(x=>x["codVariable"]=='H303'))
+      dataVariablesPersona.filter(x=>x["codVariable"]=='H303').forEach(persona=>{
+      let existe=   dataValidar.find(x=>x.ficha==persona.ficha)
+      if(!existe||persona["valor"]!=existe["monto"])
+      console.log("error en la ficha",persona.ficha)
+
+        return
+      })
+      fs.appendFileSync('message.txt', JSON.stringify(dataValidar));
+      console.log("todos las validaciones hechas")
+
+
+
       //return res.status(200).send({ status: "ok" })
       resolve()
     })
@@ -1327,6 +1397,33 @@ async function getLiquidacionCentroCosto(res, centro_costo, mes, empresa, path) 
 
 function fillTemplate(templatebase, variablesPersona) {
 
+  /* RESULTADO EJEMPLO   templatebase 
+[ { VAR_NOMBRE: 'DIAS TRABAJADOS',
+    COLUMNA: 1,
+    POSICION: 1,
+    OFFSET: 1,
+    TIPO: 'NORMAL',
+    VAR_CODI: 'P010',
+    SECTION: 'BODY',
+    VAR_VALOR: '30' },
+  { VAR_NOMBRE: 'CANT.HHEE ENAP',
+    COLUMNA: 1,
+    POSICION: 3,
+    OFFSET: null,
+    TIPO: 'NORMAL',
+    VAR_CODI: 'P052',
+    SECTION: 'BODY',
+    VAR_VALOR: '55' },
+  { VAR_NOMBRE: 'HH COMP. FESTIVOS ENAP',
+    COLUMNA: 1,
+    POSICION: 5,
+    OFFSET: null,
+    TIPO: 'NORMAL',
+    VAR_CODI: 'P041',
+    SECTION: 'BODY',
+    VAR_VALOR: '11' }]
+  */
+
   //llenamos la templatebase
   templatebase.forEach(variable => {
     if (variable.TIPO == "NORMAL" || variable.TIPO == "TOTAL") {
@@ -1358,13 +1455,36 @@ function fillTemplate(templatebase, variablesPersona) {
   //filtramos las variables que tienen dato o son t itulos
   //si se deben dejar fijas algunas variables, se debe permitir marcador que tome la posicion y la deje fija
   //luego la pinte como tds de tabla vacios, asi los espacios son fijos
-
+  //console.log("templatebase",templatebase.filter(x => x.TIPO == "TITULO" || ((x.TIPO == "NORMAL" || x.TIPO == "TOTAL") && x.VAR_VALOR)))
   return templatebase.filter(x => x.TIPO == "TITULO" || ((x.TIPO == "NORMAL" || x.TIPO == "TOTAL") && x.VAR_VALOR))
+
 
 }
 
 
 function formatTemplate(templateBase) {
+
+/*
+EJEMPLO template llena
+   [ [ { VAR_NOMBRE: 'DIAS TRABAJADOS',
+      COLUMNA: 1,
+      POSICION: 1,
+      OFFSET: 1,
+      TIPO: 'NORMAL',
+      VAR_CODI: 'P010',
+      SECTION: 'BODY',
+      VAR_VALOR: '30' },
+    { VAR_NOMBRE: 'DESCUENTOS',
+      COLUMNA: 2,
+      POSICION: 1,
+      OFFSET: 1,
+      TIPO: 'TITULO',
+      VAR_CODI: 'P',
+      SECTION: 'BODY',
+      VAR_VALOR: 10000 } ],
+  [ {}, {} ]
+  ]
+  */
   //pedir el mes y ficha para obtener data
 
   //get max posicion para saber cuantas filas tendra
@@ -1427,7 +1547,7 @@ function formatTemplate(templateBase) {
   //console.log("arrayFormat",arrayFormat)
 
 
-
+  //console.log('template format',arrayFormat)
   return arrayFormat
 
 }
