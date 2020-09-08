@@ -27,7 +27,7 @@ var StatusLiquidacionTemplate = {
   msgs: []
 }
 
-
+//No puede ir dentro de una funcion pues lo utilizan los sockets
 let pathLogs='data-logs/'
 
 
@@ -109,7 +109,7 @@ socket.on("getFileName",async (proceso) => {
  // let archivos=fs.readdirSync(pathLogs).filter(x=>x.match(`/^.*`+controlProceso+`$/`))
  
  
- let archivos=fs.readdirSync(pathLogs).filter(x=>x.indexOf(controlProceso)>-1)
+ let archivos=fs.readdirSync(pathLogs).filter(x=>x.indexOf(controlProceso)>-1).slice(0,9).sort().reverse()
   socket.emit("sendFileNames", archivos); 
   console.log(archivos)
   
@@ -135,7 +135,10 @@ socket.on("getFileName",async (proceso) => {
 
   api.get("/testView", function (req, res) {
 console.log("he")
-    res.render("../views/controla_proceso", { hola: "hola" });
+
+
+
+ res.render("../views/controla_proceso", { hola: "hola" });
   })
 
 
@@ -344,7 +347,11 @@ console.log("he")
      let variableValidar=''
      let mesProceso=''
      let pathArchivos=''
+     let nameLogFile=''
 
+     //para calcular la demora del proceso
+     var startTime= new Date();
+  
 
    if(tipoProceso=="Liquidacion"){
      //extraer mes actual
@@ -353,12 +360,14 @@ console.log("he")
      variableValidar='H303'
      mesProceso='2020-08-01'
      pathArchivos="dataTest/testLiquidaciones/"
+     nameLogFile='liquida'
 
    }if(tipoProceso=="Reliquidacion"){
 
     variableValidar='H068'
     mesProceso='2020-07-01'
     pathArchivos="dataTest/testReliquidaciones/"
+    nameLogFile='reliquida'
 
    }
 
@@ -391,7 +400,7 @@ console.log("he")
             model: VariablesFicha,
             mapToModel: true, // pass true here if you have any mapped fields
             raw: true
-          })).map(x => x.ficha).slice(0,10)  //para control de cantidad de la cantidad de fichas que se generaran
+          })).map(x => x.ficha)//.slice(0,10)  //para control de cantidad de la cantidad de fichas que se generaran ***********
 
 
 
@@ -601,17 +610,39 @@ console.log("he")
       //await Promise.all(allLiquidaciones)
       console.log("todos los trabajos terminados aa")
   
+   // para calular la demora se contrasta con startTime
+   var endTime   = new Date();
+   var demoraSeconds = parseInt((endTime.getTime() - startTime.getTime()) / 1000);
+
       //efectua validacion
+      let statusValidacion="OK"
 
      // console.log("eeee",dataVariablesPersona.filter(x=>x["codVariable"]=='H303'))
       dataVariablesPersona.filter(x=>x["codVariable"]=='H303').forEach(persona=>{
       let existe=   dataValidar.find(x=>x.ficha==persona.ficha)
-      if(!existe||persona["valor"]!=existe["monto"])
+      if(!existe||persona["valor"]!=existe["monto"]){
       console.log("error en la ficha",persona.ficha)
+      statusValidacion="ERR"
+    }
+      else   existe["montoimpreso"]=persona["valor"]
+      
 
         return
       })
-      fs.appendFileSync('message.txt', JSON.stringify(dataValidar));
+  //guarda logs de las validaciones
+
+  ///var dateString=new Date().toISOString().substr(0,10)
+//replace(/T/, ' ').  
+//replace(/\..+/, '').
+ // replace(/:/g, '-')
+
+var m = new Date();
+let formatDate=(m.getFullYear()>9?m.getFullYear():'0'+m.getFullYear())+"-"+((m.getMonth()+1)>9?(m.getMonth()+1):'0'+(m.getMonth()+1))+"-"+(m.getDate()>9?m.getDate():'0'+m.getDate())
+
+ let formatHour= (m.getHours()>9?m.getHours():'0'+m.getHours()) + "-" + (m.getMinutes()>9?m.getMinutes():'0'+m.getMinutes()) + "-" + (m.getSeconds()>9?m.getSeconds():'0'+m.getSeconds())
+ console.log(formatDate+"-"+formatHour)
+ 
+      fs.appendFileSync(pathLogs+statusValidacion+"-"+nameLogFile+"-"+formatDate+"-"+formatHour+"-"+demoraSeconds+".txt", JSON.stringify(dataValidar));
       console.log("todos las validaciones hechas")
 
 
