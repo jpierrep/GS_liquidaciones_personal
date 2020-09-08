@@ -74,7 +74,12 @@
       <div class="col-sm-12">
         <div class="card">
           <div class="card-body">
-            <h5 class="card-title">Liquidaciones</h5>
+            <h5 class="card-title">Liquidaciones 
+            <a class='ui-all' style=" font-weight: normal;font-size: 1rem;" tabindex='-1' id="liquidacion-log-modal-button" data-toggle="modal" data-target="#exampleModalCenter">
+                [logs]
+              </a>
+            </h5> 
+          
             <p class="card-text">Genera archivos de liquidaciones del mes actual.</p>
             <div class="row">
               <div class="col-1">
@@ -104,7 +109,14 @@
       <div class="col-sm-12">
         <div class="card">
           <div class="card-body">
-            <h5 class="card-title">Reliquidaciones</h5>
+            <h5 class="card-title">Reliquidaciones
+                <a class='ui-all' style=" font-weight: normal;font-size: 1rem;" tabindex='-1' id="reliquidacion-log-modal-button" data-toggle="modal" data-target="#exampleModalCenter">
+                    [logs]
+                  </a>
+
+            </h5>  <!-- Button trigger modal -->
+            
+         
             <p class="card-text">Genera liquidaciones del personal reliquidado del mes anterior.</p>
             <div class="row">
               <div class="col-1">
@@ -130,10 +142,6 @@
 
   </div>
 
-  <!-- Button trigger modal -->
-  <button id="log-modal-button" type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalCenter">
-    Launch demo modal
-  </button>
 
   <!-- Modal -->
   <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
@@ -141,7 +149,7 @@
     <div class="modal-dialog modal-dialog-centered" role="document">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLongTitle">Modal title</h5>
+          <h5 class="modal-title" id="exampleModalLongTitle">Registros Procesos</h5>
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
@@ -203,13 +211,20 @@
     //   $("[name='loader']").hide()
     //   $("[name='loader']").hide()
 
+  
+    $('#liquidacion-log-modal-button').click(function () {
 
-    $('#log-modal-button').click(function () {
-
-      socket.emit("getFileName", "holaaaa");
-
+      socket.emit("getFileName", "liquidacion");
+      $('ul.list-group').empty()
 
     });
+
+      $('#reliquidacion-log-modal-button').click(function () {
+
+socket.emit("getFileName", "reliquidacion");
+$('ul.list-group').empty()
+
+});
 
     $('#liquidacion-empieza').click(function () {
       $("[name='liquidacion-loader']").show()
@@ -235,8 +250,8 @@
        socket.emit("getFile",$(this).text());
     });
 
-    socket.on('sendfile', function (data) {
-      saveFile("data.txt", "data:attachment/text", data);
+    socket.on('sendfile', function (data,fileName) {
+      saveFile(fileName, "data:attachment/text", data);
     })
 
 

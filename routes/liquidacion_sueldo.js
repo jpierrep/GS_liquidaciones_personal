@@ -85,17 +85,32 @@ io.on('connection', (socket) => {
     //lee un archivo segun parametro de nombre
 //let filedata=fs.readFileSync(pathLogs+'/liquida-01-01-01-019191.txt')
 let filedata=fs.readFileSync(pathLogs+'/'+fileName)
- socket.emit("sendfile", filedata.toString()); 
+
+ socket.emit("sendfile", filedata.toString(),fileName); 
 
  
 });
 
 
 socket.on("getFileName",async (proceso) => {
+ let controlProceso=""
+
+ //añadiendo el guion en el nombre del proceso se puede identificar sin problemas
+  if (proceso=="reliquidacion") 
+  controlProceso="-reliquida"
+  if (proceso=="liquidacion") 
+  controlProceso="-liquida"
+
+  console.log("aaaa"+controlProceso)
+
   //obtiene el listado de archivos del log
   //theString.match(/^.*abc$/) //filter proceso
-  let archivos=fs.readdirSync(pathLogs)
-   socket.emit("sendFileNames", archivos); 
+
+ // let archivos=fs.readdirSync(pathLogs).filter(x=>x.match(`/^.*`+controlProceso+`$/`))
+ 
+ 
+ let archivos=fs.readdirSync(pathLogs).filter(x=>x.indexOf(controlProceso)>-1)
+  socket.emit("sendFileNames", archivos); 
   console.log(archivos)
   
    
