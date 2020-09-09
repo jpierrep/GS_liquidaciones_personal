@@ -68,6 +68,30 @@
       </div>
       
       -->
+      <div class="container">
+        <div class="row">
+            
+                <div class="col-6"> Empresa:
+      <select id="empresa-select" class="custom-select custom-select-lg mb-3">
+        
+        <option selected value="0">Guard Service Seguridad S.A.</option>
+        <!---<option   value="2">GS Outsourcing S.A.</option>-->
+       
+      </select>
+                </div>
+                <div class="col-6"> Mes:
+      <select id="mes-select" class="custom-select custom-select-lg mb-3">
+  
+        <option selected value="2020-09">2020-09</option>
+        <option value="2020-08">2020-08</option>
+      
+      </select>
+    </div>
+        </div>
+      </div>
+
+
+
   <div class="container">
     <div class="row">
 
@@ -213,28 +237,34 @@
 
   
     $('#liquidacion-log-modal-button').click(function () {
-
-      socket.emit("getFileName", "liquidacion");
+      var empresa=  $( "#empresa-select" ).val();
+      socket.emit("getFileName", "liquidacion",empresa);
       $('ul.list-group').empty()
+     
+     
 
     });
 
       $('#reliquidacion-log-modal-button').click(function () {
-
-socket.emit("getFileName", "reliquidacion");
+        var empresa=  $( "#empresa-select" ).val();
+socket.emit("getFileName", "reliquidacion",empresa);
 $('ul.list-group').empty()
 
 });
 
     $('#liquidacion-empieza').click(function () {
+      var empresa=  $( "#empresa-select" ).val();
+     var mes=  $( "#mes-select" ).val();
       $("[name='liquidacion-loader']").show()
-      socket.emit("getLiquidaciones", "holaaaa");
+      socket.emit("getLiquidaciones", {empresa:empresa,mes:mes});
 
     });
 
     $('#reliquidacion-empieza').click(function () {
+      var empresa=  $( "#empresa-select" ).val();
+     var mes=  $( "#mes-select" ).val();
       $("[name='reliquidacion-loader']").show()
-      socket.emit("getReliquidaciones", "holaaaa");
+      socket.emit("getReliquidaciones", {empresa:empresa,mes:mes});
 
     });
 

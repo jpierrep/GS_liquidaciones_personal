@@ -65,15 +65,17 @@ io.on('connection', (socket) => {
 
 
 
-  socket.on('getLiquidaciones', async (msg) => {
+  socket.on('getLiquidaciones', async (dataUser) => {
 
-    console.log("se empieza a ejecutar proceso liquidaciones: " + msg)
+     //data trae la info del mes y la empresa del proceso
+    console.log("se empieza a ejecutar proceso Reliquidaciones: " + dataUser["mes"]+dataUser["empresa"])
+
 
     StatusLiquidacion = JSON.parse(JSON.stringify(StatusLiquidacionTemplate))
     StatusLiquidacion.isExecuting = true
 
     io.emit('getStatusLiquidacion', StatusLiquidacion)
-    await getLiquidaciones("Liquidacion")
+    await getLiquidaciones("Liquidacion",dataUser)
     StatusLiquidacion.isExecuting = 0
     io.emit('getStatusLiquidacion', StatusLiquidacion)
  
@@ -92,8 +94,9 @@ let filedata=fs.readFileSync(pathLogs+'/'+fileName)
 });
 
 
-socket.on("getFileName",async (proceso) => {
+socket.on("getFileName",async (proceso,empresa) => {
  let controlProceso=""
+ let controlEmpresa="-"+empresa+"-"
 
  //añadiendo el guion en el nombre del proceso se puede identificar sin problemas
   if (proceso=="reliquidacion") 
@@ -109,7 +112,7 @@ socket.on("getFileName",async (proceso) => {
  // let archivos=fs.readdirSync(pathLogs).filter(x=>x.match(`/^.*`+controlProceso+`$/`))
  
  
- let archivos=fs.readdirSync(pathLogs).filter(x=>x.indexOf(controlProceso)>-1).slice(0,9).sort().reverse()
+ let archivos=fs.readdirSync(pathLogs).filter(x=>x.indexOf(controlProceso)>-1).filter(x=>x.indexOf(controlEmpresa)>-1).slice(0,9).sort().reverse()
   socket.emit("sendFileNames", archivos); 
   console.log(archivos)
   
@@ -118,14 +121,16 @@ socket.on("getFileName",async (proceso) => {
 
 
 
-  socket.on('getReliquidaciones', async (msg) => {
+  socket.on('getReliquidaciones', async (dataUser) => {
+  
 
+  //data trae la info del mes y la empresa del proceso
+  console.log("se empieza a ejecutar proceso Reliquidaciones: " + dataUser["mes"]+dataUser["empresa"])
 
-    console.log("se empieza a ejecutar proceso Reliquidaciones: " + msg)
     StatusReliquidacion = JSON.parse(JSON.stringify(StatusLiquidacionTemplate))
     StatusReliquidacion.isExecuting = true
     io.emit('getStatusReliquidacion', StatusReliquidacion)
-    await getLiquidaciones("Reliquidacion")
+    await getLiquidaciones("Reliquidacion",dataUser)
     StatusReliquidacion.isExecuting = 0
     io.emit('getStatusReliquidacion', StatusReliquidacion)
 
@@ -134,10 +139,43 @@ socket.on("getFileName",async (proceso) => {
 
 
   api.get("/testView", function (req, res) {
+
+
+    
+    var fecha
+    var fechaProceso
+    fecha=new Date()
+    if(fecha.getDate()>5){
+      //entre el 1 y el 5 no se mueven los valores, porque se estan reliquidando el mes anterior
+    
+      fechaProceso= new Date(fecha.getFullYear(), fecha.getMonth(), 1).toISOString().substr(0,10)
+    }else{
+    
+      fecha.setMonth(fecha.getMonth() - 1);
+     fechaProceso= new Date(fecha.getFullYear(), fecha.getMonth(), 1).toISOString().substr(0,10)
+    }
+    console.log(fechaProceso)
+
 console.log("he")
 
 
+var fecha = new Date(); 
+//mes pasado
+fecha.setMonth(fecha.getMonth() - 1);
+var primerDiaMesPasado= new Date(fecha.getFullYear(), fecha.getMonth(), 1).toISOString().substr(0,10)
+var fecha2=new Date()
+var primerDiaMesActual= new Date(fecha2.getFullYear(), fecha2.getMonth(), 1).toISOString().substr(0,10)
 
+console.log(primerDiaMesPasado,primerDiaMesActual)
+/*
+let date=new Date()
+var primerDia = new Date(date.getFullYear(), date.getMonth(), 1);
+let mesAnterior=primerDia.setMonth(primerDia.getMonth()-1)
+var ultimoDia = new Date(date.getFullYear(), date.getMonth() + 1, 0);
+
+console.log(primerDia,ultimoDia,mesAnterior)
+
+*/
  res.render("../views/controla_proceso", { hola: "hola" });
   })
 
@@ -337,10 +375,12 @@ console.log("he")
 
   //yyyyyyyy
   //api.get("/getLiquidaciones", async function (req, res, next) {
-  async function getLiquidaciones(tipoProceso) {
+  async function getLiquidaciones(tipoProceso,dataUser) {
   
     
     let dataValidar=[] //[{ficha:ficha1,valor:valorLiquidoficha1}]
+    
+    //dataUser["empresa"] trae la empresa
     let empresa = 0
 
      //tipo:"Liquidacion","Reliquidacion"
@@ -354,18 +394,52 @@ console.log("he")
   
 
    if(tipoProceso=="Liquidacion"){
-     //extraer mes actual
-     //extraer variable liquidacion
+   
 
+/*
+    var fecha
+    var fechaProceso
+    if(fecha.getDate() ()>5){
+      //entre el 1 y el 5 no se mueven los valores, porque se estan reliquidando el mes anterior
+      fecha=new Date()
+      fechaProceso= new Date(fecha.getFullYear(), fecha.getMonth(), 1).toISOString().substr(0,10)
+    }else{
+      fecha = new Date(); 
+      fecha.setMonth(fecha.getMonth() - 1);
+      var fechaProceso= new Date(fecha.getFullYear(), fecha.getMonth(), 1).toISOString().substr(0,10)
+    }
+
+    */
+//console.log(primerDiaMesPasado,primerDiaMesActual)
+
+
+
+    //para liquidaciones, se extraen todas las peronas que tengan valor>0 en variableValidar (h303 liquido pago)
      variableValidar='H303'
-     mesProceso='2020-08-01'
+
+     mesProceso=dataUser["mes"]+"-01"
+     console.log("el mes seleccionado es")
+    //mesProceso=fechaProceso
      pathArchivos="dataTest/testLiquidaciones/"
      nameLogFile='liquida'
 
    }if(tipoProceso=="Reliquidacion"){
 
-    variableValidar='H068'
-    mesProceso='2020-07-01'
+//El mes de consulta para reliquidaciones es solo a mes pasado ya que en el mes en curso aún no hay data
+    //para reliquidaciones, se extraen todas las peronas que tengan valor>0 en variableValidar (h068 diferencia con cheque)
+variableValidar='H068'
+ 
+/*
+var fecha = new Date(); 
+fecha.setMonth(fecha.getMonth() - 1);
+var mesPasado= new Date(fecha.getFullYear(), fecha.getMonth(), 1).toISOString().substr(0,10)
+ //mes pasado
+
+ */
+
+mesProceso=dataUser["mes"]+"-01"
+console.log("el mes seleccionado es")
+    //mesProceso=mesPasado
     pathArchivos="dataTest/testReliquidaciones/"
     nameLogFile='reliquida'
 
@@ -400,7 +474,7 @@ console.log("he")
             model: VariablesFicha,
             mapToModel: true, // pass true here if you have any mapped fields
             raw: true
-          })).map(x => x.ficha)//.slice(0,10)  //para control de cantidad de la cantidad de fichas que se generaran ***********
+          })).map(x => x.ficha).slice(0,2)  //para control de cantidad de la cantidad de fichas que se generaran ***********
 
 
 
@@ -642,7 +716,7 @@ let formatDate=(m.getFullYear()>9?m.getFullYear():'0'+m.getFullYear())+"-"+((m.g
  let formatHour= (m.getHours()>9?m.getHours():'0'+m.getHours()) + "-" + (m.getMinutes()>9?m.getMinutes():'0'+m.getMinutes()) + "-" + (m.getSeconds()>9?m.getSeconds():'0'+m.getSeconds())
  console.log(formatDate+"-"+formatHour)
  
-      fs.appendFileSync(pathLogs+statusValidacion+"-"+nameLogFile+"-"+formatDate+"-"+formatHour+"-"+demoraSeconds+".txt", JSON.stringify(dataValidar));
+      fs.appendFileSync(pathLogs+statusValidacion+"-"+nameLogFile+"-"+empresa+"-"+formatDate+"-"+formatHour+"-"+demoraSeconds+".txt", JSON.stringify(dataValidar));
       console.log("todos las validaciones hechas")
 
 
