@@ -1,0 +1,633 @@
+
+    [
+        {
+            "VAR_NOMBRE": "DIAS TRABAJADOS",
+            "COLUMNA": 1,
+            "POSICION": 1,
+            "OFFSET": 1,
+            "TIPO": "NORMAL",
+            "VAR_CODI": "P010",
+            "SECTION": "BODY",
+            "VAR_VALOR": 10000
+        },
+        {
+            "VAR_NOMBRE": "HORAS TRABAJADAS",
+            "COLUMNA": 1,
+            "POSICION": 2,
+            "OFFSET": null,
+            "TIPO": "NORMAL",
+            "VAR_CODI": "P009",
+            "SECTION": "BODY",
+            "VAR_VALOR": 10000
+        },
+        {
+            "VAR_NOMBRE": "CANTIDAD TOTAL HORAS EXTRAS DEL MES",
+            "COLUMNA": 1,
+            "POSICION": 3,
+            "OFFSET": null,
+            "TIPO": "NORMAL",
+            "VAR_CODI": "H005",
+            "SECTION": "BODY",
+            "VAR_VALOR": 10000
+        },
+        {
+            "VAR_NOMBRE": "CANTIDAD HORAS EXTRAS  FESTIVOS",
+            "COLUMNA": 1,
+            "POSICION": 4,
+            "OFFSET": null,
+            "TIPO": "NORMAL",
+            "VAR_CODI": "P051",
+            "SECTION": "BODY",
+            "VAR_VALOR": 10000
+        },
+        {
+            "VAR_NOMBRE": "HABERES",
+            "COLUMNA": 1,
+            "POSICION": 5,
+            "OFFSET": null,
+            "TIPO": "TITULO",
+            "VAR_CODI": "P",
+            "SECTION": "BODY",
+            "VAR_VALOR": 10000
+        },
+        {
+            "VAR_NOMBRE": "SUELDO BASE MENSUAL",
+            "COLUMNA": 1,
+            "POSICION": 6,
+            "OFFSET": null,
+            "TIPO": "NORMAL",
+            "VAR_CODI": "H001",
+            "SECTION": "BODY",
+            "VAR_VALOR": 10000
+        },
+        {
+            "VAR_NOMBRE": "SUELDO BASE DIARIO",
+            "COLUMNA": 1,
+            "POSICION": 7,
+            "OFFSET": null,
+            "TIPO": "NORMAL",
+            "VAR_CODI": "H007",
+            "SECTION": "BODY",
+            "VAR_VALOR": 10000
+        },
+        {
+            "VAR_NOMBRE": "SUELDO BASE POR HORA",
+            "COLUMNA": 1,
+            "POSICION": 8,
+            "OFFSET": null,
+            "TIPO": "NORMAL",
+            "VAR_CODI": "H008",
+            "SECTION": "BODY",
+            "VAR_VALOR": 10000
+        },
+        {
+            "VAR_NOMBRE": "VALOR TOTAL HORAS EXTRAS MES",
+            "COLUMNA": 1,
+            "POSICION": 9,
+            "OFFSET": null,
+            "TIPO": "NORMAL",
+            "VAR_CODI": "H002",
+            "SECTION": "BODY",
+            "VAR_VALOR": 10000
+        },
+        {
+            "VAR_NOMBRE": "HORAS EXTRAS COMP. FESTIVOS",
+            "COLUMNA": 1,
+            "POSICION": 10,
+            "OFFSET": null,
+            "TIPO": "NORMAL",
+            "VAR_CODI": "H003",
+            "SECTION": "BODY",
+            "VAR_VALOR": 10000
+        },
+        {
+            "VAR_NOMBRE": "ANTICIPO DE GRATIFICACION ",
+            "COLUMNA": 1,
+            "POSICION": 11,
+            "OFFSET": null,
+            "TIPO": "NORMAL",
+            "VAR_CODI": "H030",
+            "SECTION": "BODY",
+            "VAR_VALOR": 10000
+        },
+        {
+            "VAR_NOMBRE": "ANTICIPO DE GRATIFICACION POR DIA",
+            "COLUMNA": 1,
+            "POSICION": 12,
+            "OFFSET": null,
+            "TIPO": "NORMAL",
+            "VAR_CODI": "H031",
+            "SECTION": "BODY",
+            "VAR_VALOR": 10000
+        },
+        {
+            "VAR_NOMBRE": "ANTICIPO GRATIFICACION POR HORA",
+            "COLUMNA": 1,
+            "POSICION": 13,
+            "OFFSET": null,
+            "TIPO": "NORMAL",
+            "VAR_CODI": "H029",
+            "SECTION": "BODY",
+            "VAR_VALOR": 10000
+        },
+        {
+            "VAR_NOMBRE": "BONO PLANTA MES",
+            "COLUMNA": 1,
+            "POSICION": 14,
+            "OFFSET": null,
+            "TIPO": "NORMAL",
+            "VAR_CODI": "H013",
+            "SECTION": "BODY",
+            "VAR_VALOR": 10000
+        },
+        {
+            "VAR_NOMBRE": "BONO DE RESPONSABILIDAD ",
+            "COLUMNA": 1,
+            "POSICION": 15,
+            "OFFSET": null,
+            "TIPO": "NORMAL",
+            "VAR_CODI": "H020",
+            "SECTION": "BODY",
+            "VAR_VALOR": 10000
+        },
+        {
+            "VAR_NOMBRE": "BONO ASISTENCIA EXTRAORDINARIO",
+            "COLUMNA": 1,
+            "POSICION": 16,
+            "OFFSET": null,
+            "TIPO": "NORMAL",
+            "VAR_CODI": "H074",
+            "SECTION": "BODY",
+            "VAR_VALOR": 10000
+        },
+        {
+            "VAR_NOMBRE": "BONO CLIENTE/BONO CALIDAD",
+            "COLUMNA": 1,
+            "POSICION": 17,
+            "OFFSET": null,
+            "TIPO": "NORMAL",
+            "VAR_CODI": "H043",
+            "SECTION": "BODY",
+            "VAR_VALOR": 10000
+        },
+        {
+            "VAR_NOMBRE": "BONO ADICIONAL",
+            "COLUMNA": 1,
+            "POSICION": 18,
+            "OFFSET": null,
+            "TIPO": "NORMAL",
+            "VAR_CODI": "H044",
+            "SECTION": "BODY",
+            "VAR_VALOR": 10000
+        },
+        {
+            "VAR_NOMBRE": "BONO CALIDAD/BONO CLIENTE MENSUAL",
+            "COLUMNA": 1,
+            "POSICION": 19,
+            "OFFSET": null,
+            "TIPO": "NORMAL",
+            "VAR_CODI": "H024",
+            "SECTION": "BODY",
+            "VAR_VALOR": 10000
+        },
+        {
+            "VAR_NOMBRE": "AGUINALDO",
+            "COLUMNA": 1,
+            "POSICION": 20,
+            "OFFSET": null,
+            "TIPO": "NORMAL",
+            "VAR_CODI": "H050",
+            "SECTION": "BODY",
+            "VAR_VALOR": 10000
+        },
+        {
+            "VAR_NOMBRE": "SUELDO MENSUAL  PUERTO",
+            "COLUMNA": 1,
+            "POSICION": 21,
+            "OFFSET": null,
+            "TIPO": "NORMAL",
+            "VAR_CODI": "H650",
+            "SECTION": "BODY",
+            "VAR_VALOR": 10000
+        },
+        {
+            "VAR_NOMBRE": "TOTAL HABERES IMPONIBLES",
+            "COLUMNA": 1,
+            "POSICION": 22,
+            "OFFSET": 1,
+            "TIPO": "TOTAL",
+            "VAR_CODI": "H100",
+            "SECTION": "BODY",
+            "VAR_VALOR": 10000
+        },
+        {
+            "VAR_NOMBRE": "ASIGNACION DE MOVILIZACION ",
+            "COLUMNA": 1,
+            "POSICION": 23,
+            "OFFSET": null,
+            "TIPO": "NORMAL",
+            "VAR_CODI": "H060",
+            "SECTION": "BODY",
+            "VAR_VALOR": 10000
+        },
+        {
+            "VAR_NOMBRE": "ASIGNACION DE MOVILIZACION POR HORA",
+            "COLUMNA": 1,
+            "POSICION": 24,
+            "OFFSET": null,
+            "TIPO": "NORMAL",
+            "VAR_CODI": "H062",
+            "SECTION": "BODY",
+            "VAR_VALOR": 10000
+        },
+        {
+            "VAR_NOMBRE": "ASIGNACION DE MOVILIZACION  POR DIA",
+            "COLUMNA": 1,
+            "POSICION": 25,
+            "OFFSET": null,
+            "TIPO": "NORMAL",
+            "VAR_CODI": "H064",
+            "SECTION": "BODY",
+            "VAR_VALOR": 10000
+        },
+        {
+            "VAR_NOMBRE": "ASIGNACION DE COLACION ",
+            "COLUMNA": 1,
+            "POSICION": 26,
+            "OFFSET": null,
+            "TIPO": "NORMAL",
+            "VAR_CODI": "H061",
+            "SECTION": "BODY",
+            "VAR_VALOR": 10000
+        },
+        {
+            "VAR_NOMBRE": "ASIGNACION DE COLACION POR HORA",
+            "COLUMNA": 1,
+            "POSICION": 27,
+            "OFFSET": null,
+            "TIPO": "NORMAL",
+            "VAR_CODI": "H063",
+            "SECTION": "BODY",
+            "VAR_VALOR": 10000
+        },
+        {
+            "VAR_NOMBRE": "ASIGNACION DE COLACION POR DIA",
+            "COLUMNA": 1,
+            "POSICION": 28,
+            "OFFSET": null,
+            "TIPO": "NORMAL",
+            "VAR_CODI": "H065",
+            "SECTION": "BODY",
+            "VAR_VALOR": 10000
+        },
+        {
+            "VAR_NOMBRE": "ASIGNACION POR PERDIDA DE CAJA ",
+            "COLUMNA": 1,
+            "POSICION": 29,
+            "OFFSET": null,
+            "TIPO": "NORMAL",
+            "VAR_CODI": "H025",
+            "SECTION": "BODY",
+            "VAR_VALOR": 10000
+        },
+        {
+            "VAR_NOMBRE": "ASIGNACION POR PERDIDA DE CAJA POR DIA",
+            "COLUMNA": 1,
+            "POSICION": 30,
+            "OFFSET": null,
+            "TIPO": "NORMAL",
+            "VAR_CODI": "H027",
+            "SECTION": "BODY",
+            "VAR_VALOR": 10000
+        },
+        {
+            "VAR_NOMBRE": "ASIGNACION POR PERDIDA DE CAJA POR HORA",
+            "COLUMNA": 1,
+            "POSICION": 31,
+            "OFFSET": null,
+            "TIPO": "NORMAL",
+            "VAR_CODI": "H026",
+            "SECTION": "BODY",
+            "VAR_VALOR": 10000
+        },
+        {
+            "VAR_NOMBRE": "ASIGN. MOVILIZACION ADIC. PACTADA",
+            "COLUMNA": 1,
+            "POSICION": 32,
+            "OFFSET": null,
+            "TIPO": "NORMAL",
+            "VAR_CODI": "H085",
+            "SECTION": "BODY",
+            "VAR_VALOR": 10000
+        },
+        {
+            "VAR_NOMBRE": "ASIG. MOVIL. ADIC. y VIATICOS",
+            "COLUMNA": 1,
+            "POSICION": 33,
+            "OFFSET": null,
+            "TIPO": "NORMAL",
+            "VAR_CODI": "H073",
+            "SECTION": "BODY",
+            "VAR_VALOR": 10000
+        },
+        {
+            "VAR_NOMBRE": "BONO LEY 20262",
+            "COLUMNA": 1,
+            "POSICION": 34,
+            "OFFSET": null,
+            "TIPO": "NORMAL",
+            "VAR_CODI": "H080",
+            "SECTION": "BODY",
+            "VAR_VALOR": 10000
+        },
+        {
+            "VAR_NOMBRE": "ASIGNACION FAMILIAR DEL MES",
+            "COLUMNA": 1,
+            "POSICION": 35,
+            "OFFSET": null,
+            "TIPO": "NORMAL",
+            "VAR_CODI": "H071",
+            "SECTION": "BODY",
+            "VAR_VALOR": 10000
+        },
+        {
+            "VAR_NOMBRE": "ASIGNACION FAMILIAR RETROACTIVA",
+            "COLUMNA": 1,
+            "POSICION": 36,
+            "OFFSET": null,
+            "TIPO": "NORMAL",
+            "VAR_CODI": "H072",
+            "SECTION": "BODY",
+            "VAR_VALOR": 10000
+        },
+        {
+            "VAR_NOMBRE": "TOTAL HABERES NO IMPONIBLES",
+            "COLUMNA": 1,
+            "POSICION": 37,
+            "OFFSET": 1,
+            "TIPO": "TOTAL",
+            "VAR_CODI": "H200",
+            "SECTION": "BODY",
+            "VAR_VALOR": 10000
+        },
+        {
+            "VAR_NOMBRE": "TOTAL HABERES",
+            "COLUMNA": 1,
+            "POSICION": 38,
+            "OFFSET": 1,
+            "TIPO": "TOTAL",
+            "VAR_CODI": "H300",
+            "SECTION": "BODY",
+            "VAR_VALOR": 10000
+        },
+        {
+            "VAR_NOMBRE": "DESCUENTOS",
+            "COLUMNA": 2,
+            "POSICION": 39,
+            "OFFSET": 1,
+            "TIPO": "TITULO",
+            "VAR_CODI": "P",
+            "SECTION": "BODY",
+            "VAR_VALOR": 10000
+        },
+        {
+            "VAR_NOMBRE": "AFP",
+            "COLUMNA": 2,
+            "POSICION": 40,
+            "OFFSET": null,
+            "TIPO": "NORMAL",
+            "VAR_CODI": "D003",
+            "SECTION": "BODY",
+            "VAR_VALOR": 10000
+        },
+        {
+            "VAR_NOMBRE": "FONASA",
+            "COLUMNA": 2,
+            "POSICION": 41,
+            "OFFSET": 1,
+            "TIPO": "NORMAL",
+            "VAR_CODI": "D021",
+            "SECTION": "BODY",
+            "VAR_VALOR": 10000
+        },
+        {
+            "VAR_NOMBRE": "ISAPRE",
+            "COLUMNA": 2,
+            "POSICION": 42,
+            "OFFSET": null,
+            "TIPO": "NORMAL",
+            "VAR_CODI": "D020",
+            "SECTION": "BODY",
+            "VAR_VALOR": 10000
+        },
+        {
+            "VAR_NOMBRE": "SEGURO DE CESANTIA TRABAJADOR",
+            "COLUMNA": 2,
+            "POSICION": 43,
+            "OFFSET": null,
+            "TIPO": "NORMAL",
+            "VAR_CODI": "D004",
+            "SECTION": "BODY",
+            "VAR_VALOR": 10000
+        },
+        {
+            "VAR_NOMBRE": "TOTAL DESCUENTOS PREVISIONALES",
+            "COLUMNA": 2,
+            "POSICION": 44,
+            "OFFSET": 1,
+            "TIPO": "TOTAL",
+            "VAR_CODI": "D100",
+            "SECTION": "BODY",
+            "VAR_VALOR": 10000
+        },
+        {
+            "VAR_NOMBRE": "COTIZACION ADICIONAL VOLUNTARIA",
+            "COLUMNA": 2,
+            "POSICION": 45,
+            "OFFSET": 1,
+            "TIPO": "NORMAL",
+            "VAR_CODI": "D005",
+            "SECTION": "BODY",
+            "VAR_VALOR": 10000
+        },
+        {
+            "VAR_NOMBRE": "APV CIA. ASEG.",
+            "COLUMNA": 2,
+            "POSICION": 46,
+            "OFFSET": null,
+            "TIPO": "NORMAL",
+            "VAR_CODI": "D007",
+            "SECTION": "BODY",
+            "VAR_VALOR": 10000
+        },
+        {
+            "VAR_NOMBRE": "CUENTA DE AHORRO AFP",
+            "COLUMNA": 2,
+            "POSICION": 47,
+            "OFFSET": null,
+            "TIPO": "NORMAL",
+            "VAR_CODI": "D006",
+            "SECTION": "BODY",
+            "VAR_VALOR": 10000
+        },
+        {
+            "VAR_NOMBRE": "CONVENIOS ISAPRE",
+            "COLUMNA": 2,
+            "POSICION": 48,
+            "OFFSET": null,
+            "TIPO": "NORMAL",
+            "VAR_CODI": "D022",
+            "SECTION": "BODY",
+            "VAR_VALOR": 10000
+        },
+        {
+            "VAR_NOMBRE": "PRESTAMOS CCAF",
+            "COLUMNA": 2,
+            "POSICION": 49,
+            "OFFSET": null,
+            "TIPO": "NORMAL",
+            "VAR_CODI": "D030",
+            "SECTION": "BODY",
+            "VAR_VALOR": 10000
+        },
+        {
+            "VAR_NOMBRE": "AHORRO VOL. CCAF",
+            "COLUMNA": 2,
+            "POSICION": 50,
+            "OFFSET": null,
+            "TIPO": "NORMAL",
+            "VAR_CODI": "D031",
+            "SECTION": "BODY",
+            "VAR_VALOR": 10000
+        },
+        {
+            "VAR_NOMBRE": "PRESTAMOS OTRAS CAJAS",
+            "COLUMNA": 2,
+            "POSICION": 51,
+            "OFFSET": null,
+            "TIPO": "NORMAL",
+            "VAR_CODI": "D040",
+            "SECTION": "BODY",
+            "VAR_VALOR": 10000
+        },
+        {
+            "VAR_NOMBRE": "RETENCIONES JUDICIALES",
+            "COLUMNA": 2,
+            "POSICION": 52,
+            "OFFSET": null,
+            "TIPO": "NORMAL",
+            "VAR_CODI": "D032",
+            "SECTION": "BODY",
+            "VAR_VALOR": 10000
+        },
+        {
+            "VAR_NOMBRE": "ANTIC.MOV.ADIC.(NO USAR DESABILITADA)",
+            "COLUMNA": 2,
+            "POSICION": 53,
+            "OFFSET": null,
+            "TIPO": "NORMAL",
+            "VAR_CODI": "D050",
+            "SECTION": "BODY",
+            "VAR_VALOR": 10000
+        },
+        {
+            "VAR_NOMBRE": "TOTAL ANTICIPOS",
+            "COLUMNA": 2,
+            "POSICION": 54,
+            "OFFSET": null,
+            "TIPO": "NORMAL",
+            "VAR_CODI": "D060",
+            "SECTION": "BODY",
+            "VAR_VALOR": 10000
+        },
+        {
+            "VAR_NOMBRE": "CUOTA SINDICAL",
+            "COLUMNA": 2,
+            "POSICION": 55,
+            "OFFSET": null,
+            "TIPO": "NORMAL",
+            "VAR_CODI": "D062",
+            "SECTION": "BODY",
+            "VAR_VALOR": 10000
+        },
+        {
+            "VAR_NOMBRE": "IMPUESTO UNICO",
+            "COLUMNA": 2,
+            "POSICION": 56,
+            "OFFSET": null,
+            "TIPO": "NORMAL",
+            "VAR_CODI": "D065",
+            "SECTION": "BODY",
+            "VAR_VALOR": 10000
+        },
+        {
+            "VAR_NOMBRE": "CUOTAS SINDICALES",
+            "COLUMNA": 2,
+            "POSICION": 57,
+            "OFFSET": null,
+            "TIPO": "NORMAL",
+            "VAR_CODI": "D070",
+            "SECTION": "BODY",
+            "VAR_VALOR": 10000
+        },
+        {
+            "VAR_NOMBRE": "PRESTAMOS EMPRESA",
+            "COLUMNA": 2,
+            "POSICION": 58,
+            "OFFSET": null,
+            "TIPO": "NORMAL",
+            "VAR_CODI": "D080",
+            "SECTION": "BODY",
+            "VAR_VALOR": 10000
+        },
+        {
+            "VAR_NOMBRE": "OTROS DESCUENTOS",
+            "COLUMNA": 2,
+            "POSICION": 59,
+            "OFFSET": null,
+            "TIPO": "NORMAL",
+            "VAR_CODI": "D090",
+            "SECTION": "BODY",
+            "VAR_VALOR": 10000
+        },
+        {
+            "VAR_NOMBRE": "APV MISMA AFP TRABAJADOR",
+            "COLUMNA": 2,
+            "POSICION": 60,
+            "OFFSET": null,
+            "TIPO": "NORMAL",
+            "VAR_CODI": "D091",
+            "SECTION": "BODY",
+            "VAR_VALOR": 10000
+        },
+        {
+            "VAR_NOMBRE": "TOTAL OTROS DESCUENTOS ",
+            "COLUMNA": 2,
+            "POSICION": 61,
+            "OFFSET": 1,
+            "TIPO": "TOTAL",
+            "VAR_CODI": "D101",
+            "SECTION": "BODY",
+            "VAR_VALOR": 10000
+        },
+        {
+            "VAR_NOMBRE": "TOTAL DESCUENTOS",
+            "COLUMNA": 2,
+            "POSICION": 62,
+            "OFFSET": 2,
+            "TIPO": "TOTAL",
+            "VAR_CODI": "D104",
+            "SECTION": "BODY",
+            "VAR_VALOR": 10000
+        },
+        {
+            "VAR_NOMBRE": "LIQUIDO A PAGO",
+            "COLUMNA": 2,
+            "POSICION": 63,
+            "OFFSET": 1,
+            "TIPO": "TOTAL",
+            "VAR_CODI": "H303",
+            "SECTION": "BODY",
+            "VAR_VALOR": 10000
+        }
+    ]

@@ -26,48 +26,7 @@
 </head>
 
 <body>
-  <!--
-    <h1>Listado Procesos</h1>
-    
 
-
-    <button name="loader" class="btn btn-primary" type="button" disabled>
-
-      <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-      <span class="sr-only">Loading...</span>
-    </button>
-
-    <button name="loader" class="btn btn-primary" type="button" disabled>
-      <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-      Loading...
-    </button>
-    <span id="cc-status">   </span>
-
--->
-
-  <!--
-      <div class="row">
-          <div class="col-1">Liquidaciones: </div> 
-          <div class="col-1"> <button type="button" id="empieza" class="btn btn-primary">Empieza</button> </div>
-          <div class="col-1">    
-            <div name="loader" class="progress">
-              <div id='ProgressLiquidaciones' class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="5" aria-valuemin="0" aria-valuemax="100" style="width: 5%">5%</div>
-            </div>
-          </div>
-
-
-            <div class="col-1">    
-                <div name="loader" >
-                    <span id="cc-status">   </span>
-                </div>
-
-          
-          
-        </div>
-
-      </div>
-      
-      -->
       <div class="container">
         <div class="row">
             
@@ -75,7 +34,7 @@
       <select id="empresa-select" class="custom-select custom-select-lg mb-3">
         
         <option selected value="0">Guard Service Seguridad S.A.</option>
-        <!---<option   value="2">GS Outsourcing S.A.</option>-->
+      <option   value="2">GS Outsourcing S.A.</option>
        
       </select>
                 </div>
@@ -310,6 +269,7 @@ $('ul.list-group').empty()
       if (!data.isExecuting) {
         $("[name='liquidacion-loader']").hide()
         $('#liquidacion-empieza').attr("disabled", false);
+        $('#liquidacion-cc-status').text("")
       }
 
       else {
@@ -330,6 +290,7 @@ $('ul.list-group').empty()
       if (!data.isExecuting) {
         $("[name='reliquidacion-loader']").hide()
         $('#reliquidacion-empieza').attr("disabled", false);
+        $('#reliquidacion-cc-status').text("")
       }
 
       else {

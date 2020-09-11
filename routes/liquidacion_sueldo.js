@@ -21,14 +21,14 @@ const io = require('../index');
 var ficha = ''
 
 var StatusLiquidacionTemplate = {
- 
+
   isExecuting: false,
   percent: 0,
   msgs: []
 }
 
 //No puede ir dentro de una funcion pues lo utilizan los sockets
-let pathLogs='data-logs/'
+let pathLogs = 'data-logs/'
 
 
 var StatusLiquidacion = JSON.parse(JSON.stringify(StatusLiquidacionTemplate))
@@ -40,12 +40,12 @@ console.log("liquidacion")
 
 api.get("/testView2", function (req, res) {
   console.log("he")
-      res.render("../views/controla_proceso", { hola: "hola" });
-    })
-  
+  res.render("../views/controla_proceso", { hola: "hola" });
+})
+
 
 //carga plantilla db
-var templateDB = require('../config/template_liquidacion.json')
+var templateDB = require('../config/template_liquidacion_guard.json')
 
 
 //reference 
@@ -67,70 +67,70 @@ io.on('connection', (socket) => {
 
   socket.on('getLiquidaciones', async (dataUser) => {
 
-     //data trae la info del mes y la empresa del proceso
-    console.log("se empieza a ejecutar proceso Reliquidaciones: " + dataUser["mes"]+dataUser["empresa"])
+    //data trae la info del mes y la empresa del proceso
+    console.log("se empieza a ejecutar proceso Reliquidaciones: " + dataUser["mes"] + dataUser["empresa"])
 
 
     StatusLiquidacion = JSON.parse(JSON.stringify(StatusLiquidacionTemplate))
     StatusLiquidacion.isExecuting = true
 
     io.emit('getStatusLiquidacion', StatusLiquidacion)
-    await getLiquidaciones("Liquidacion",dataUser)
+    await getLiquidaciones("Liquidacion", dataUser)
     StatusLiquidacion.isExecuting = 0
     io.emit('getStatusLiquidacion', StatusLiquidacion)
- 
+
   });
 
 
 
-  socket.on("getFile",function(fileName){
+  socket.on("getFile", function (fileName) {
     //lee un archivo segun parametro de nombre
-//let filedata=fs.readFileSync(pathLogs+'/liquida-01-01-01-019191.txt')
-let filedata=fs.readFileSync(pathLogs+'/'+fileName)
+    //let filedata=fs.readFileSync(pathLogs+'/liquida-01-01-01-019191.txt')
+    let filedata = fs.readFileSync(pathLogs + '/' + fileName)
 
- socket.emit("sendfile", filedata.toString(),fileName); 
-
- 
-});
+    socket.emit("sendfile", filedata.toString(), fileName);
 
 
-socket.on("getFileName",async (proceso,empresa) => {
- let controlProceso=""
- let controlEmpresa="-"+empresa+"-"
+  });
 
- //añadiendo el guion en el nombre del proceso se puede identificar sin problemas
-  if (proceso=="reliquidacion") 
-  controlProceso="-reliquida"
-  if (proceso=="liquidacion") 
-  controlProceso="-liquida"
 
-  console.log("aaaa"+controlProceso)
+  socket.on("getFileName", async (proceso, empresa) => {
+    let controlProceso = ""
+    let controlEmpresa = "-" + empresa + "-"
 
-  //obtiene el listado de archivos del log
-  //theString.match(/^.*abc$/) //filter proceso
+    //añadiendo el guion en el nombre del proceso se puede identificar sin problemas
+    if (proceso == "reliquidacion")
+      controlProceso = "-reliquida"
+    if (proceso == "liquidacion")
+      controlProceso = "-liquida"
 
- // let archivos=fs.readdirSync(pathLogs).filter(x=>x.match(`/^.*`+controlProceso+`$/`))
- 
- 
- let archivos=fs.readdirSync(pathLogs).filter(x=>x.indexOf(controlProceso)>-1).filter(x=>x.indexOf(controlEmpresa)>-1).slice(0,9).sort().reverse()
-  socket.emit("sendFileNames", archivos); 
-  console.log(archivos)
-  
-   
+    console.log("aaaa" + controlProceso)
+
+    //obtiene el listado de archivos del log
+    //theString.match(/^.*abc$/) //filter proceso
+
+    // let archivos=fs.readdirSync(pathLogs).filter(x=>x.match(`/^.*`+controlProceso+`$/`))
+
+
+    let archivos = fs.readdirSync(pathLogs).filter(x => x.indexOf(controlProceso) > -1).filter(x => x.indexOf(controlEmpresa) > -1).sort().reverse().slice(0, 9)
+    socket.emit("sendFileNames", archivos);
+    console.log(archivos)
+
+
   });
 
 
 
   socket.on('getReliquidaciones', async (dataUser) => {
-  
 
-  //data trae la info del mes y la empresa del proceso
-  console.log("se empieza a ejecutar proceso Reliquidaciones: " + dataUser["mes"]+dataUser["empresa"])
+
+    //data trae la info del mes y la empresa del proceso
+    console.log("se empieza a ejecutar proceso Reliquidaciones: " + dataUser["mes"] + dataUser["empresa"])
 
     StatusReliquidacion = JSON.parse(JSON.stringify(StatusLiquidacionTemplate))
     StatusReliquidacion.isExecuting = true
     io.emit('getStatusReliquidacion', StatusReliquidacion)
-    await getLiquidaciones("Reliquidacion",dataUser)
+    await getLiquidaciones("Reliquidacion", dataUser)
     StatusReliquidacion.isExecuting = 0
     io.emit('getStatusReliquidacion', StatusReliquidacion)
 
@@ -141,42 +141,42 @@ socket.on("getFileName",async (proceso,empresa) => {
   api.get("/testView", function (req, res) {
 
 
-    
+
     var fecha
     var fechaProceso
-    fecha=new Date()
-    if(fecha.getDate()>5){
+    fecha = new Date()
+    if (fecha.getDate() > 5) {
       //entre el 1 y el 5 no se mueven los valores, porque se estan reliquidando el mes anterior
-    
-      fechaProceso= new Date(fecha.getFullYear(), fecha.getMonth(), 1).toISOString().substr(0,10)
-    }else{
-    
+
+      fechaProceso = new Date(fecha.getFullYear(), fecha.getMonth(), 1).toISOString().substr(0, 10)
+    } else {
+
       fecha.setMonth(fecha.getMonth() - 1);
-     fechaProceso= new Date(fecha.getFullYear(), fecha.getMonth(), 1).toISOString().substr(0,10)
+      fechaProceso = new Date(fecha.getFullYear(), fecha.getMonth(), 1).toISOString().substr(0, 10)
     }
     console.log(fechaProceso)
 
-console.log("he")
+    console.log("he")
 
 
-var fecha = new Date(); 
-//mes pasado
-fecha.setMonth(fecha.getMonth() - 1);
-var primerDiaMesPasado= new Date(fecha.getFullYear(), fecha.getMonth(), 1).toISOString().substr(0,10)
-var fecha2=new Date()
-var primerDiaMesActual= new Date(fecha2.getFullYear(), fecha2.getMonth(), 1).toISOString().substr(0,10)
+    var fecha = new Date();
+    //mes pasado
+    fecha.setMonth(fecha.getMonth() - 1);
+    var primerDiaMesPasado = new Date(fecha.getFullYear(), fecha.getMonth(), 1).toISOString().substr(0, 10)
+    var fecha2 = new Date()
+    var primerDiaMesActual = new Date(fecha2.getFullYear(), fecha2.getMonth(), 1).toISOString().substr(0, 10)
 
-console.log(primerDiaMesPasado,primerDiaMesActual)
-/*
-let date=new Date()
-var primerDia = new Date(date.getFullYear(), date.getMonth(), 1);
-let mesAnterior=primerDia.setMonth(primerDia.getMonth()-1)
-var ultimoDia = new Date(date.getFullYear(), date.getMonth() + 1, 0);
-
-console.log(primerDia,ultimoDia,mesAnterior)
-
-*/
- res.render("../views/controla_proceso", { hola: "hola" });
+    console.log(primerDiaMesPasado, primerDiaMesActual)
+    /*
+    let date=new Date()
+    var primerDia = new Date(date.getFullYear(), date.getMonth(), 1);
+    let mesAnterior=primerDia.setMonth(primerDia.getMonth()-1)
+    var ultimoDia = new Date(date.getFullYear(), date.getMonth() + 1, 0);
+    
+    console.log(primerDia,ultimoDia,mesAnterior)
+    
+    */
+    res.render("../views/controla_proceso", { hola: "hola" });
   })
 
 
@@ -375,75 +375,58 @@ console.log(primerDia,ultimoDia,mesAnterior)
 
   //yyyyyyyy
   //api.get("/getLiquidaciones", async function (req, res, next) {
-  async function getLiquidaciones(tipoProceso,dataUser) {
-  
-    
-    let dataValidar=[] //[{ficha:ficha1,valor:valorLiquidoficha1}]
-    
-    //dataUser["empresa"] trae la empresa
-    let empresa = 0
+  async function getLiquidaciones(tipoProceso, dataUser) {
 
-     //tipo:"Liquidacion","Reliquidacion"
-     let variableValidar=''
-     let mesProceso=''
-     let pathArchivos=''
-     let nameLogFile=''
 
-     //para calcular la demora del proceso
-     var startTime= new Date();
-  
+    let dataValidar = [] //[{ficha:ficha1,valor:valorLiquidoficha1}]
 
-   if(tipoProceso=="Liquidacion"){
-   
+    //let empresa = 2
+    let empresa = dataUser["empresa"]
 
-/*
-    var fecha
-    var fechaProceso
-    if(fecha.getDate() ()>5){
-      //entre el 1 y el 5 no se mueven los valores, porque se estan reliquidando el mes anterior
-      fecha=new Date()
-      fechaProceso= new Date(fecha.getFullYear(), fecha.getMonth(), 1).toISOString().substr(0,10)
-    }else{
-      fecha = new Date(); 
-      fecha.setMonth(fecha.getMonth() - 1);
-      var fechaProceso= new Date(fecha.getFullYear(), fecha.getMonth(), 1).toISOString().substr(0,10)
+
+
+    let variableBase = ''
+    let variableValidacion=''
+    let mesProceso = ''
+    let pathArchivos = ''
+    let nameLogFile = ''
+
+    //para calcular la demora del proceso
+    var startTime = new Date();
+    var empresaDetalle = constants.EMPRESAS.find(x => x.ID == empresa)
+    let templateDB = require('../config/' + empresaDetalle["TEMPLATE_LIQUIDACION"]) //archivo json con la plantilla para generar liquidaciones
+
+
+    //tipo:"Liquidacion","Reliquidacion"
+    if (tipoProceso == "Liquidacion") {
+
+
+      //para liquidaciones, se extraen todas las peronas que tengan valor>0 en variableBase (h303 liquido pago)
+      variableBase = 'H303'
+      //variable para hacer realizar validacion del proceso (comparar al extraer data y luego despues de  generar pdfs)
+      variableValidacion='H303'
+
+      mesProceso = dataUser["mes"] + "-01"
+      console.log("el mes seleccionado es")
+      //mesProceso=fechaProceso
+      pathArchivos = "dataTest/testLiquidaciones/"
+      nameLogFile = 'liquida'
+
+    } if (tipoProceso == "Reliquidacion") {
+
+      //El mes de consulta para reliquidaciones es solo a mes pasado ya que en el mes en curso aún no hay data
+      //para reliquidaciones, se extraen todas las peronas que tengan valor>0 en variableBase (h068 diferencia con cheque)
+      variableBase = 'H068'
+      //variable para hacer realizar validacion del proceso (comparar al extraer data y luego despues de  generar pdfs)
+      variableValidacion='H303'
+
+      mesProceso = dataUser["mes"] + "-01"
+      console.log("el mes seleccionado es")
+      //mesProceso=mesPasado
+      pathArchivos = "dataTest/testReliquidaciones/"
+      nameLogFile = 'reliquida'
+
     }
-
-    */
-//console.log(primerDiaMesPasado,primerDiaMesActual)
-
-
-
-    //para liquidaciones, se extraen todas las peronas que tengan valor>0 en variableValidar (h303 liquido pago)
-     variableValidar='H303'
-
-     mesProceso=dataUser["mes"]+"-01"
-     console.log("el mes seleccionado es")
-    //mesProceso=fechaProceso
-     pathArchivos="dataTest/testLiquidaciones/"
-     nameLogFile='liquida'
-
-   }if(tipoProceso=="Reliquidacion"){
-
-//El mes de consulta para reliquidaciones es solo a mes pasado ya que en el mes en curso aún no hay data
-    //para reliquidaciones, se extraen todas las peronas que tengan valor>0 en variableValidar (h068 diferencia con cheque)
-variableValidar='H068'
- 
-/*
-var fecha = new Date(); 
-fecha.setMonth(fecha.getMonth() - 1);
-var mesPasado= new Date(fecha.getFullYear(), fecha.getMonth(), 1).toISOString().substr(0,10)
- //mes pasado
-
- */
-
-mesProceso=dataUser["mes"]+"-01"
-console.log("el mes seleccionado es")
-    //mesProceso=mesPasado
-    pathArchivos="dataTest/testReliquidaciones/"
-    nameLogFile='reliquida'
-
-   }
 
     return new Promise(async (resolve, reject) => {
       //http://localhost:3800/liquidacion_sueldo/getLiquidaciones
@@ -465,8 +448,8 @@ console.log("el mes seleccionado es")
   select distinct ficha
   FROM [SISTEMA_CENTRAL].[dbo].[sw_variablepersona]
   where 
-   emp_codi=0 and fecha='`+mesProceso+`'
-   and codVariable='`+variableValidar+`' and valor>0
+   emp_codi='`+ empresa + `' and fecha='` + mesProceso + `'
+   and codVariable='`+ variableBase + `' and valor>0
 
 `
           , {
@@ -477,6 +460,21 @@ console.log("el mes seleccionado es")
           })).map(x => x.ficha).slice(0,2)  //para control de cantidad de la cantidad de fichas que se generaran ***********
 
 
+          //si no existen fichas, se termina el proceso
+          if (fichasVigentes.length==0){
+            console.log("no hay fichas,termina el proceso")
+          
+           //emitir mensaje de error
+            //termina el promise
+          resolve()
+            //sale de la funcion
+           return
+          }
+
+      //se deben listar todas las variables de la plantilla para añadirlos a la query  ej: 'h001','h220', para ello se transforma el array a ese formato
+      //Existe una opcion que lo hace automatico (replacements), pero al testearla relentiza la query ya que añade el formato nvarchar ej: N'h001',N'h220' (demoró 10 seg. mas en ejecutarse) 
+      let variablesTemplate = templateDB.filter(x => x["VAR_CODI"]).map(x => x["VAR_CODI"])
+      variablesTemplate = JSON.stringify(variablesTemplate).replace('[', '').replace(']', '').replace(/"/g, "'")
 
 
       let dataVariablesPersona = (await sequelizeMssql
@@ -488,19 +486,11 @@ console.log("el mes seleccionado es")
    where 
    emp_codi=`+ empresa + `
    and fecha='`+ mesProceso + `'
-   and codVariable in (
-   'P010','P053','P052','P050','P041','H001','H007','H008','H002','H003'
-   ,'H016','H030','H031','H029','H024','H013','H074','H020','H043','H050'
-   ,'H044','P044','H350','H100','H060','H062','H064','H061','H063','H065'
-   ,'H025','H027','H026','H085','H080','H072','H073','H071','H351','H200'
-   ,'H300','D003','D020','D004','D021','D100','D005','D007','D006','D022'
-   ,'D030','D031','D040','D050','D061','D064','D065','D070','D080','D090'
-   ,'D091','D009','D101','D104','H303'
+   and codVariable in (`+ variablesTemplate + `)
    
-   )
-`
+   `
           , {
-
+            // replacements: { variablesTemplate: variablesTemplate },
             model: VariablesFicha,
             mapToModel: true, // pass true here if you have any mapped fields
             raw: true
@@ -518,27 +508,26 @@ console.log("el mes seleccionado es")
 
 
       let distinctCC = infoPersonas.map(x => { return x.CENCO2_CODI }).filter(unique)//.slice(0, 3)
-    //distinctCC = ["165-001"]
-  //   distinctCC = ["129-001"]
-  //distinctCC = ["162-009"]
+      //distinctCC = ["165-001"]
+      //   distinctCC = ["129-001"]
+      //distinctCC = ["162-009"]
 
       console.log(distinctCC.length)
 
 
-
       let path = ""
-     // let batch = 1
-     // let cantIteraciones = parseInt(distinctCC.length / batch) + 1 //si tiene decimales 
-     let cantIteraciones = distinctCC.length//si tiene decimales 
-     console.log("total registros:", distinctCC.length, "cantidad iteraciones", cantIteraciones)
+      // let batch = 1
+      // let cantIteraciones = parseInt(distinctCC.length / batch) + 1 //si tiene decimales 
+      let cantIteraciones = distinctCC.length
+      console.log("total registros:", distinctCC.length, "cantidad iteraciones", cantIteraciones)
 
       for (let i = 0; i < cantIteraciones; i++) {
 
         let centro_costo = distinctCC[i]
 
-    await(  new Promise(async (resolves, rejects) => {
-    
-       
+        await (new Promise(async (resolves, rejects) => {
+
+
           //  let getFilesPromises = distinctCC.slice(i * batch, (i * batch) + batch).map(async centro_costo => {
 
 
@@ -546,7 +535,7 @@ console.log("el mes seleccionado es")
 
           //await getLiquidacionCentroCosto(null, centro_costo, mes, empresa, path + filename)
           //desde aca es centro de costo
-          var empresaDetalle = constants.EMPRESAS.find(x => x.ID == empresa)
+
           var options = {
             format: 'Letter',
             border: {
@@ -555,7 +544,7 @@ console.log("el mes seleccionado es")
               bottom: "2cm",
               left: "1cm"
             },
-            
+
             timeout: 100000,
           };
 
@@ -563,7 +552,7 @@ console.log("el mes seleccionado es")
           var templates_persona = []
 
           let fichasCC = infoPersonasCC.map(x => x.FICHA).filter(unique)
-          console.log('fichasCC',fichasCC)
+          console.log('fichasCC', fichasCC)
 
           fichasCC.map(ficha => {
 
@@ -583,143 +572,129 @@ console.log("el mes seleccionado es")
             // console.log(persona)
             //se añade la infor de una persona //CAMBIAR A LA PERSONA CORRESPONDIENTE (BUSCAR EN INFOPERSONA)
             //se pasa filled template pues ahí se pueden recorrer la data para validar, template viene formateada con columnasy es mas dificil recorrer
-            templates_persona.push({ ficha: ficha, persona: persona, template: template,data:filledTemplate })
+            templates_persona.push({ ficha: ficha, persona: persona, template: template, data: filledTemplate })
 
           })
-            console.log("antes_data")
+          console.log("antes_data")
 
-            ejs.renderFile("views/liquidacion_sueldo_multiple - copia.ejs", { templates_persona: templates_persona, empresaDetalle: empresaDetalle,mes: mesProceso }, {}, function (err, data) {
-              if (err)
-                console.log(err)
-              //console.log("data",data)
+          ejs.renderFile("views/liquidacion_sueldo_multiple - copia.ejs", { templates_persona: templates_persona, empresaDetalle: empresaDetalle, mes: mesProceso }, {}, function (err, data) {
+            if (err)
+              console.log(err)
+            //console.log("data",data)
 
-              let liquidacionID = "10.010-JEAN-TEST"
-              var html = data;
+            let liquidacionID = "10.010-JEAN-TEST"
+            var html = data;
 
 
-              pdf.create(html, options).toStream(function (err, stream) {
+            pdf.create(html, options).toStream(function (err, stream) {
 
-                //    res.setHeader('Content-disposition', 'inline; filename="Cotizacion-' + liquidacionID + '.pdf"');
-                //    res.setHeader('Content-Type', 'application/pdf');
-                //    stream.pipe(res);
-                if (stream && !err) {
+              //    res.setHeader('Content-disposition', 'inline; filename="Cotizacion-' + liquidacionID + '.pdf"');
+              //    res.setHeader('Content-Type', 'application/pdf');
+              //    stream.pipe(res);
+              if (stream && !err) {
 
-                  stream.pipe(fs.createWriteStream(pathArchivos + centro_costo + ".pdf"));
-                  // stream.pipe(res);
-                  
+                stream.pipe(fs.createWriteStream(pathArchivos + centro_costo + ".pdf"));
+                // stream.pipe(res);
 
-                  //recorre todas las personas (ficha) y busca la variable a validar (H303 ) liquido a pago , para luego validar con la data de base, con ello
-                  //sabemos si se ejecutó completamente el proceso
-                
-                  
-                
-                  templates_persona.forEach(persona=>{
-                    let ficha=persona.ficha
-                   console.log(persona["data"])
-                    let monto= persona["data"].find(x=>x["VAR_CODI"]=="H303")["VAR_VALOR"]
-                    
-                    dataValidar.push({ficha:ficha,monto:monto})
-                  })
-               
-                  resolves()
-                 
-                
-                  // resolve({status:"oka"})
-                  //con esto evitamos que se acumule la memoria, tambien el return lo hace  
-                  //return next()
-                } else {
-                  rejects()
-                  console.log("error en stream, " + centro_costo,err)
-          
-                   if(tipoProceso=="Liquidacion"){ 
-                    StatusLiquidacion.msgs[0] = "falloo el centro "+  centro_costo +" "+err
-                    // StatusLiquidacion.percent = parseInt((i + 1) / distinctCC.length * 100)
-                     io.emit('getStatusLiquidacion', StatusLiquidacion)
-                    } if(tipoProceso=="Reliquidacion"){ 
-                      StatusReliquidacion.msgs[0] = "falloo el centro "+  centro_costo +" "+err
-                      // StatusLiquidacion.percent = parseInt((i + 1) / distinctCC.length * 100)
-                       io.emit('getStatusReliquidacion', StatusReliquidacion)
-                      }
-              
-              
+
+                //recorre todas las personas (ficha) y busca la variable a validar (H303 ) liquido a pago , para luego validar con la data de base, con ello
+                //sabemos si se ejecutó completamente el proceso
+
+
+                templates_persona.forEach(persona => {
+                  let ficha = persona.ficha
+                 // console.log(persona["data"])
+                  let monto = persona["data"].find(x => x["VAR_CODI"] == variableValidacion)["VAR_VALOR"]
+
+                  dataValidar.push({ ficha: ficha, monto: monto })
+                })
+
+                resolves()
+
+
+                // resolve({status:"oka"})
+                //con esto evitamos que se acumule la memoria, tambien el return lo hace  
+                //return next()
+              } else {
+                rejects()
+                console.log("error en stream, " + centro_costo, err)
+
+                if (tipoProceso == "Liquidacion") {
+                  StatusLiquidacion.msgs[0] = "falloo el centro " + centro_costo + " " + err
+                  // StatusLiquidacion.percent = parseInt((i + 1) / distinctCC.length * 100)
+                  io.emit('getStatusLiquidacion', StatusLiquidacion)
+                } if (tipoProceso == "Reliquidacion") {
+                  StatusReliquidacion.msgs[0] = "falloo el centro " + centro_costo + " " + err
+                  // StatusLiquidacion.percent = parseInt((i + 1) / distinctCC.length * 100)
+                  io.emit('getStatusReliquidacion', StatusReliquidacion)
                 }
 
 
-
-
-              })
+              }
 
 
             })
 
 
-
-          
-
+          })
 
 
-            }))
+        }))
 
 
 
 
-          //   await Promise.all(getFilesPromises)
-          console.log("todos los trabajos terminados iteracion ", i)
-          //aca esta ok, asi que emitimos evento    
-          if(tipoProceso=="Liquidacion"){ 
+        //   await Promise.all(getFilesPromises)
+        console.log("todos los trabajos terminados iteracion ", i)
+        //aca esta ok, asi que emitimos evento    
+        if (tipoProceso == "Liquidacion") {
           StatusLiquidacion.msgs[0] = centro_costo
           StatusLiquidacion.percent = parseInt((i + 1) / distinctCC.length * 100)
           io.emit('getStatusLiquidacion', StatusLiquidacion)
-          } if(tipoProceso=="Reliquidacion"){ 
-            StatusReliquidacion.msgs[0] = centro_costo
-            StatusReliquidacion.percent = parseInt((i + 1) / distinctCC.length * 100)
-            io.emit('getStatusReliquidacion', StatusReliquidacion)
-            }
-          
-          //termina
-       
+        } if (tipoProceso == "Reliquidacion") {
+          StatusReliquidacion.msgs[0] = centro_costo
+          StatusReliquidacion.percent = parseInt((i + 1) / distinctCC.length * 100)
+          io.emit('getStatusReliquidacion', StatusReliquidacion)
+        }
+
+        //termina
+
       }
 
 
       //await Promise.all(allLiquidaciones)
       console.log("todos los trabajos terminados aa")
-  
-   // para calular la demora se contrasta con startTime
-   var endTime   = new Date();
-   var demoraSeconds = parseInt((endTime.getTime() - startTime.getTime()) / 1000);
+
+      // para calular la demora se contrasta con startTime
+      var endTime = new Date();
+      var demoraSeconds = parseInt((endTime.getTime() - startTime.getTime()) / 1000);
 
       //efectua validacion
-      let statusValidacion="OK"
+      let statusValidacion = "OK"
 
-     // console.log("eeee",dataVariablesPersona.filter(x=>x["codVariable"]=='H303'))
-      dataVariablesPersona.filter(x=>x["codVariable"]=='H303').forEach(persona=>{
-      let existe=   dataValidar.find(x=>x.ficha==persona.ficha)
-      if(!existe||persona["valor"]!=existe["monto"]){
-      console.log("error en la ficha",persona.ficha)
-      statusValidacion="ERR"
-    }
-      else   existe["montoimpreso"]=persona["valor"]
-      
+      // console.log("eeee",dataVariablesPersona.filter(x=>x["codVariable"]=='H303'))
+      dataVariablesPersona.filter(x => x["codVariable"] == variableValidacion).forEach(persona => {
+        let existe = dataValidar.find(x => x.ficha == persona.ficha)
+        if (!existe || persona["valor"] != existe["monto"]) {
+          console.log("error en la ficha", persona.ficha)
+          statusValidacion = "ERR"
+        }
+        else existe["montoimpreso"] = persona["valor"]
+
 
         return
       })
-  //guarda logs de las validaciones
+      //guarda logs de las validaciones
 
-  ///var dateString=new Date().toISOString().substr(0,10)
-//replace(/T/, ' ').  
-//replace(/\..+/, '').
- // replace(/:/g, '-')
+      var m = new Date();
+      let formatDate = (m.getFullYear() > 9 ? m.getFullYear() : '0' + m.getFullYear()) + "-" + ((m.getMonth() + 1) > 9 ? (m.getMonth() + 1) : '0' + (m.getMonth() + 1)) + "-" + (m.getDate() > 9 ? m.getDate() : '0' + m.getDate())
 
-var m = new Date();
-let formatDate=(m.getFullYear()>9?m.getFullYear():'0'+m.getFullYear())+"-"+((m.getMonth()+1)>9?(m.getMonth()+1):'0'+(m.getMonth()+1))+"-"+(m.getDate()>9?m.getDate():'0'+m.getDate())
+      let formatHour = (m.getHours() > 9 ? m.getHours() : '0' + m.getHours()) + "-" + (m.getMinutes() > 9 ? m.getMinutes() : '0' + m.getMinutes()) + "-" + (m.getSeconds() > 9 ? m.getSeconds() : '0' + m.getSeconds())
+      console.log(formatDate + "-" + formatHour)
 
- let formatHour= (m.getHours()>9?m.getHours():'0'+m.getHours()) + "-" + (m.getMinutes()>9?m.getMinutes():'0'+m.getMinutes()) + "-" + (m.getSeconds()>9?m.getSeconds():'0'+m.getSeconds())
- console.log(formatDate+"-"+formatHour)
- 
-      fs.appendFileSync(pathLogs+statusValidacion+"-"+nameLogFile+"-"+empresa+"-"+formatDate+"-"+formatHour+"-"+demoraSeconds+".txt", JSON.stringify(dataValidar));
+      //path +validacion (OK,ERR)+proceso(Liq,reliq)+empresa(0,1,2), fecha (yyy-mm-dd-hh-mm-ss), tiempo demora (s)
+      fs.appendFileSync(pathLogs + statusValidacion + "-" + nameLogFile + "-" + empresa + "-" + formatDate + "-" + formatHour + "-" + demoraSeconds + ".txt", JSON.stringify(dataValidar));
       console.log("todos las validaciones hechas")
-
-
 
       //return res.status(200).send({ status: "ok" })
       resolve()
@@ -1584,27 +1559,27 @@ function fillTemplate(templatebase, variablesPersona) {
 
 function formatTemplate(templateBase) {
 
-/*
-EJEMPLO template llena
-   [ [ { VAR_NOMBRE: 'DIAS TRABAJADOS',
-      COLUMNA: 1,
-      POSICION: 1,
-      OFFSET: 1,
-      TIPO: 'NORMAL',
-      VAR_CODI: 'P010',
-      SECTION: 'BODY',
-      VAR_VALOR: '30' },
-    { VAR_NOMBRE: 'DESCUENTOS',
-      COLUMNA: 2,
-      POSICION: 1,
-      OFFSET: 1,
-      TIPO: 'TITULO',
-      VAR_CODI: 'P',
-      SECTION: 'BODY',
-      VAR_VALOR: 10000 } ],
-  [ {}, {} ]
-  ]
-  */
+  /*
+  EJEMPLO template llena
+     [ [ { VAR_NOMBRE: 'DIAS TRABAJADOS',
+        COLUMNA: 1,
+        POSICION: 1,
+        OFFSET: 1,
+        TIPO: 'NORMAL',
+        VAR_CODI: 'P010',
+        SECTION: 'BODY',
+        VAR_VALOR: '30' },
+      { VAR_NOMBRE: 'DESCUENTOS',
+        COLUMNA: 2,
+        POSICION: 1,
+        OFFSET: 1,
+        TIPO: 'TITULO',
+        VAR_CODI: 'P',
+        SECTION: 'BODY',
+        VAR_VALOR: 10000 } ],
+    [ {}, {} ]
+    ]
+    */
   //pedir el mes y ficha para obtener data
 
   //get max posicion para saber cuantas filas tendra
