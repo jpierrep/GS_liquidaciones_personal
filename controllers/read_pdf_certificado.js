@@ -70,7 +70,7 @@ socket.emit('getStatusPrevired', StatusPrevired)
     StatusPrevired.isExecuting = true
 
     io.emit('getStatusPrevired', StatusPrevired)
-    await getPrevired()
+    await getPrevired(dataUser)
     StatusPrevired.isExecuting = 0
     io.emit('getStatusPrevired', StatusPrevired)
 
@@ -154,8 +154,12 @@ router.post('/fileupload', async function (req, res, next) {
 
 
 
-async function getPrevired(){
+async function getPrevired(dataUser){
 
+	var startTime = new Date();
+	let pathLogs = 'data-logs/'
+	let nameLogFile='previred'
+	let empresa = dataUser["empresa"]
 
 	
   //get ubicaciones del archivo, etc.
@@ -167,12 +171,47 @@ async function getPrevired(){
 			let oldpath='C:/Users/jpierre/Documents/NodeProjects/liquidaciones-sueldo/api-server/CotizacionesPersonal.pdf'
 			rutsEncontrados = await getRutsOfFile(oldpath)
 			
-	let mapPersonas = (await generaMapPersonas(rutsEncontrados, empresa)).slice(0,15)  //para control de cantidad de la cantidad de archivos que se generaran ***********
+	let tablaMapPersonas = (await generaMapPersonas(rutsEncontrados, empresa)).slice(0,5)  //para control de cantidad de la cantidad de archivos que se generaran ***********
 
-	if (mapPersonas.length > 0) {
+	if (tablaMapPersonas.length > 0) {
 
-	 await generaFiles(mapPersonas, empresa)
-	 console.log("termina genera Files")
+	  
+		let dataValidar= await generaFiles(tablaMapPersonas, empresa)
+		console.log("termina genera Files")
+		
+  //efectua validacion
+ let statusValidacion = "OK"
+ // para calular la demora se contrasta con startTime
+ var endTime = new Date();
+ var demoraSeconds = parseInt((endTime.getTime() - startTime.getTime()) / 1000);
+
+ tablaMapPersonas.forEach(persona => {
+	let existe = dataValidar.find(x => x.ficha == persona.ficha)
+	if (!existe) {
+		console.log("error en la persona", persona)
+		statusValidacion = "ERR"
+	}
+	else existe["status"] = 'OK'
+
+
+	return
+})
+
+
+
+  //guarda logs de las validaciones
+
+	var m = new Date();
+	let formatDate = (m.getFullYear() > 9 ? m.getFullYear() : '0' + m.getFullYear()) + "-" + ((m.getMonth() + 1) > 9 ? (m.getMonth() + 1) : '0' + (m.getMonth() + 1)) + "-" + (m.getDate() > 9 ? m.getDate() : '0' + m.getDate())
+ 
+	let formatHour = (m.getHours() > 9 ? m.getHours() : '0' + m.getHours()) + "-" + (m.getMinutes() > 9 ? m.getMinutes() : '0' + m.getMinutes()) + "-" + (m.getSeconds() > 9 ? m.getSeconds() : '0' + m.getSeconds())
+	console.log(formatDate + "-" + formatHour)
+ 
+	//path +validacion (OK,ERR)+proceso(Liq,reliq)+empresa(0,1,2), fecha (yyy-mm-dd-hh-mm-ss), tiempo demora (s)
+	fs.appendFileSync(pathLogs + statusValidacion + "-" + nameLogFile + "-" + empresa + "-" + formatDate + "-" + formatHour + "-" + demoraSeconds + ".txt", JSON.stringify(dataValidar));
+	console.log("todos las validaciones hechas")
+
+	 
 	 // res.render('index', { title: 'Compilación Archivos Previred', errormessage: 'Proceso iniciado correctamente, se comenzarán a generar los archivos' });
 
  
@@ -378,6 +417,8 @@ async function generaMapPersonas(rutsEncontrados, empresa) {
 
 
 async function generaFiles(tablaMapPersonas) {
+	
+	let dataValidar = [] 
 
   let unique = (value, index, self) => {
 
@@ -400,8 +441,11 @@ async function generaFiles(tablaMapPersonas) {
       function (error, stdout, stderr) {
         console.log('stdout: ' + stdout);
         console.log('stderr: ' + stderr);
-        console.log("terminado el cc " + centro_costo)
-
+				console.log("terminado el cc " + centro_costo)
+				
+			 tablaMapPersonas.filter(x => x["CENCO2_CODI"] == centro_costo).forEach(x=>{
+				 dataValidar.push(x)
+			 })
         
         if (error !== null) {
           console.log('exec error: ' + error);
@@ -412,7 +456,7 @@ async function generaFiles(tablaMapPersonas) {
 				StatusPrevired.percent = parseInt((distinctCC.indexOf(centro_costo) + 1) / distinctCC.length * 100)
 				io.emit('getStatusPrevired', StatusPrevired)
 				//
-	 
+	       //entrega data para validacion
 				resolve()
 
       });
@@ -420,10 +464,13 @@ async function generaFiles(tablaMapPersonas) {
     })
 
   }
-  console.log("termino todo")
-  
- 
+	console.log("termino todo")
+	
 
+
+
+
+return dataValidar
 
 }
 

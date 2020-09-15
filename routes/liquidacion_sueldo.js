@@ -471,7 +471,7 @@ io.on('connection', (socket) => {
            //emitir mensaje de error
             //termina el promise
           resolve()
-            //sale de la funcion
+            //sale de la funcion, si no hay return, continua ejecutando lo siguiente
            return
           }
 
