@@ -27,27 +27,27 @@
 
 <body>
 
-      <div class="container">
-        <div class="row">
-            
-                <div class="col-6"> Empresa:
-      <select id="empresa-select" class="custom-select custom-select-lg mb-3">
-        
-        <option selected value="0">Guard Service Seguridad S.A.</option>
-      <option   value="2">GS Outsourcing S.A.</option>
-       
-      </select>
-                </div>
-                <div class="col-6"> Mes:
-      <select id="mes-select" class="custom-select custom-select-lg mb-3">
-  
-        <option selected value="2020-09">2020-09</option>
-        <option value="2020-08">2020-08</option>
-      
-      </select>
-    </div>
-        </div>
+  <div class="container">
+    <div class="row">
+
+      <div class="col-6"> Empresa:
+        <select id="empresa-select" class="custom-select custom-select-lg mb-3">
+
+          <option selected value="0">Guard Service Seguridad S.A.</option>
+          <option value="2">GS Outsourcing S.A.</option>
+
+        </select>
       </div>
+      <div class="col-6"> Mes:
+        <select id="mes-select" class="custom-select custom-select-lg mb-3">
+
+          <option selected value="2020-09">2020-09</option>
+          <option value="2020-08">2020-08</option>
+
+        </select>
+      </div>
+    </div>
+  </div>
 
 
 
@@ -57,12 +57,13 @@
       <div class="col-sm-12">
         <div class="card">
           <div class="card-body">
-            <h5 class="card-title">Liquidaciones 
-            <a class='ui-all' style=" font-weight: normal;font-size: 1rem;" tabindex='-1' id="liquidacion-log-modal-button" data-toggle="modal" data-target="#exampleModalCenter">
+            <h5 class="card-title">Liquidaciones
+              <a class='ui-all' style=" font-weight: normal;font-size: 1rem;" tabindex='-1' id="liquidacion-log-modal-button"
+                data-toggle="modal" data-target="#exampleModalCenter">
                 [logs]
               </a>
-            </h5> 
-          
+            </h5>
+
             <p class="card-text">Genera archivos de liquidaciones del mes actual.</p>
             <div class="row">
               <div class="col-1">
@@ -93,14 +94,15 @@
         <div class="card">
           <div class="card-body">
             <h5 class="card-title">Reliquidaciones
-                <a class='ui-all' style=" font-weight: normal;font-size: 1rem;" tabindex='-1' id="reliquidacion-log-modal-button" data-toggle="modal" data-target="#exampleModalCenter">
-                    [logs]
-                  </a>
+              <a class='ui-all' style=" font-weight: normal;font-size: 1rem;" tabindex='-1' id="reliquidacion-log-modal-button"
+                data-toggle="modal" data-target="#exampleModalCenter">
+                [logs]
+              </a>
 
-            </h5>  <!-- Button trigger modal -->
-            
-         
-            <p class="card-text">Genera liquidaciones del personal reliquidado del mes anterior.</p>
+            </h5> <!-- Button trigger modal -->
+
+
+            <p class="card-text">Genera liquidaciones del personal reliquidado del mes.</p>
             <div class="row">
               <div class="col-1">
                 <button type="button" id="reliquidacion-empieza" class="btn btn-primary">Ejecutar</button>
@@ -121,6 +123,43 @@
           </div>
         </div>
       </div>
+
+      <div class="col-sm-12">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">Certificados Previred
+              <a class='ui-all' style=" font-weight: normal;font-size: 1rem;" tabindex='-1' id="previred-log-modal-button"
+                data-toggle="modal" data-target="#exampleModalCenter">
+                [logs]
+              </a>
+
+            </h5> <!-- Button trigger modal -->
+
+
+            <p class="card-text">Compila certificados Previred por centro de costo a partir de archivo base.</p>
+            <div class="row">
+              <div class="col-1">
+                <button type="button" id="previred-empieza" class="btn btn-primary">Ejecutar</button>
+              </div>
+              <div class="col-8 " style="padding:10px;margin: auto">
+
+                <div name="previred-loader" class=" progress">
+                  <div id='previred-progress' class="progress-bar progress-bar-striped progress-bar-animated " role="progressbar"
+                    aria-valuenow="5" aria-valuemin="0" aria-valuemax="100" style="width: 5%">5%</div>
+
+                </div>
+
+              </div>
+              <div class="col-1">
+                <span name=" previred-loader " id="previred-cc-status"> </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+
     </div>
 
   </div>
@@ -140,7 +179,7 @@
         <div class="modal-body">
 
           <ul class="list-group">
-          <!--  ESTE ITEM SE CARGARA AUTOMATICO CON LOS LOGS DEL SERVIDOR
+            <!--  ESTE ITEM SE CARGARA AUTOMATICO CON LOS LOGS DEL SERVIDOR
             <li class="list-group-item active">Cras justo odio</li>
             <li class='list-group-item'>
               <a class='ui-all' tabindex='-1'>
@@ -153,7 +192,7 @@
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
-        
+
         </div>
       </div>
     </div>
@@ -181,49 +220,63 @@
     $(document).ready(function () {
       //saveFile("Example.txt", "data:attachment/text", "Hello, world.");
       //socket.emit("getFile","holaaaa");
-    //esto hace que se dupliquen los archivos pues se llama al getFilename que carga lista de archivos
-    //  socket.emit("getFileName", "holaaaa");
+      //esto hace que se dupliquen los archivos pues se llama al getFilename que carga lista de archivos
+      //  socket.emit("getFileName", "holaaaa");
 
 
       var countries = ['United States', 'Canada', 'Argentina', 'Armenia'];
 
-  
+
       console.log(countries)
     });
 
-    //   $("[name='loader']").hide()
-    //   $("[name='loader']").hide()
 
-  
     $('#liquidacion-log-modal-button').click(function () {
-      var empresa=  $( "#empresa-select" ).val();
-      socket.emit("getFileName", "liquidacion",empresa);
+      var empresa = $("#empresa-select").val();
+      socket.emit("getFileName", "liquidacion", empresa);
       $('ul.list-group').empty()
-     
-     
+
+
 
     });
 
-      $('#reliquidacion-log-modal-button').click(function () {
-        var empresa=  $( "#empresa-select" ).val();
-socket.emit("getFileName", "reliquidacion",empresa);
-$('ul.list-group').empty()
+    $('#reliquidacion-log-modal-button').click(function () {
+      var empresa = $("#empresa-select").val();
+      socket.emit("getFileName", "reliquidacion", empresa);
+      $('ul.list-group').empty()
 
-});
+    });
+
+    $('#previred-log-modal-button').click(function () {
+      var empresa = $("#empresa-select").val();
+      socket.emit("getFileName", "previred", empresa);
+      $('ul.list-group').empty()
+
+    });
+
+    //al ejecutar alguno de los procesos
 
     $('#liquidacion-empieza').click(function () {
-      var empresa=  $( "#empresa-select" ).val();
-     var mes=  $( "#mes-select" ).val();
+      var empresa = $("#empresa-select").val();
+      var mes = $("#mes-select").val();
       $("[name='liquidacion-loader']").show()
-      socket.emit("getLiquidaciones", {empresa:empresa,mes:mes});
+      socket.emit("getLiquidaciones", { empresa: empresa, mes: mes });
 
     });
 
     $('#reliquidacion-empieza').click(function () {
-      var empresa=  $( "#empresa-select" ).val();
-     var mes=  $( "#mes-select" ).val();
+      var empresa = $("#empresa-select").val();
+      var mes = $("#mes-select").val();
       $("[name='reliquidacion-loader']").show()
-      socket.emit("getReliquidaciones", {empresa:empresa,mes:mes});
+      socket.emit("getReliquidaciones", { empresa: empresa, mes: mes });
+
+    });
+
+    $('#previred-empieza').click(function () {
+      var empresa = $("#empresa-select").val();
+      var mes = $("#mes-select").val();
+      $("[name='previred-loader']").show()
+      socket.emit("getPrevired", { empresa: empresa, mes: mes });
 
     });
 
@@ -236,10 +289,10 @@ $('ul.list-group').empty()
 
       //getFile y el nombre del archivo
 
-       socket.emit("getFile",$(this).text());
+      socket.emit("getFile", $(this).text());
     });
 
-    socket.on('sendfile', function (data,fileName) {
+    socket.on('sendfile', function (data, fileName) {
       saveFile(fileName, "data:attachment/text", data);
     })
 
@@ -250,7 +303,7 @@ $('ul.list-group').empty()
       console.log(data) //listado de archivos array
       //crear listado selector jquery con los archivos
       //https://stackoverflow.com/questions/5881033/how-to-generate-ul-li-list-from-string-array-using-jquery
-      
+
       countries = data
       var cList = $('ul.list-group').append(
         countries.map(country =>
@@ -261,6 +314,8 @@ $('ul.list-group').empty()
     })
 
 
+
+    //cuando el back envía eventos de actualización de procesos
 
     socket.on('getStatusLiquidacion', function (data) {
       //    $("#messages").append('<li class="list-group-item">'+msg+'</li>');
@@ -282,10 +337,7 @@ $('ul.list-group').empty()
       }
     });
 
-
     socket.on('getStatusReliquidacion', function (data) {
-      //    $("#messages").append('<li class="list-group-item">'+msg+'</li>');
-      //console.log("Termina "+msg)
 
       if (!data.isExecuting) {
         $("[name='reliquidacion-loader']").hide()
@@ -305,6 +357,27 @@ $('ul.list-group').empty()
 
 
 
+    socket.on('getStatusPrevired', function (data) {
+
+      if (!data.isExecuting) {
+        $("[name='previred-loader']").hide()
+        $('#previred-empieza').attr("disabled", false);
+        $('#previred-cc-status').text("")
+      }
+
+      else {
+        $("[name='previred-loader']").show()
+        $('#previred-empieza').attr("disabled", true);
+        $('#previred-cc-status').text(data.msgs[0])
+        $('#previred-progress').attr('style', "width:" + data.percent + "%")
+        $('#previred-progress').attr('aria-valuenow', data.percent)
+        $('#previred-progress').text(data.percent + "%")
+      }
+    });
+
+
+
+   //descarga archivo al cliente
 
     function saveFile(name, type, data) {
       if (data !== null && navigator.msSaveBlob)
@@ -318,6 +391,7 @@ $('ul.list-group').empty()
       window.URL.revokeObjectURL(url);
       a.remove();
     }
+
   </script>
 
 </body>

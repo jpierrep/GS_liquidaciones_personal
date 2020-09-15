@@ -103,6 +103,10 @@ io.on('connection', (socket) => {
       controlProceso = "-reliquida"
     if (proceso == "liquidacion")
       controlProceso = "-liquida"
+      if (proceso == "previred")
+      controlProceso = "-previred"
+
+      
 
     console.log("aaaa" + controlProceso)
 
@@ -457,7 +461,7 @@ io.on('connection', (socket) => {
             model: VariablesFicha,
             mapToModel: true, // pass true here if you have any mapped fields
             raw: true
-          })).map(x => x.ficha).slice(0,2)  //para control de cantidad de la cantidad de fichas que se generaran ***********
+          })).map(x => x.ficha).slice(0,10)  //para control de cantidad de la cantidad de fichas que se generaran ***********
 
 
           //si no existen fichas, se termina el proceso

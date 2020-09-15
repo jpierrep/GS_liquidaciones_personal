@@ -39,8 +39,9 @@ var ip='localhost';
     //referencia https://stackoverflow.com/questions/38511976/how-can-i-export-socket-io-into-other-modules-in-nodejs
 
     var liquidacion_sueldo=require('./routes/liquidacion_sueldo')
-    
+    var read_pdf=require('./controllers/read_pdf_certificado')
      app.use('/liquidacion_sueldo',liquidacion_sueldo)
+     app.use('/readPdf',read_pdf)
      console.log("Holaa")
     
     
