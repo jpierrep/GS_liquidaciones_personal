@@ -28,10 +28,11 @@ var ip='localhost';
 
     const socketIO = require('socket.io');
     
-     
-     const server=app.listen(port,ip,()=>{
+    const server=app.listen(port,ip,()=>{
         console.log("Servidor corriendo en ip "+ip+" puerto "+ port )
     });
+      
+
 
     module.exports = socketIO(server);
     // ojo con la secuencia , liquidaciones de sueldo ocupa el socket, por lo que debe ir declarado antes de cargar el archivo dependiente
@@ -43,7 +44,7 @@ var ip='localhost';
      app.use('/liquidacion_sueldo',liquidacion_sueldo)
      app.use('/readPdf',read_pdf)
      console.log("Holaa")
-    
+   
     
    
 

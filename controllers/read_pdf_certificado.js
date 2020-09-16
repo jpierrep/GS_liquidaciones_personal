@@ -60,106 +60,102 @@ io.on('connection', (socket) => {
 
 socket.emit('getStatusPrevired', StatusPrevired)
 
-  socket.on('getPrevired', async (dataUser) => {
+socket.on('getTest', async (uploadFileName) => {
+})
+
+  socket.on('getPrevired', async (uploadFileName) => {
 
     //data trae la info del mes y la empresa del proceso
-    console.log("se empieza a ejecutar proceso Previred: " + dataUser["mes"] + dataUser["empresa"])
+    console.log("se empieza a ejecutar proceso Previred: " + uploadFileName+" "+empresa)
 
   
     StatusPrevired = JSON.parse(JSON.stringify(StatusPreviredTemplate))
     StatusPrevired.isExecuting = true
 
     io.emit('getStatusPrevired', StatusPrevired)
-    await getPrevired(dataUser)
+    await getPrevired(uploadFileName,0)
     StatusPrevired.isExecuting = 0
     io.emit('getStatusPrevired', StatusPrevired)
 
   });
 
 
-router.post('/fileupload', async function (req, res, next) {
-  //se setea sin timeout el browser pasado 120 seg cierra conexion y lo vuelve a intentar
-  req.setTimeout(0);
-  console.log("en fileup")
-  var form = formidable({ multiples: true });
-  form.parse(req, async function (err, fields, files) {
-    //console.log(fields)
 
-    var empresa = parseInt(fields.empresa)
+	router.post('/fileupload', async function (req, res, next) {
+		var empresa=0
+		
+	//	req.setTimeout(0);
+		console.log("en fileup")
+		var form = formidable({ multiples: true });
+		form.parse(req, async function (err, fields, files) {
+			if (err){
+				res.status(500).send({status:"error",messaje:"error en subida de archivo"})
+				return
 
-    var oldpath = files.filetoupload.path;
-    // var newpath = 'C:/Users/jpierre/Desktop/' + files.filetoupload.name;
-    var newpath = files.filetoupload.name;
+			}
 
-    let rutsEncontrados
+			//añadir como parametro campo hidden con la empresa valor global y obtenerla acá para luego hacer las validaciones
+			
+		//archivo (con path) donde se subió en servidor, si no es valido entregar error y eliminar del servidor
+		//C:\Users\jpierre\AppData\Local\Temp\upload_5d2d5021b6c503746eaf1987d4abf555 	
+		var oldpath = files.filetoupload.path;
+			
+			//nombre del archivo que se subió (nombre del cliente)
+			//001-001.pdf
+			var  uploadFileName = files.filetoupload.name;
 
-    try {
-			console.log("EEEEE")
-			console.log(oldpath)
-      rutsEncontrados = await getRutsOfFile(oldpath)
-     // console.log("ruts", rutsEncontrados)
-      //solo si encuentra ruts, si no, mostrar error
+		//	let rutsEncontrados
 
-      let fechaHora = new Date().toISOString().slice(0, 19).replace('T', ' ').replace(/ /g, "-").replace(/:/g, "-");
-      console.log(fechaHora)
+			console.log("oldpath",oldpath," newpath",uploadFileName)
 
+		
+			//var socketio = req.app.get('socketIO');
+			//socketio.emit('getPrevired',uploadFileName)
+			
+		//	console.log("socket emitidos")
+			res.status(200).send({status:"ok",messaje:"Archivo subido correctamente",path:oldpath})
+		
+		
+			return
 
-      //se respalda el archivo anteriormente cargado, si existe.
-      fs.copyFile(pdf_path, 'respaldo_file_uploads/' + fechaHora + pdf_path, function (err) {
-       // if (err) throw err;
+		/*	try {
+				console.log("EEEEE")
+				console.log(oldpath)
+				rutsEncontrados = await getRutsOfFile(oldpath)
+			 // console.log("ruts", rutsEncontrados)
+				//solo si encuentra ruts, si no, mostrar error
 
-        //se carga el archivo actual
-        fs.rename(oldpath, pdf_path, async function (err) {
-          if (err) throw err;
-          //await generaFiles(rutsEncontrados)
+				//si pasa la prueba se emite el evento de iniciar
+				// si no entregar error
+				console.log("rutsEncontrados",rutsEncontrados)
+				res.status(200).send({status:"ok"})
 
-
-          let mapPersonas = await generaMapPersonas(rutsEncontrados, empresa)
-
-          if (mapPersonas.length > 0) {
-
-           await generaFiles(mapPersonas, empresa)
-           console.log("termina genera Files")
-           // res.render('index', { title: 'Compilación Archivos Previred', errormessage: 'Proceso iniciado correctamente, se comenzarán a generar los archivos' });
-           var string = encodeURIComponent('OK');
-           res.status(200).redirect('/cargarArchivoPrevired?valid=' + string);
-         //res.status(200).send({hola:"hola"})
-         
-          } else {
-            res.render('index', { title: 'Compilación Archivos Previred', errormessage: 'Error empresa erronea' });
-
-          }
-        });
-      });
-
-      console.log("new", newpath)
-      console.log("old", oldpath)
-
-    } catch (e) {
-      console.log("no tiene formato", e)
-      res.render('index', { title: 'Compilación Archivos Previred', errormessage: 'Formato del archivo es incorrecto' });
-      res.end();
+		} catch (e) {
+			console.log("no tiene formato", e)
+			res.status(200).send({status:"error"})
+   
+    
+		}
+		
+		*/
 
 
-    }
-  });
+		})
 
-
-
-}, function (req, res) {
-  //test next function middelware
-  res.send('ahoraaa')
-})
+	})
 
 
 
 
-async function getPrevired(dataUser){
+
+async function getPrevired(uploadFileName,empresa){
+	console.log("comienza el proceso previred")
 
 	var startTime = new Date();
+
 	let pathLogs = 'data-logs/'
 	let nameLogFile='previred'
-	let empresa = dataUser["empresa"]
+//	let empresa = dataUser["empresa"]
 
 	
   //get ubicaciones del archivo, etc.
@@ -168,8 +164,8 @@ async function getPrevired(dataUser){
 
     try {
 			console.log("EEEEE")
-			let oldpath='C:/Users/jpierre/Documents/NodeProjects/liquidaciones-sueldo/api-server/CotizacionesPersonal.pdf'
-			rutsEncontrados = await getRutsOfFile(oldpath)
+		//	let uploadFileName='C:/Users/jpierre/Documents/NodeProjects/liquidaciones-sueldo/api-server/CotizacionesPersonal.pdf'
+			rutsEncontrados = await getRutsOfFile(uploadFileName)
 			
 	let tablaMapPersonas = (await generaMapPersonas(rutsEncontrados, empresa)).slice(0,5)  //para control de cantidad de la cantidad de archivos que se generaran ***********
 
@@ -234,8 +230,11 @@ function getRutsOfFile(pdf_path) {
     let option = null
     pdfUtil.pdfToText(pdf_path, option, function (err, data) {
       console.log("errr", err)
-      if (err) { reject(err) };
-      //rut filtrados sin el de empresa
+			if (err||!data) { reject(err)
+			return
+			};
+			//rut filtrados sin el de empresa
+			
       let rutsEncontrados = data.match(regex) ? data.match(regex).filter(x => !rutsFiltrar.includes(x)) : null;
       //console.log("rutsss", rutsEncontrados)
       if (!rutsEncontrados) { reject("no hay data") };
@@ -473,6 +472,85 @@ async function generaFiles(tablaMapPersonas) {
 return dataValidar
 
 }
+
+
+
+router.post('/fileupload2', async function (req, res, next) {
+  //se setea sin timeout el browser pasado 120 seg cierra conexion y lo vuelve a intentar
+  req.setTimeout(0);
+  console.log("en fileup")
+  var form = formidable({ multiples: true });
+  form.parse(req, async function (err, fields, files) {
+    //console.log(fields)
+
+		
+    var empresa = parseInt(fields.empresa)
+
+    var oldpath = files.filetoupload.path;
+    // var newpath = 'C:/Users/jpierre/Desktop/' + files.filetoupload.name;
+    var newpath = files.filetoupload.name;
+
+    let rutsEncontrados
+
+    try {
+			console.log("EEEEE")
+			console.log(oldpath)
+      rutsEncontrados = await getRutsOfFile(oldpath)
+     // console.log("ruts", rutsEncontrados)
+      //solo si encuentra ruts, si no, mostrar error
+
+      let fechaHora = new Date().toISOString().slice(0, 19).replace('T', ' ').replace(/ /g, "-").replace(/:/g, "-");
+      console.log(fechaHora)
+
+
+      //se respalda el archivo anteriormente cargado, si existe.
+      fs.copyFile(pdf_path, 'respaldo_file_uploads/' + fechaHora + pdf_path, function (err) {
+       // if (err) throw err;
+
+        //se carga el archivo actual
+        fs.rename(oldpath, pdf_path, async function (err) {
+          if (err) throw err;
+          //await generaFiles(rutsEncontrados)
+
+
+          let mapPersonas = await generaMapPersonas(rutsEncontrados, empresa)
+
+          if (mapPersonas.length > 0) {
+
+           await generaFiles(mapPersonas, empresa)
+           console.log("termina genera Files")
+           // res.render('index', { title: 'Compilación Archivos Previred', errormessage: 'Proceso iniciado correctamente, se comenzarán a generar los archivos' });
+           var string = encodeURIComponent('OK');
+           res.status(200).redirect('/cargarArchivoPrevired?valid=' + string);
+         //res.status(200).send({hola:"hola"})
+         
+          } else {
+            res.render('index', { title: 'Compilación Archivos Previred', errormessage: 'Error empresa erronea' });
+
+          }
+        });
+      });
+
+      console.log("new", newpath)
+      console.log("old", oldpath)
+
+    } catch (e) {
+      console.log("no tiene formato", e)
+      res.render('index', { title: 'Compilación Archivos Previred', errormessage: 'Formato del archivo es incorrecto' });
+      res.end();
+
+
+    }
+  });
+
+
+
+}, function (req, res) {
+  //test next function middelware
+  res.send('ahoraaa')
+})
+
+
 
 
 

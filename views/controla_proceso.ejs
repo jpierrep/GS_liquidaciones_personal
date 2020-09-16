@@ -139,7 +139,8 @@
             <p class="card-text">Compila certificados Previred por centro de costo a partir de archivo base.</p>
             <div class="row">
               <div class="col-1">
-                <button type="button" id="previred-empieza" class="btn btn-primary">Ejecutar</button>
+              <!--  <button type="button" id="previred-empieza" class="btn btn-primary">Ejecutar</button> -->
+              <button type="button" data-toggle="modal" data-target="#previred-modal-file-upload"   class="btn btn-primary">Ejecutar</button>    
               </div>
               <div class="col-8 " style="padding:10px;margin: auto">
 
@@ -164,15 +165,7 @@
 
   </div>
 
-  <div class="input-group">
-      <div class="custom-file">
-        <input type="file" class="custom-file-input" accept=".pdf" id="inputGroupFile04">
-        <label class="custom-file-label" for="inputGroupFile04">Seleccionar archivo...</label>
-      </div>
-      <div class="input-group-append">
-        <button class="btn btn-outline-secondary" type="button">Cargar</button>
-      </div>
-    </div>
+
 
 
   <!-- Modal -->
@@ -202,6 +195,47 @@
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+    <!-- Modal -->
+    <div class="modal fade" id="previred-modal-file-upload" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLongTitle">Seleccione Archivo</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+
+
+           <!-- <form  action="/readPdf/fileupload" method="post" enctype="multipart/form-data" >-->
+  <form  id="fileUploadForm" method="post" enctype="multipart/form-data" >
+    
+    <div class="input-group">
+        <div class="custom-file">
+          <input type="file" class="custom-file-input" name="filetoupload"  accept=".pdf" id="previred-upload-archivo">
+          <label class="custom-file-label" for="inputGroupFile04">Seleccionar archivo...</label>
+        </div>
+        <div class="input-group-append">
+         <!--  <button class="btn btn-outline-secondary" id="previred-upload-button" type="submit">Cargar</button> -->
+        </div>
+      </div>
+  
+    </form>
+
+
+        </div>
+        <div class="modal-footer">
+       <!--   <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button> -->
+       <button type="button" class="btn btn-secondary" data-dismiss="modal" id="previred-upload-button" >Cerrar</button>
 
         </div>
       </div>
@@ -241,6 +275,8 @@
 
       console.log(countries)
     });
+
+ 
 
 
     $('#liquidacion-log-modal-button').click(function () {
@@ -403,6 +439,53 @@
       window.URL.revokeObjectURL(url);
       a.remove();
     }
+
+
+    $("#previred-upload-button").click(function (event) {
+
+//stop submit the form, we will post it manually.
+event.preventDefault();
+
+// Get form
+var form = $('#fileUploadForm')[0];
+
+// Create an FormData object
+var data = new FormData(form);
+
+// If you want to add an extra field for the FormData
+data.append("CustomField", "This is some extra data, testing");
+
+ $("#previred-upload-button").attr("disabled", true);
+
+$.ajax({
+    type: "POST",
+    enctype: 'multipart/form-data',
+    url: "/readPdf/fileupload",
+    data: data,
+    processData: false,
+    contentType: false,
+    cache: false,
+    timeout: 600000,
+    success: function (data) {
+
+        $("#result").text(data);
+        console.log("SUCCESS : ", data);
+        $("#previred-upload-button").attr("disabled", false);
+        $('#previred-upload-archivo').val('')
+       // $('#previred-modal-file-upload').modal('hide')
+        socket.emit('getPrevired',data.path)
+
+    },
+    error: function (e) {
+
+        $("#result").text(e.responseText);
+        console.log("ERROR : ", e);
+        $("#btnSubmit").prop("disabled", false);
+
+    }
+});
+
+});
 
   </script>
 
