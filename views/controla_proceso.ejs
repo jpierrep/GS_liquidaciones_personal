@@ -140,7 +140,7 @@
             <div class="row">
               <div class="col-1">
               <!--  <button type="button" id="previred-empieza" class="btn btn-primary">Ejecutar</button> -->
-              <button type="button" data-toggle="modal" data-target="#previred-modal-file-upload"   class="btn btn-primary">Ejecutar</button>    
+              <button type="button" id="previred-empieza" data-toggle="modal" data-target="#previred-modal-file-upload"   class="btn btn-primary">Ejecutar</button>    
               </div>
               <div class="col-8 " style="padding:10px;margin: auto">
 
@@ -231,11 +231,16 @@
   
     </form>
 
+ 
 
         </div>
         <div class="modal-footer">
+            <div class="alert alert-danger" id="previred-alert" role="alert" style="display:none;">
+                <strong>Error!</strong> Archivo sin formato o sin ruts.
+              </div>
+           
        <!--   <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button> -->
-       <button type="button" class="btn btn-secondary" data-dismiss="modal" id="previred-upload-button" >Cerrar</button>
+       <button type="button" class="btn btn-secondary" data-dismiss="modal" id="previred-upload-button"  disabled>Cargar</button>
 
         </div>
       </div>
@@ -251,13 +256,15 @@
 
   <!-- Optional JavaScript -->
   <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
-    crossorigin="anonymous"></script>
+  
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script> 
+  <!--<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+    crossorigin="anonymous"></script>-->
   <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN"
     crossorigin="anonymous"></script>
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV"
     crossorigin="anonymous"></script>
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
   <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js" integrity="sha512-v8ng/uGxkge3d1IJuEo6dJP8JViyvms0cly9pnbfRxT6/31c3dRWxIiwGnMSWwZjHKOuY3EVmijs7k1jz/9bLA=="
     crossorigin="anonymous"></script>
 
@@ -321,10 +328,17 @@
     });
 
     $('#previred-empieza').click(function () {
+      $('#previred-alert').hide(); 
+
+    //  $(".alert").alert('close')
+    
+   
+   /*
       var empresa = $("#empresa-select").val();
       var mes = $("#mes-select").val();
       $("[name='previred-loader']").show()
       socket.emit("getPrevired", { empresa: empresa, mes: mes });
+      */
 
     });
 
@@ -339,6 +353,21 @@
 
       socket.emit("getFile", $(this).text());
     });
+
+        $('#previred-upload-archivo').on("change",function () {
+          if($('#previred-upload-archivo').val()!=''){
+          $("#previred-upload-button").attr("disabled", false);
+ console.log("holaa")
+ }
+         else{
+           console.log("cambio y ningun archivo seleccionado")
+          $("#previred-upload-button").attr("disabled", true);
+         }
+ //$('#previred-upload-archivo').val('')
+    });
+
+
+    
 
     socket.on('sendfile', function (data, fileName) {
       saveFile(fileName, "data:attachment/text", data);
@@ -442,6 +471,8 @@
 
 
     $("#previred-upload-button").click(function (event) {
+    //se quitan los mensajes
+    $('#previred-alert').hide(); 
 
 //stop submit the form, we will post it manually.
 event.preventDefault();
@@ -471,15 +502,30 @@ $.ajax({
         $("#result").text(data);
         console.log("SUCCESS : ", data);
         $("#previred-upload-button").attr("disabled", false);
-        $('#previred-upload-archivo').val('')
-       // $('#previred-modal-file-upload').modal('hide')
+        
+        
+       if (data.status=="ok"){
+        $('#previred-modal-file-upload').modal('hide')
         socket.emit('getPrevired',data.path)
+       }else{
 
+         //si hay algun error el status no será OK, por lo que se debe eliminar la referencia del archivo subido, mandando triguer on chanque val('') este evento (on change) hara que se desactive
+         // y mostrar el mensaje
+         console.log("no hay ruts")
+        $('#previred-upload-archivo').val('')
+        $('#previred-upload-archivo').trigger('change');
+       
+        $('#previred-alert').show(); 
+        
+       }
+    
+        
     },
     error: function (e) {
 
         $("#result").text(e.responseText);
         console.log("ERROR : ", e);
+        $('.alert').alert()
         $("#btnSubmit").prop("disabled", false);
 
     }

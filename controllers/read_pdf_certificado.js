@@ -108,16 +108,32 @@ socket.on('getTest', async (uploadFileName) => {
 
 			console.log("oldpath",oldpath," newpath",uploadFileName)
 
+		 //archivo subido, ahora validamos que haya data
 		
+		 let rutsEncontrados
+
+    try {
+			console.log("EEEEE")
+		//	let uploadFileName='C:/Users/jpierre/Documents/NodeProjects/liquidaciones-sueldo/api-server/CotizacionesPersonal.pdf'
+			rutsEncontrados = await getRutsOfFile(oldpath)
+		
+			res.status(200).send({status:"ok",messaje:"Archivo subido correctamente",path:oldpath})
+
+			return
+
+
+		}catch(e){
+			res.status(200).send({status:"error, no hay ruts",menssaje:e})
+			return
+
+		}
+
+
 			//var socketio = req.app.get('socketIO');
 			//socketio.emit('getPrevired',uploadFileName)
 			
 		//	console.log("socket emitidos")
-			res.status(200).send({status:"ok",messaje:"Archivo subido correctamente",path:oldpath})
 		
-		
-			return
-
 		/*	try {
 				console.log("EEEEE")
 				console.log(oldpath)
@@ -132,7 +148,7 @@ socket.on('getTest', async (uploadFileName) => {
 
 		} catch (e) {
 			console.log("no tiene formato", e)
-			res.status(200).send({status:"error"})
+		
    
     
 		}
