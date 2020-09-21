@@ -313,7 +313,7 @@
 
     $('#liquidacion-empieza').click(function () {
       var empresa = $("#empresa-select").val();
-      var mes = $("#mes-select").val();
+      var mes = $("#mes-select").val()+"-01";
       $("[name='liquidacion-loader']").show()
       socket.emit("getLiquidaciones", { empresa: empresa, mes: mes });
 
@@ -321,7 +321,7 @@
 
     $('#reliquidacion-empieza').click(function () {
       var empresa = $("#empresa-select").val();
-      var mes = $("#mes-select").val();
+      var mes = $("#mes-select").val()+"-01";
       $("[name='reliquidacion-loader']").show()
       socket.emit("getReliquidaciones", { empresa: empresa, mes: mes });
 
@@ -484,7 +484,11 @@ var form = $('#fileUploadForm')[0];
 var data = new FormData(form);
 
 // If you want to add an extra field for the FormData
-data.append("CustomField", "This is some extra data, testing");
+//añadimos a la data la empresa y el mes 
+ let empresa=$("#empresa-select").val()
+ let mes=$("#mes-select").val()+"-01"
+data.append('empresa',empresa );
+data.append('mes', mes);
 
  $("#previred-upload-button").attr("disabled", true);
 
@@ -506,7 +510,7 @@ $.ajax({
         
        if (data.status=="ok"){
         $('#previred-modal-file-upload').modal('hide')
-        socket.emit('getPrevired',data.path)
+        socket.emit('getPrevired',data.path,empresa,mes)
        }else{
 
          //si hay algun error el status no será OK, por lo que se debe eliminar la referencia del archivo subido, mandando triguer on chanque val('') este evento (on change) hara que se desactive
@@ -514,8 +518,9 @@ $.ajax({
          console.log("no hay ruts")
         $('#previred-upload-archivo').val('')
         $('#previred-upload-archivo').trigger('change');
-       
+        $('#previred-alert').text(data.messaje); 
         $('#previred-alert').show(); 
+       
         
        }
     

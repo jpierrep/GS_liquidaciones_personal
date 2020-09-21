@@ -1,0 +1,4 @@
+21-09-2020
+- Añade validaciones multiempresa
+- Añade validaciones archivo (ruts correspondan a empresa,no hay ruts, si hay ruts no vigentes, entrega error para que se activen en softland )
+- carga respaldo archivo ,elimina al terminar el de la carpeta temp

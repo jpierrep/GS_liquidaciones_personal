@@ -410,7 +410,7 @@ io.on('connection', (socket) => {
       //variable para hacer realizar validacion del proceso (comparar al extraer data y luego despues de  generar pdfs)
       variableValidacion='H303'
 
-      mesProceso = dataUser["mes"] + "-01"
+      mesProceso = dataUser["mes"]  //ej 2020-01-01
       console.log("el mes seleccionado es")
       //mesProceso=fechaProceso
       pathArchivos = "dataTest/testLiquidaciones/"
@@ -424,7 +424,7 @@ io.on('connection', (socket) => {
       //variable para hacer realizar validacion del proceso (comparar al extraer data y luego despues de  generar pdfs)
       variableValidacion='H303'
 
-      mesProceso = dataUser["mes"] + "-01"
+      mesProceso = dataUser["mes"] // ej 2020-01-01
       console.log("el mes seleccionado es")
       //mesProceso=mesPasado
       pathArchivos = "dataTest/testReliquidaciones/"
