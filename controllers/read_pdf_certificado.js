@@ -124,7 +124,7 @@ socket.on('getTest', async (uploadFileName) => {
 			console.log("EEEEE")
 		//	let uploadFileName='C:/Users/jpierre/Documents/NodeProjects/liquidaciones-sueldo/api-server/CotizacionesPersonal.pdf'
       rutsEncontrados = (await getRutsOfFile(oldpath,empresa)).map(x=>parseInt(convierteRutID(x)))
-    // console.log("ruts",rutsEncontrados.slice(0,10))
+     console.log("ruts",rutsEncontrados.slice(0,10))
       // si se encuentran ruts  validar que sean de la empresa y que todos esten vigentes
      personalVigente =(await SoftlandController.getFichasVigentes(mes,empresa)).map(x=>(parseInt(x.RUT_ID)))
    //  console.log("vigentes",personalVigente.slice(0,10))
@@ -285,6 +285,7 @@ function getRutsOfFile(pdf_path,empresa) {
 
     let option = null
     let rutEmpresa =constants.EMPRESAS.find(x => x.ID == empresa).RUT
+    console.log("rut empresa",rutEmpresa)
 
     pdfUtil.pdfToText(pdf_path, option, function (err, data) {
     
@@ -305,7 +306,7 @@ function getRutsOfFile(pdf_path,empresa) {
       //verificamos la empresa
       if (!rutsEncontrados.includes(rutEmpresa)){ reject("Error, Empresa no valida"); return };
 
-      rutsEncontrados = data.match(regex) ? data.match(regex).filter(x => !rutEmpresa) : null;
+      rutsEncontrados = data.match(regex) ? data.match(regex).filter(x => x!=rutEmpresa) : null;
       //console.log("rutsencontrados", rutsEncontrados)
       //rutsencontrados [ '8.849.245-5', '13.510.579-1', '10.420.224-1', '8.223.485-3' ]
       //console.log(data)

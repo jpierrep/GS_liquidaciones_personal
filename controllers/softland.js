@@ -160,7 +160,7 @@ async function getFichasVigentes(mes,empresa) {
     `+ empresaDetalle + `.softland.sw_ccostoper AS ccp ON ccp.ficha = per.ficha AND ccp.vigHasta = '9999-12-01' 
     where estado='V'
     and ep.FechaMes=' `+mes+ `'
-    
+    order by RUT asc, FECHA_INGRESO desc,FECHA_FINIQUITO desc
     
                              `,
       {  type: sequelizeMssql.QueryTypes.SELECT, raw: true })

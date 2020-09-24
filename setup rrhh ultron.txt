@@ -1,0 +1,27 @@
+ //clonar repositario y traer rama correspondiente
+
+ git status
+git clone repositorio
+#traer una rama al origin
+git pull origin feature_read_pdf_certificado
+#traer la rama
+git pull
+
+
+//instalar paquetes
+npm install
+
+//instalar dependencias externas: pdftk(encargado de decompilar y separar archivos pdf para previred) xpdf (encargado de leer el texto del pdf de previred para obtener ruts)
+apt-get install xpdf
+apt-get install pdftk
+
+
+//configuraciones
+en index.js (o donde se defina el servidor), cambiar ip de conexion a "0.0.0.0" para aceptar conexiones, si no hay conexion, revisar firewall y ver bloqueo de pueros
+referencia:  https://stackoverrun.com/es/q/4203914 http://servidor.dokry.com/el-sitio-node-js-rechaza-la-connection.html
+
+
+
+//en el archivo plantilla views/liquidacion_sueldo_multiple.ejs mover el numero del zoom con el que quedará el pdf en windows esta con 0.65 en linux quedo con 0.5 pues con más se queda sin formato
+ 
+//revisar carpetas de archivos deben existir directorio liquidaciones, reliquidaciones, previred, data-logs (directorio de logs), respaldo_file uploads (respaldo files previred subidos), 
