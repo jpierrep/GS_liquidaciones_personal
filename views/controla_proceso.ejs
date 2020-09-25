@@ -27,6 +27,10 @@
 
 <body>
 
+  <div class="alert alert-danger" id="global-alert" role="alert"   style="display:none;">
+    <strong>Error!</strong> Archivo sin formato o sin ruts.
+  </div>
+
   <div class="container">
     <div class="row">
 
@@ -48,7 +52,6 @@
       </div>
     </div>
   </div>
-
 
 
   <div class="container">
@@ -270,13 +273,17 @@
 
   <script>
     var socket = io();
+    
+    
+
+
     $(document).ready(function () {
       //saveFile("Example.txt", "data:attachment/text", "Hello, world.");
       //socket.emit("getFile","holaaaa");
       //esto hace que se dupliquen los archivos pues se llama al getFilename que carga lista de archivos
       //  socket.emit("getFileName", "holaaaa");
 
-
+    
       var countries = ['United States', 'Canada', 'Argentina', 'Armenia'];
 
 
@@ -399,12 +406,18 @@
       //console.log("Termina "+msg)
 
       if (!data.isExecuting) {
+        $("#mes-select").attr("disabled", false);
+        $("#empresa-select").attr("disabled", false);
+
+        $('#liquidacion-empieza').attr("disabled", false); 
         $("[name='liquidacion-loader']").hide()
-        $('#liquidacion-empieza').attr("disabled", false);
         $('#liquidacion-cc-status').text("")
       }
 
       else {
+        $("#mes-select").attr("disabled", true);
+        $("#empresa-select").attr("disabled", true);
+
         $("[name='liquidacion-loader']").show()
         $('#liquidacion-empieza').attr("disabled", true);
         $('#liquidacion-cc-status').text(data.msgs[0])
@@ -417,12 +430,19 @@
     socket.on('getStatusReliquidacion', function (data) {
 
       if (!data.isExecuting) {
+       
+        $("#mes-select").attr("disabled", false);
+        $("#empresa-select").attr("disabled", false);
+
         $("[name='reliquidacion-loader']").hide()
         $('#reliquidacion-empieza').attr("disabled", false);
         $('#reliquidacion-cc-status').text("")
       }
 
       else {
+        $("#mes-select").attr("disabled", true);
+        $("#empresa-select").attr("disabled", true);
+
         $("[name='reliquidacion-loader']").show()
         $('#reliquidacion-empieza').attr("disabled", true);
         $('#reliquidacion-cc-status').text(data.msgs[0])
@@ -437,12 +457,19 @@
     socket.on('getStatusPrevired', function (data) {
 
       if (!data.isExecuting) {
+        
+        $("#mes-select").attr("disabled", false);
+        $("#empresa-select").attr("disabled", false);
+
         $("[name='previred-loader']").hide()
         $('#previred-empieza').attr("disabled", false);
         $('#previred-cc-status').text("")
       }
 
       else {
+        $("#mes-select").attr("disabled", true);
+        $("#empresa-select").attr("disabled", true);
+
         $("[name='previred-loader']").show()
         $('#previred-empieza').attr("disabled", true);
         $('#previred-cc-status').text(data.msgs[0])
@@ -451,6 +478,32 @@
         $('#previred-progress').text(data.percent + "%")
       }
     });
+
+
+        socket.on('getGlobalAlert', function (data) {
+        //data.type: error (rojo), success (verde), warning (amarillo)
+        var alertClass
+        if(data.type=="error")
+        alertClass='alert alert-danger'
+        if(data.type=="success")
+        alertClass='alert alert-success'
+        
+
+         
+          $('#global-alert').removeClass($('#global-alert').attr('class'))
+          
+          $('#global-alert').text(data.messaje); 
+         
+          $('#global-alert').addClass(alertClass)
+    $('#global-alert').fadeTo(2000, 500).slideUp(500, function(){
+    $('#global-alert').hide(); });  //si le seteo alert.close se elimina del dom, por lo que no vuelve a aparecer
+    
+    
+  
+       
+
+});
+
 
 
 

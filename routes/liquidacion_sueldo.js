@@ -461,13 +461,15 @@ io.on('connection', (socket) => {
             model: VariablesFicha,
             mapToModel: true, // pass true here if you have any mapped fields
             raw: true
-          })).map(x => x.ficha).slice(0,10)  //para control de cantidad de la cantidad de fichas que se generaran ***********
+          })).map(x => x.ficha)//.slice(0,10)  //para control de cantidad de la cantidad de fichas que se generaran ***********
 
 
           //si no existen fichas, se termina el proceso
           if (fichasVigentes.length==0){
             console.log("no hay fichas,termina el proceso")
-          
+            socket.emit('getGlobalAlert', {messaje:"Error, no hay data para el proceso",type:'error'})
+        
+
            //emitir mensaje de error
             //termina el promise
           resolve()
@@ -699,9 +701,10 @@ io.on('connection', (socket) => {
       //path +validacion (OK,ERR)+proceso(Liq,reliq)+empresa(0,1,2), fecha (yyy-mm-dd-hh-mm-ss), tiempo demora (s)
       fs.appendFileSync(pathLogs + statusValidacion + "-" + nameLogFile + "-" + empresa + "-" + formatDate + "-" + formatHour + "-" + demoraSeconds + ".txt", JSON.stringify(dataValidar));
       console.log("todos las validaciones hechas")
-
+      io.emit('getGlobalAlert', {messaje:"Proceso concluido exitosamente",type:'success'})
       //return res.status(200).send({ status: "ok" })
       resolve()
+      return
     })
   }
 

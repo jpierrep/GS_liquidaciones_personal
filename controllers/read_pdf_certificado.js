@@ -255,9 +255,9 @@ async function getPrevired(uploadFileName,empresa,mes){
    fs.unlinkSync(uploadFileName)
    console.log("archivo eliminado")
 
-	 
-	 // res.render('index', { title: 'Compilación Archivos Previred', errormessage: 'Proceso iniciado correctamente, se comenzarán a generar los archivos' });
-
+   console.log("Proceso concluido")
+	
+   io.emit('getGlobalAlert', {messaje:"Proceso concluido exitosamente",type:'success'})
  
 	} else {
 		console.log("no tiene ruts")
