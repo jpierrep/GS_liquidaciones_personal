@@ -461,7 +461,9 @@ io.on('connection', (socket) => {
             model: VariablesFicha,
             mapToModel: true, // pass true here if you have any mapped fields
             raw: true
-          })).map(x => x.ficha)//.slice(0,10)  //para control de cantidad de la cantidad de fichas que se generaran ***********
+          })).map(x => x.ficha)
+         // .filter(x=>x=="FRPMCHA002")
+          //.slice(0,10)  //para control de cantidad de la cantidad de fichas que se generaran ***********
 
 
           //si no existen fichas, se termina el proceso
@@ -501,6 +503,7 @@ io.on('connection', (socket) => {
             mapToModel: true, // pass true here if you have any mapped fields
             raw: true
           })).filter(x => fichasVigentes.includes(x.ficha))
+      
       //.map(x => x.CENCO2_CODI)//.slice(0,50)  //para control de cantidad de cc para testear
 
 
@@ -514,7 +517,7 @@ io.on('connection', (socket) => {
 
 
       let distinctCC = infoPersonas.map(x => { return x.CENCO2_CODI }).filter(unique)//.slice(0, 3)
-      //distinctCC = ["165-001"]
+      // distinctCC = ["958-007"]
       //   distinctCC = ["129-001"]
       //distinctCC = ["162-009"]
 

@@ -89,7 +89,7 @@ async function getFichasInfoPromiseMes(fichas, empresa, mes) {
     let fichasInfo = await sequelizeMssql.query(`SELECT     
   per.ficha as FICHA,per.nombres as NOMBRES,per.rut as RUT,c.CarNom as CARGO_DESC,cc.CodiCC as CENCO2_CODI,cc1.DescCC as CENCO1_DESC,cc.DescCC  as CENCO2_DESC
   ,area.codArn as AREA_CODI,area_desc.DesArn as AREA_DESC,per.tipoPago as TIPO_PAGO,isapre.CodIsapre as ISAPRE_CODI,isapre.nombre as ISAPRE_NOMBRE,afp.CodAFP as AFP_CODI, afp.nombre as AFP_NOMBRE,cargas.cant_cargas as CANT_CARGAS
-  
+  ,isnull(per.numCtaCte,'') as NUM_CUENTA
   FROM 
                            `+ empresaDetalle + `.softland.sw_personal AS per INNER JOIN
                            `+ empresaDetalle + `.softland.sw_cargoper AS cp ON cp.ficha = per.Ficha AND '` + mes + `' between cp.vigDesde and cp.vigHasta  INNER JOIN

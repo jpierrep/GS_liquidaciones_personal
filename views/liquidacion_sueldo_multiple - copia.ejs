@@ -250,7 +250,7 @@ var mesSoftland=mes.substr(5,2)+"-"+mes.substr(0,4)
 			   <% 	if (templates_persona[x].persona['CANT_CARGAS']>0){ %>
 				<tr class=xl6531828 height=17 style='height:12.75pt'>
 						<td height=17 class=xl7431828 style='height:12.75pt'>Nº CARGAS FAM.:</td>
-						<td class=xl7431828><%= templates_persona[x].persona['CANT_CARGAS:'] %></td>
+						<td class=xl7431828><%= templates_persona[x].persona['CANT_CARGAS'] %></td>
 						<td class=xl6831828></td>
 						<td class=xl7431828></td>
 						<td class=xl7431828></td>
@@ -264,7 +264,7 @@ var mesSoftland=mes.substr(5,2)+"-"+mes.substr(0,4)
 					<td class=xl7431828><%= templates_persona[x].persona['TIPO_PAGO'] %></td>
 					<td class=xl6831828></td>
 					<td class=xl7431828>Nº CUENTA: </td>
-					<td class=xl7431828></td>
+					<td class=xl7431828><%= templates_persona[x].persona['NUM_CUENTA'] %></td>
 					<td class=xl6831828></td>
 					<td class=xl6731828></td>
 				   </tr>
