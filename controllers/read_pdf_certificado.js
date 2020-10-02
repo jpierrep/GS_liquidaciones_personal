@@ -10,6 +10,8 @@ var sql = require("mssql");
 var pdfUtil = require('pdf-to-text');
 var exec = require('child_process').exec
 const constants = require('../config/systems_constants')
+const FileServer = require('../controllers/file_server');
+const Utils = require('../controllers/utils');
 var sql = require('../config/connections')
 var fs = require('fs');
 var formidable = require('formidable');
@@ -199,6 +201,32 @@ async function getPrevired(uploadFileName,empresa,mes){
 	let pathLogs = 'data-logs/'
   let nameLogFile='previred'
 
+  
+  let pathBase=FileServer.getPathServerSobreLaboral() //revisa acceso a carpeta destino (carpeta compartida)
+    
+  if (!pathBase){
+    socket.emit('getGlobalAlert', {messaje:"Error, no hay acceso a carpeta de sobre laboral",type:'error'})
+    return
+  }
+  let nameEmpresa
+  if (empresa==0) nameEmpresa='GUARD'
+  if (empresa==2) nameEmpresa='OUTSOURCING'
+
+  let dirDestino=pathBase+"/"+(new Date().getFullYear())+"/"+Utils.getMesName(mes).toUpperCase()+"/CERTIFICADOS/"+nameEmpresa  //path completo EJ \\192.168.100.69\sobrelaboral\Sistema_de_documentacion_laboral\2020\AGOSTO\LIQUIDACIONES\OUTSOURCING
+    console.log("dir",dirDestino)
+    
+  
+    // crea carpeta del mes en destino, si no existe 
+  if (!fs.existsSync(dirDestino)){
+  
+    fs.mkdirSync(dirDestino,{recursive:true});
+    console.log("no existe carpeta, creada la carpeta del mes")
+}else{
+  console.log("existe la carpeta, se debe elimnar el contenido ")
+
+}
+
+
 
   fs.copyFileSync(uploadFileName, 'respaldo_file_uploads/' + getCompleteFormatDate()+".pdf")
    console.log("archivo copiado para respaldo") 
@@ -220,7 +248,7 @@ async function getPrevired(uploadFileName,empresa,mes){
 	if (tablaMapPersonas.length > 0) {
 
 	  
-		let dataValidar= await generaFiles(tablaMapPersonas, empresa,uploadFileName)
+		let dataValidar= await generaFiles(tablaMapPersonas, empresa,uploadFileName,dirDestino)
 		console.log("termina genera Files")
 		
   //efectua validacion
@@ -292,7 +320,7 @@ function getRutsOfFile(pdf_path,empresa) {
    
 
       console.log("errr", err)
-			if (err||!data) { reject("error al leer el archivo")
+			if (err||!data) { reject("Error al leer el archivo")
 			return
 			};
 			//rut filtrados sin el de empresa
@@ -449,8 +477,8 @@ async function generaMapPersonas(rutsEncontrados, empresa,mes) {
 }
 
 
-async function generaFiles(tablaMapPersonas,empresa,uploadFileName) {
-	
+async function generaFiles(tablaMapPersonas,empresa,uploadFileName,dirDestino) {
+	console.log("Se comenzaran a generar los archivos en directorio destino...",dirDestino)
 	let dataValidar = [] 
 
   let unique = (value, index, self) => {
@@ -470,7 +498,9 @@ async function generaFiles(tablaMapPersonas,empresa,uploadFileName) {
     console.log("pagesCC", pagesCC)
     
     let child = await  new Promise ( (resolve,reject)=>{
-      exec('pdftk ' + uploadFileName + ' cat ' + pagesCC + ' output ' + path_output_base + centro_costo + '.pdf',
+     // exec('pdftk ' + uploadFileName + ' cat ' + pagesCC + ' output ' + path_output_base + centro_costo + '.pdf',
+     exec('pdftk ' + uploadFileName + ' cat ' + pagesCC + ' output ' + dirDestino+'\\' + centro_costo + '.pdf',
+  
       function (error, stdout, stderr) {
         console.log('stdout: ' + stdout);
         console.log('stderr: ' + stderr);

@@ -8,7 +8,9 @@ var system_constants ={
     TABLE_AREA_NEG_PERSON:{database:'Softland (segun empresa)', table:'.[softland].[sw_areanegper]'},
     TABLE_AREA_NEG_EMPRESA:{database:'Softland (segun empresa)', table:'.softland.cwtaren'},
     TABLE_VARIABLES_PERSONA:{database:'SISTEMA_CENTRAL', table:'sw_variablepersona'},
-    VARIABLES_PARAMETERS:[{nombre:"LIQUIDO PAGO",variable:'H303'},{nombre:"RELIQUIDACION",variable:'H068'}]
+    VARIABLES_PARAMETERS:[{nombre:"LIQUIDO PAGO",variable:'H303'},{nombre:"RELIQUIDACION",variable:'H068'}],
+    FOLDER_PATH_FILES:{linux:'/mnt/win_share',windows:'\\\\192.168.100.69\\sobrelaboral\\Sistema_de_documentacion_laboral'}
+    
   
 }
 module.exports = system_constants;

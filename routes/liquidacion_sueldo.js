@@ -11,6 +11,8 @@ const VariablesFicha = sequelizeMssql.import('../models/soft_variables_ficha');
 var SoftlandController = require('../controllers/softland');
 var api = express.Router();
 const constants = require('../config/systems_constants')
+const FileServer = require('../controllers/file_server');
+const Utils = require('../controllers/utils');
 const fs = require('fs');
 var request = require('request');
 const http = require('https');
@@ -77,7 +79,7 @@ io.on('connection', (socket) => {
     io.emit('getStatusLiquidacion', StatusLiquidacion)
     await getLiquidaciones("Liquidacion", dataUser)
     StatusLiquidacion.isExecuting = 0
-    io.emit('getStatusLiquidacion', StatusLiquidacion)
+    io.emit('getStatusLiquidacion', StatusLiquidacion)     
 
   });
 
@@ -115,11 +117,11 @@ io.on('connection', (socket) => {
 
     // let archivos=fs.readdirSync(pathLogs).filter(x=>x.match(`/^.*`+controlProceso+`$/`))
 
-
+    
     let archivos = fs.readdirSync(pathLogs).filter(x => x.indexOf(controlProceso) > -1).filter(x => x.indexOf(controlEmpresa) > -1).sort().reverse().slice(0, 9)
     socket.emit("sendFileNames", archivos);
     console.log(archivos)
-
+   
 
   });
 
@@ -387,19 +389,47 @@ io.on('connection', (socket) => {
     //let empresa = 2
     let empresa = dataUser["empresa"]
 
-
+    let mesProceso = dataUser["mes"]  //ej 2020-01-01
 
     let variableBase = ''
     let variableValidacion=''
-    let mesProceso = ''
-    let pathArchivos = ''
+   
+    
     let nameLogFile = ''
+    let nameFileSuffix=''
 
     //para calcular la demora del proceso
     var startTime = new Date();
     var empresaDetalle = constants.EMPRESAS.find(x => x.ID == empresa)
     let templateDB = require('../config/' + empresaDetalle["TEMPLATE_LIQUIDACION"]) //archivo json con la plantilla para generar liquidaciones
 
+
+    let pathBase=FileServer.getPathServerSobreLaboral() //revisa acceso a carpeta destino (carpeta compartida)
+    
+    if (!pathBase){
+      socket.emit('getGlobalAlert', {messaje:"Error, no hay acceso a carpeta de sobre laboral",type:'error'})
+      return
+    }
+    let nameEmpresa
+    if (empresa==0) nameEmpresa='GUARD'
+    if (empresa==2) nameEmpresa='OUTSOURCING'
+
+    let dirDestino=pathBase+"/"+(new Date().getFullYear())+"/"+Utils.getMesName(mesProceso).toUpperCase()+"/LIQUIDACIONES/"+nameEmpresa  //path completo EJ \\192.168.100.69\sobrelaboral\Sistema_de_documentacion_laboral\2020\AGOSTO\LIQUIDACIONES\OUTSOURCING
+      console.log("dir",dirDestino)
+    
+      // crea carpeta del mes en destino, si no existe 
+    if (!fs.existsSync(dirDestino)){
+    
+      fs.mkdirSync(dirDestino,{recursive:true});
+      console.log("no existe carpeta, creada la carpeta del mes")
+  }else{
+    console.log("existe la carpeta, se debe elimnar el contenido ")
+
+  }
+
+
+
+  
 
     //tipo:"Liquidacion","Reliquidacion"
     if (tipoProceso == "Liquidacion") {
@@ -409,13 +439,12 @@ io.on('connection', (socket) => {
       variableBase = 'H303'
       //variable para hacer realizar validacion del proceso (comparar al extraer data y luego despues de  generar pdfs)
       variableValidacion='H303'
-
-      mesProceso = dataUser["mes"]  //ej 2020-01-01
       console.log("el mes seleccionado es")
-      //mesProceso=fechaProceso
-      pathArchivos = "dataTest/testLiquidaciones/"
-      nameLogFile = 'liquida'
+        //dirDestino = "dataTest/testLiquidaciones"
+      nameLogFile = 'liquida' // nombre del log proceso
+      nameFileSuffix=' LIQUIDACION' //sufijo del nombre archivos
 
+  
     } if (tipoProceso == "Reliquidacion") {
 
       //El mes de consulta para reliquidaciones es solo a mes pasado ya que en el mes en curso aún no hay data
@@ -424,13 +453,16 @@ io.on('connection', (socket) => {
       //variable para hacer realizar validacion del proceso (comparar al extraer data y luego despues de  generar pdfs)
       variableValidacion='H303'
 
-      mesProceso = dataUser["mes"] // ej 2020-01-01
-      console.log("el mes seleccionado es")
+      console.log("el mes seleccionado es",mesProceso)
       //mesProceso=mesPasado
-      pathArchivos = "dataTest/testReliquidaciones/"
-      nameLogFile = 'reliquida'
+     // dirDestino = "dataTest/testReliquidaciones/"
+      nameLogFile = 'reliquida' // nombre del log proceso
+      nameFileSuffix=' RELIQUIDACION'//sufijo del nombre archivos 
 
-    }
+    
+
+  }
+   
 
     return new Promise(async (resolve, reject) => {
       //http://localhost:3800/liquidacion_sueldo/getLiquidaciones
@@ -602,7 +634,7 @@ io.on('connection', (socket) => {
               //    stream.pipe(res);
               if (stream && !err) {
 
-                stream.pipe(fs.createWriteStream(pathArchivos + centro_costo + ".pdf"));
+                stream.pipe(fs.createWriteStream(dirDestino+"/" + centro_costo +nameFileSuffix+ ".pdf"));
                 // stream.pipe(res);
 
 
@@ -649,7 +681,6 @@ io.on('connection', (socket) => {
 
 
         }))
-
 
 
 
@@ -712,119 +743,6 @@ io.on('connection', (socket) => {
   }
 
 
-  //xxxxx
-  //api.get("/getLiquidaciones", async function (req, res, next) {
-  async function getLiquidaciones2() {
-
-    return new Promise(async (resolve, reject) => {
-      //http://localhost:3800/liquidacion_sueldo/getLiquidaciones
-
-      let mes = '2020-07-01'
-      let empresa = 0
-      //Actualizar vacaciones GUARD
-      let ccVigentes = (await sequelizeMssql
-        .query(`
-      SELECT CENCO2_CODI,count(*) as cant
-      FROM [Inteligencias].[dbo].[VIEW_SOFT_PERSONAL_VIGENTE]
-      where FECHA_SOFT='`+ mes + `'
-      and ESTADO='V'
-      and emp_codi=`+ empresa + `
-      
-      group by CENCO2_CODI
-  `
-          , {
-
-            model: VariablesFicha,
-            mapToModel: true, // pass true here if you have any mapped fields
-            raw: true
-          })).map(x => x.CENCO2_CODI)//.slice(0,50)  //para control de cantidad de cc para testear
-
-      /*
-    
-      async function printFiles () {
-       const files = await getFilePaths();
-     
-       for (const file of files) {
-         const contents = await fs.readFile(file, 'utf8');
-         console.log(contents);
-       }
-     }
-    
-     */
-
-      console.log(JSON.parse(JSON.stringify(ccVigentes)))
-      //truncado los 4 primeros para testing
-
-      //let allLiquidaciones=
-      // for(const centro_costo of ccVigentes.slice(0,20)){
-
-      /*
-      
-      for (var i=0;i<ccVigentes.length;i=i+10){
-     // for (var i = 0; i < 20; i = i + 20) {
-    
-        for (const centro_costo of ccVigentes.slice(i, i + 10)) {
-          console.log("el centro costo es " + centro_costo)
-          try {
-            console.log("testeando")
-            let response = await request.get('http://192.168.0.130:3800/liquidacion_sueldo/liquidacion_sueldo_cc_pdf_test/' + centro_costo + '/2019-08-01/0');
-    
-            //console.log("holaaaaa",hola)
-            console.log("terminó cc", centro_costo)
-            if (response.err) { console.log('error');}
-            else { console.log('fetched response');
-        }
-    
-          } catch (e) {
-         return   res.status(500).send({ error: 'error en  request pdf cc', cc: centro_costo, e: e.message, ee: e.stack })
-    
-    
-          }
-        }
-      }
-    
-      */
-
-      let path = ""
-      let batch = 1
-      let cantIteraciones = parseInt(ccVigentes.length / batch) + 1 //si tiene decimales 
-      console.log("total registros:", ccVigentes.length, "cantidad iteraciones", cantIteraciones)
-
-      for (let i = 0; i < cantIteraciones; i++) {
-        let getFilesPromises = ccVigentes.slice(i * batch, (i * batch) + batch).map(async centro_costo => {
-          let filename = centro_costo + ".pdf"
-          await getLiquidacionCentroCosto(null, centro_costo, mes, empresa, path + filename)
-          StatusLiquidacion.msgs[0] = centro_costo
-          StatusLiquidacion.percent = parseInt((i + 1) / ccVigentes.length * 100)
-          io.emit('getStatus', StatusLiquidacion)
-
-        })
-
-        /*
-        for (let i=0; i<cantIteraciones; i++){
-        let getFilesPromises= ccVigentes.slice(i*batch,(i*batch)+batch).map(async centro_costo=>{
-         //let filename=ficha+".pdf"
-         // await getLiquidacionFichaMes(res,ficha,mes,empresa,path+filename)
-         await request.get('http://192.168.0.130:3800/liquidacion_sueldo/liquidacion_sueldo_cc_pdf_test/' + centro_costo + '/2019-08-01/0');
-          
-        })
-      
-      */
-
-        await Promise.all(getFilesPromises)
-        console.log("todos los trabajos terminados iteracion ", i - 10)
-
-      }
-
-      //await Promise.all(allLiquidaciones)
-      console.log("todos los trabajos terminados")
-      //return res.status(200).send({ status: "ok" })
-      resolve()
-    })
-  }
-
-
-
 
   api.get("/liquidacion_fichas_reliquidadas", async function (req, res, next) {
     let empresa = 0
@@ -865,10 +783,6 @@ io.on('connection', (socket) => {
 
 
   })
-
-
-
-
 
 
 

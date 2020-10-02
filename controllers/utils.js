@@ -22,7 +22,19 @@ function convierteRutID (rut){
     return replaceAll(prevstring, omit, place, string)
   }
 
+  function getMesName(mes){
+   
+    //formato mes '2020-09-01  yyyy-mm-dd ' 
+   let meses = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
+   let mesActual=parseInt(new Date(mes).toISOString().substr(5,2))-1
+  
+   //let mesActual=new Date().getMonth()
+   return meses[mesActual]
+  }
+ 
+ 
 
 
 
-  module.exports={convierteRutID}
+
+  module.exports={convierteRutID,getMesName}
