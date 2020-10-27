@@ -1,5 +1,9 @@
 'use strict'
 
+    /**
+    * Métodos para la generación de archivos pdf Previred
+    * @module /controllers/read_pdf_certificado
+    */
 var express = require('express');
 var router = express.Router();
 var sql = require("mssql");
@@ -58,6 +62,12 @@ var StatusPreviredTemplate = {
 
 var StatusPrevired = JSON.parse(JSON.stringify(StatusPreviredTemplate))
 
+/** 
+ * Funcion del socket
+ * @constructor
+ * @param {socket} socket - El directorio local donde se subió el archivo pdf necesario para el proces.
+
+*/
 
 io.on('connection', (socket) => {
 
@@ -85,115 +95,19 @@ socket.on('getTest', async (uploadFileName) => {
 
 
 
-	router.post('/fileupload', async function (req, res, next) {
-    var empresa=0
-    var mes='2020-01-01'
-		
-	//	req.setTimeout(0);
-		console.log("en fileup")
-		var form = formidable({ multiples: true });
-		form.parse(req, async function (err, fields, files) {
-			if (err){
-				res.status(500).send({status:"error",messaje:"error en subida de archivo"})
-				return
-
-      }
-    
-      console.log("fields",fields)
-     // fields { empresa: '0', mes: '2020-09' }
-     empresa=parseInt(fields.empresa)
-     mes=fields.mes
-			//añadir como parametro campo hidden con la empresa valor global y obtenerla acá para luego hacer las validaciones
-			
-		//archivo (con path) donde se subió en servidor, si no es valido entregar error y eliminar del servidor
-		//C:\Users\jpierre\AppData\Local\Temp\upload_5d2d5021b6c503746eaf1987d4abf555 	
-		var oldpath = files.filetoupload.path;
-			
-			//nombre del archivo que se subió (nombre del cliente)
-			//001-001.pdf
-			var  uploadFileName = files.filetoupload.name;
-
-		//	let rutsEncontrados
-
-			console.log("oldpath",oldpath," newpath",uploadFileName)
-
-		 //archivo subido, ahora validamos que haya data
-		
-     let rutsEncontrados
-     let personalVigente
-
-    try {
-			console.log("EEEEE")
-		//	let uploadFileName='C:/Users/jpierre/Documents/NodeProjects/liquidaciones-sueldo/api-server/CotizacionesPersonal.pdf'
-      rutsEncontrados = (await getRutsOfFile(oldpath,empresa)).map(x=>parseInt(convierteRutID(x)))
-     console.log("ruts",rutsEncontrados.slice(0,10))
-      // si se encuentran ruts  validar que sean de la empresa y que todos esten vigentes
-     personalVigente =(await SoftlandController.getFichasVigentes(mes,empresa)).map(x=>(parseInt(x.RUT_ID)))
-   //  console.log("vigentes",personalVigente.slice(0,10))
-    let rutsNoVigentes= rutsEncontrados.filter(x=>!personalVigente.includes(x))
-   console.log("no vigentes",rutsNoVigentes)
-    // personalVigente.filter(x => x["RUT_ID"] == rutId)
-
-		  if(rutsNoVigentes.length==0){
-        res.status(200).send({status:"ok",messaje:"Archivo subido correctamente",path:oldpath})
-      }else{
-       let rutsString=""
-       if(rutsNoVigentes.length>5){
-       rutsString= rutsNoVigentes.slice(0,5).toString()+"... y otros "+(rutsNoVigentes.length-10)+" más."
-       }else{
-        rutsString= rutsNoVigentes.slice(0,5).toString()
-       }
-        res.status(200).send({status:"error",messaje:"Error, hay ruts no vigentes. "+rutsString})
-      }
-
-		
-
-			return
-
-
-		}catch(e){
-			res.status(200).send({status:"error",messaje:e})
-			return
-
-		}
-
-
-			//var socketio = req.app.get('socketIO');
-			//socketio.emit('getPrevired',uploadFileName)
-			
-		//	console.log("socket emitidos")
-		
-		/*	try {
-				console.log("EEEEE")
-				console.log(oldpath)
-				rutsEncontrados = await getRutsOfFile(oldpath)
-			 // console.log("ruts", rutsEncontrados)
-				//solo si encuentra ruts, si no, mostrar error
-
-				//si pasa la prueba se emite el evento de iniciar
-				// si no entregar error
-				console.log("rutsEncontrados",rutsEncontrados)
-				res.status(200).send({status:"ok"})
-
-		} catch (e) {
-			console.log("no tiene formato", e)
-		
-   
-    
-		}
-		
-		*/
-
-
-		})
-
-	})
 
 
 
-
-
-async function getPrevired(uploadFileName,empresa,mes){
+/** 
+ * Funcion principal que ejecuta el proceso una vez se llama desde el front y ya se encuentra cargado el archivo previred
+ * @async 
+ * @function getPrevired
+ * @param {string} uploadFileName - El directorio local donde se subió el archivo pdf necesario para el proces.
+ * @param {integer} empresa - el id de la empresa.
+ * @param {string} mes - mes del proceso formato yyy-mm-dd ej. 2020-10-01.
+ * @return {Promise} .
+*/
+   async function getPrevired(uploadFileName,empresa,mes){
 	console.log("comienza el proceso previred",empresa,mes)
 
 	var startTime = new Date();
@@ -307,56 +221,10 @@ function getCompleteFormatDate(){
 return  formatDate + "-" + formatHour 
 }
 
-function getRutsOfFile(pdf_path,empresa) {
-
-  return new Promise((resolve, reject) => {
-
-    let option = null
-    let rutEmpresa =constants.EMPRESAS.find(x => x.ID == empresa).RUT
-    console.log("rut empresa",rutEmpresa)
-
-    pdfUtil.pdfToText(pdf_path, option, function (err, data) {
-    
-   
-
-      console.log("errr", err)
-			if (err||!data) { reject("Error al leer el archivo")
-			return
-			};
-			//rut filtrados sin el de empresa
-			
-     // let rutsEncontrados = data.match(regex) ? data.match(regex).filter(x => !rutsFiltrar.includes(x)) : null;
-      //console.log("rutsss", rutsEncontrados)
-      let rutsEncontrados = data.match(regex) ? data.match(regex) : null;
-
-      if (!rutsEncontrados) { reject("Error, no se encontraron ruts");return};
-
-      //verificamos la empresa
-      if (!rutsEncontrados.includes(rutEmpresa)){ reject("Error, Empresa no valida"); return };
-
-      rutsEncontrados = data.match(regex) ? data.match(regex).filter(x => x!=rutEmpresa) : null;
-      //console.log("rutsencontrados", rutsEncontrados)
-      //rutsencontrados [ '8.849.245-5', '13.510.579-1', '10.420.224-1', '8.223.485-3' ]
-      //console.log(data)
-      //console.log(data); //print text    
-      let cadena = "Para más información, vea Capítulo 3.4.5.1";
-      let expresion = /(capítulo \d+(\.\d)*)/i;
-      let hallado = cadena.match(expresion);
-
-      console.log('hallado: ', hallado);
-
-      resolve(rutsEncontrados)
-
-    })
 
 
 
-
-
-  })
-
-}
-
+/*
 router.get('/cargarArchivoPrevired/', async function (req, res, next) {
   if (req.query.valid){
       let mensaje=req.query.valid
@@ -369,29 +237,21 @@ router.get('/cargarArchivoPrevired/', async function (req, res, next) {
   }
 })
 
+*/
 
 
-function convierteRutID(rut) {
-
-  rut = rut.substr(0, rut.length - 1);
-  rut = replaceAll(rut, ".", "");
-  rut = replaceAll(rut, "-", "");
-  // rut1=rut.replace(".","");
-  if (isNaN(parseFloat(rut)) && !isFinite(rut))
-    rut = 0;
 
 
-  //   console.log("el rut es:" + rut);
-  return rut;
-}
 
-function replaceAll(string, omit, place, prevstring) {
-  if (prevstring && string === prevstring)
-    return string;
-  prevstring = string.replace(omit, place);
-  return replaceAll(prevstring, omit, place, string)
-}
-
+/** 
+ * Funcion que devuelve map de ruts encontrados y el núm de página, junto a  su correspondiente información en erp (ficha, centro costo), con ello luego se hará la separación página, persona, centro costo.
+ * @async
+ * @function generaMapPersonas
+ * @param {string[]} rutsEncontrados - Listado de ruts encontrados
+ * @param {integer} empresa - el id de la empresa.
+  * @param {string} mes - mes del proceso formato yyy-mm-dd ej. 2020-10-01.
+ * @return {Promise.<Object[]>} - datos del mapeo persona, centro costo del archivo, num. de página.
+*/
 async function generaMapPersonas(rutsEncontrados, empresa,mes) {
 
   return new Promise(async (resolve, reject) => {
@@ -476,7 +336,16 @@ async function generaMapPersonas(rutsEncontrados, empresa,mes) {
 
 }
 
-
+/** 
+ * Funcion genera los archivos por centro de costo en el directorio indicado
+ * @async
+ * @function generaFiles
+ * @param {string[]} tablaMapPersonas - datos del mapeo persona, centro costo del archivo, num. de página.
+ * @param {integer} empresa - el id de la empresa.
+ * @param {string} uploadFileName - El directorio local donde se subió el archivo pdf necesario para el proces.
+ *  @param {string} dirDestino - El directorio donde se generarán los archivos.
+ * @return {Promise}  
+*/
 async function generaFiles(tablaMapPersonas,empresa,uploadFileName,dirDestino) {
 	console.log("Se comenzaran a generar los archivos en directorio destino...",dirDestino)
 	let dataValidar = [] 
@@ -546,4 +415,185 @@ return dataValidar
 }) //cierra socket
 
 
-module.exports = router;
+
+async function fileupload(req, res, next) {
+  var empresa=0
+  var mes='2020-01-01'
+  
+//	req.setTimeout(0);
+  console.log("en fileup")
+  var form = formidable({ multiples: true });
+  form.parse(req, async function (err, fields, files) {
+    if (err){
+      res.status(500).send({status:"error",messaje:"error en subida de archivo"})
+      return
+
+    }
+  
+    console.log("fields",fields)
+   // fields { empresa: '0', mes: '2020-09' }
+   empresa=parseInt(fields.empresa)
+   mes=fields.mes
+    //añadir como parametro campo hidden con la empresa valor global y obtenerla acá para luego hacer las validaciones
+    
+  //archivo (con path) donde se subió en servidor, si no es valido entregar error y eliminar del servidor
+  //C:\Users\jpierre\AppData\Local\Temp\upload_5d2d5021b6c503746eaf1987d4abf555 	
+  var oldpath = files.filetoupload.path;
+    
+    //nombre del archivo que se subió (nombre del cliente)
+    //001-001.pdf
+    var  uploadFileName = files.filetoupload.name;
+
+  //	let rutsEncontrados
+
+    console.log("oldpath",oldpath," newpath",uploadFileName)
+
+   //archivo subido, ahora validamos que haya data
+  
+   let rutsEncontrados
+   let personalVigente
+
+  try {
+    console.log("EEEEE")
+  //	let uploadFileName='C:/Users/jpierre/Documents/NodeProjects/liquidaciones-sueldo/api-server/CotizacionesPersonal.pdf'
+    rutsEncontrados = (await getRutsOfFile(oldpath,empresa)).map(x=>parseInt(convierteRutID(x)))
+   console.log("ruts",rutsEncontrados.slice(0,10))
+    // si se encuentran ruts  validar que sean de la empresa y que todos esten vigentes
+   personalVigente =(await SoftlandController.getFichasVigentes(mes,empresa)).map(x=>(parseInt(x.RUT_ID)))
+ //  console.log("vigentes",personalVigente.slice(0,10))
+  let rutsNoVigentes= rutsEncontrados.filter(x=>!personalVigente.includes(x))
+ console.log("no vigentes",rutsNoVigentes)
+  // personalVigente.filter(x => x["RUT_ID"] == rutId)
+
+    if(rutsNoVigentes.length==0){
+      res.status(200).send({status:"ok",messaje:"Archivo subido correctamente",path:oldpath})
+    }else{
+     let rutsString=""
+     if(rutsNoVigentes.length>5){
+     rutsString= rutsNoVigentes.slice(0,5).toString()+"... y otros "+(rutsNoVigentes.length-10)+" más."
+     }else{
+      rutsString= rutsNoVigentes.slice(0,5).toString()
+     }
+      res.status(200).send({status:"error",messaje:"Error, hay ruts no vigentes. "+rutsString})
+    }
+
+  
+
+    return
+
+
+  }catch(e){
+    console.log(e)
+    res.status(200).send({status:"error",messaje:e})
+    return
+
+  }
+
+ //no se puede aca iniciar socket, hay tencnicas, pero no es optimo ya que son enfoques distintos y no se recomienda mezclarlos
+    //var socketio = req.app.get('socketIO');
+    //socketio.emit('getPrevired',uploadFileName)
+    
+  //	console.log("socket emitidos")
+  
+  /*	try {
+      console.log("EEEEE")
+      console.log(oldpath)
+      rutsEncontrados = await getRutsOfFile(oldpath)
+     // console.log("ruts", rutsEncontrados)
+      //solo si encuentra ruts, si no, mostrar error
+
+      //si pasa la prueba se emite el evento de iniciar
+      // si no entregar error
+      console.log("rutsEncontrados",rutsEncontrados)
+      res.status(200).send({status:"ok"})
+
+  } catch (e) {
+    console.log("no tiene formato", e)
+  
+ 
+  
+  }
+  
+  */
+
+
+  })
+
+}
+
+/** 
+ * Funcion que extrae los ruts encontrados en el archivo subido en la ruta del input
+ * @function getRutsOfFile
+ * @param {string} pdf_path - El directorio local donde se subió el archivo pdf necesario para el procesamiento.
+ * @param {integer} empresa - El id de la empresa.
+ * @return {Promise.<string[]>} - Arreglo de ruts encontrados
+*/
+function getRutsOfFile(pdf_path,empresa) {
+
+  return new Promise((resolve, reject) => {
+
+    let option = null
+    let rutEmpresa =constants.EMPRESAS.find(x => x.ID == empresa).RUT
+    console.log("rut empresa",rutEmpresa)
+
+    pdfUtil.pdfToText(pdf_path, option, function (err, data) {
+    
+   
+
+      console.log("errr", err)
+			if (err||!data) { reject("Error al leer el archivo")
+			return
+			};
+			//rut filtrados sin el de empresa
+			
+     // let rutsEncontrados = data.match(regex) ? data.match(regex).filter(x => !rutsFiltrar.includes(x)) : null;
+      //console.log("rutsss", rutsEncontrados)
+      let rutsEncontrados = data.match(regex) ? data.match(regex) : null;
+
+      if (!rutsEncontrados) { reject("Error, no se encontraron ruts");return};
+
+      //verificamos la empresa
+      if (!rutsEncontrados.includes(rutEmpresa)){ reject("Error, Empresa no valida"); return };
+
+      rutsEncontrados = data.match(regex) ? data.match(regex).filter(x => x!=rutEmpresa) : null;
+      //console.log("rutsencontrados", rutsEncontrados)
+      //rutsencontrados [ '8.849.245-5', '13.510.579-1', '10.420.224-1', '8.223.485-3' ]
+      //console.log(data)
+      //console.log(data); //print text    
+      let cadena = "Para más información, vea Capítulo 3.4.5.1";
+      let expresion = /(capítulo \d+(\.\d)*)/i;
+      let hallado = cadena.match(expresion);
+
+      console.log('hallado: ', hallado);
+
+      resolve(rutsEncontrados)
+
+    })
+
+  })
+
+}
+
+function convierteRutID(rut) {
+
+  rut = rut.substr(0, rut.length - 1);
+  rut = replaceAll(rut, ".", "");
+  rut = replaceAll(rut, "-", "");
+  // rut1=rut.replace(".","");
+  if (isNaN(parseFloat(rut)) && !isFinite(rut))
+    rut = 0;
+
+
+  //   console.log("el rut es:" + rut);
+  return rut;
+}
+
+function replaceAll(string, omit, place, prevstring) {
+  if (prevstring && string === prevstring)
+    return string;
+  prevstring = string.replace(omit, place);
+  return replaceAll(prevstring, omit, place, string)
+}
+
+
+module.exports = {fileupload}

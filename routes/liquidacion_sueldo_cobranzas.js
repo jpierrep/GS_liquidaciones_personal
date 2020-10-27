@@ -312,9 +312,10 @@ io.on('connection', (socket) => {
   select distinct ficha
   FROM [SISTEMA_CENTRAL].[dbo].[sw_variablepersona]
   where 
-  emp_codi='`+ empresa + `' and fecha='` + mesProceso + `'
-  and codVariable='`+ variableBase + `' and valor>0
-
+   emp_codi='`+ empresa + `' and fecha='` + mesProceso + `'
+  ---REGLA POR EL MOMENTO CAMBIARLA
+   --and codVariable='`+ variableBase + `' and valor>0
+  -- and codVariable='`+ variableBase + `' 
 `
           , {
 
@@ -354,7 +355,7 @@ io.on('connection', (socket) => {
    where 
    emp_codi=`+ empresa + `
    and fecha='`+ mesProceso + `'
-   and codVariable in (`+ variablesTemplate + `)
+  -- and codVariable in (`+ variablesTemplate + `)
    
    `
           , {
@@ -473,9 +474,9 @@ io.on('connection', (socket) => {
                 templates_persona.forEach(persona => {
                   let ficha = persona.ficha
                  // console.log(persona["data"])
-                 let monto = persona["data"].find(x => x["VAR_CODI"] == variableValidacion)["VAR_VALOR"]
+                  //-------------------------let monto = persona["data"].find(x => x["VAR_CODI"] == variableValidacion)["VAR_VALOR"]
 
-                  dataValidar.push({ ficha: ficha, monto: monto })
+                  dataValidar.push({ ficha: ficha, monto: 0 })
                 })
 
                 resolves()
@@ -831,7 +832,7 @@ function fillTemplate(templatebase, variablesPersona) {
     VAR_CODI: 'P052',
     SECTION: 'BODY',
     VAR_VALOR: '55' },
-  { VAR_NOMBRE: 'HH COMP. FESTIVOS ENAP',
+  { VAR_NOMBRE: 'HH COMP. FESTIVOS ENAP',ç-
     COLUMNA: 1,
     POSICION: 5,
     OFFSET: null,

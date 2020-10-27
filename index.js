@@ -23,7 +23,7 @@ var server = app.listen(5000, function () {
 
 var app=require('./app');
 var port= 3800;
-var ip='localhost';
+var ip='0.0.0.0';
 
 
     const socketIO = require('socket.io');
@@ -40,7 +40,7 @@ var ip='localhost';
     //referencia https://stackoverflow.com/questions/38511976/how-can-i-export-socket-io-into-other-modules-in-nodejs
 
     var liquidacion_sueldo=require('./routes/liquidacion_sueldo')
-    var read_pdf=require('./controllers/read_pdf_certificado')
+    var read_pdf=require('./routes/read_pdf_certificado')
      app.use('/liquidacion_sueldo',liquidacion_sueldo)
      app.use('/readPdf',read_pdf)
      console.log("Holaa")

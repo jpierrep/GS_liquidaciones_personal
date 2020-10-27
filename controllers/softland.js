@@ -1,3 +1,8 @@
+    /**
+    * Métodos para la generación de archivos pdf Previred
+    * @module /controllers/sofltand
+    */
+
 'use strict'
 
 
@@ -29,7 +34,15 @@ const VariablesFicha = sequelizeMssql.import('../models/soft_variables_ficha');
 
 
 
-
+/** 
+ * Funcion principal que ejecuta el proceso una vez se llama desde el front y ya se encuentra cargado el archivo previred
+ * @async 
+ * @function getFichasInfoPromise
+ * @param {string} uploadFileName - El directorio local donde se subió el archivo pdf necesario para el proces.
+ * @param {integer} empresa - el id de la empresa.
+ * @param {string} mes - mes del proceso formato yyy-mm-dd ej. 2020-10-01.
+ * @return {Promise} .
+*/
 async function getFichasInfoPromise(fichas, empresa) {
   //no depende de fechas 
 
