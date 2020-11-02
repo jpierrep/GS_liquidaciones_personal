@@ -85,6 +85,8 @@ socket.on('getTest', async (uploadFileName) => {
   
     StatusPrevired = JSON.parse(JSON.stringify(StatusPreviredTemplate))
     StatusPrevired.isExecuting = true
+    StatusPrevired.userParams={mes:mes,empresa:empresa}
+   // StatusPrevired.userParams={mes:dataUser["mes"],empresa:dataUser["empresa"]}
 
     io.emit('getStatusPrevired', StatusPrevired)
     await getPrevired(uploadFileName,empresa,mes)
@@ -114,8 +116,26 @@ socket.on('getTest', async (uploadFileName) => {
 
 	let pathLogs = 'data-logs/'
   let nameLogFile='previred'
+//////
+  let dirDestino=FileServer.getDirDestinoProceso('previred',mes,empresa)
+  if (!dirDestino){
+    socket.emit('getGlobalAlert', {messaje:"Error, no hay acceso a carpeta de sobre laboral",type:'error'})
+    return
+  }
 
-  
+        // crea carpeta del mes en destino, si no existe 
+        if (!fs.existsSync(dirDestino)){
+    
+          fs.mkdirSync(dirDestino,{recursive:true});
+          console.log("no existe carpeta, creada la carpeta del mes")
+      }else{
+        console.log("existe la carpeta, se debe respaldar el contenido ")
+        FileServer.backupFiles(dirDestino,empresa)
+    
+      }
+
+
+  /*
   let pathBase=FileServer.getPathServerSobreLaboral() //revisa acceso a carpeta destino (carpeta compartida)
     
   if (!pathBase){
@@ -139,6 +159,8 @@ socket.on('getTest', async (uploadFileName) => {
   console.log("existe la carpeta, se debe elimnar el contenido ")
 
 }
+
+*/
 
 
 

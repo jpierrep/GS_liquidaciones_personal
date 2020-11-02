@@ -95,75 +95,8 @@
         </div>
       </div>
 
-      <div class="col-sm-12">
-        <div class="card">
-          <div class="card-body">
-            <h5 class="card-title">Reliquidaciones
-              <a class='ui-all' style=" font-weight: normal;font-size: 1rem;" tabindex='-1' id="reliquidacion-log-modal-button"
-                data-toggle="modal" data-target="#exampleModalCenter">
-                [logs]
-              </a>
-
-            </h5> <!-- Button trigger modal -->
 
 
-            <p class="card-text">Genera liquidaciones del personal reliquidado del mes.</p>
-            <div class="row">
-              <div class="col-1">
-                <button type="button" id="reliquidacion-empieza" class="btn btn-primary">Ejecutar</button>
-              </div>
-              <div class="col-8 " style="padding:10px;margin: auto">
-
-                <div name="reliquidacion-loader" class=" progress">
-                  <div id='reliquidacion-progress' class="progress-bar progress-bar-striped progress-bar-animated "
-                    role="progressbar" aria-valuenow="5" aria-valuemin="0" aria-valuemax="100" style="width: 5%">5%</div>
-
-                </div>
-
-              </div>
-              <div class="col-1">
-                <span name=" reliquidacion-loader " id="reliquidacion-cc-status"> </span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="col-sm-12">
-        <div class="card">
-          <div class="card-body">
-            <h5 class="card-title">Certificados Previred
-              <a class='ui-all' style=" font-weight: normal;font-size: 1rem;" tabindex='-1' id="previred-log-modal-button"
-                data-toggle="modal" data-target="#exampleModalCenter">
-                [logs]
-              </a>
-
-            </h5> <!-- Button trigger modal -->
-
-
-            <p class="card-text">Compila certificados Previred por centro de costo a partir de archivo base.</p>
-            <div class="row">
-              <div class="col-1">
-              <!--  <button type="button" id="previred-empieza" class="btn btn-primary">Ejecutar</button> -->
-            <!--  <button type="button" id="previred-empieza" data-toggle="modal" data-target="#previred-modal-file-upload"   class="btn btn-primary">Ejecutar</button>    -->
-            <button type="button" id="previred-empieza" data-toggle="modal"  class="btn btn-primary">Ejecutar</button>  
-          </div>
-              <div class="col-8 " style="padding:10px;margin: auto">
-
-                <div name="previred-loader" class=" progress">
-                  <div id='previred-progress' class="progress-bar progress-bar-striped progress-bar-animated " role="progressbar"
-                    aria-valuenow="5" aria-valuemin="0" aria-valuemax="100" style="width: 5%">5%</div>
-
-                </div>
-
-              </div>
-              <div class="col-1">
-                <span name=" previred-loader " id="previred-cc-status"> </span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
 
 
     </div>
@@ -204,50 +137,6 @@
   </div>
 
 
-    <!-- Modal -->
-    <div class="modal fade" id="previred-modal-file-upload" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
-    aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLongTitle">Seleccione Archivo</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-        <div class="modal-body">
-
-
-           <!-- <form  action="/readPdf/fileupload" method="post" enctype="multipart/form-data" >-->
-  <form  id="fileUploadForm" method="post" enctype="multipart/form-data" >
-    
-    <div class="input-group">
-        <div class="custom-file">
-          <input type="file" class="custom-file-input" name="filetoupload"  accept=".pdf" id="previred-upload-archivo">
-          <label class="custom-file-label" for="inputGroupFile04">Seleccionar archivo...</label>
-        </div>
-        <div class="input-group-append">
-         <!--  <button class="btn btn-outline-secondary" id="previred-upload-button" type="submit">Cargar</button> -->
-        </div>
-      </div>
-  
-    </form>
-
- 
-
-        </div>
-        <div class="modal-footer">
-            <div class="alert alert-danger" id="previred-alert" role="alert" style="display:none;">
-                <strong>Error!</strong> Archivo sin formato o sin ruts.
-              </div>
-           
-       <!--   <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button> -->
-       <button type="button" class="btn btn-secondary" data-dismiss="modal" id="previred-upload-button"  disabled>Cargar</button>
-
-        </div>
-      </div>
-    </div>
-  </div>
 
 
 

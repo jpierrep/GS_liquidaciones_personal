@@ -32,9 +32,23 @@ function convierteRutID (rut){
    return meses[mesActual]
   }
  
+
+  function getDateFormat(separador){
+  //si viene separador se toma en cuenta, si no viene el separador es -
+  if (!separador){
+   separador='-'
+  }
+
+    var m = new Date();
+    let formatDate = (m.getFullYear() > 9 ? m.getFullYear() : '0' + m.getFullYear()) + separador + ((m.getMonth() + 1) > 9 ? (m.getMonth() + 1) : '0' + (m.getMonth() + 1)) + separador+ (m.getDate() > 9 ? m.getDate() : '0' + m.getDate())
+  
+    let formatHour = (m.getHours() > 9 ? m.getHours() : '0' + m.getHours()) + separador + (m.getMinutes() > 9 ? m.getMinutes() : '0' + m.getMinutes()) + separador+ (m.getSeconds() > 9 ? m.getSeconds() : '0' + m.getSeconds())
+  //  console.log(formatDate + "-" + formatHour)
+  return formatDate+separador+formatHour
+  }
  
 
 
 
 
-  module.exports={convierteRutID,getMesName}
+  module.exports={convierteRutID,getMesName,getDateFormat}
