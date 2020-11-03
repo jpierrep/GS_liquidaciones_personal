@@ -45,10 +45,8 @@
       <div class="col-6"> Mes:
         <select id="mes-select" class="custom-select custom-select-lg mb-3">
 
-          <option selected value="2020-11-01">2020-11</option>
-          <option value="2020-09-01">2020-09</option>
-          <option value="2020-10-01">2020-10</option>
-          <option value="2020-08-01">2020-08</option>
+          <option selected value="2020-10-01">2020-10</option>
+
 
         </select>
       </div>
@@ -69,7 +67,7 @@
               </a>
             </h5>
 
-            <p class="card-text">Genera archivos de liquidaciones del mes actual.</p>
+            <p class="card-text">Genera archivos de liquidaciones del mes anterior.</p>
             <div class="row">
               <div class="col-1">
                 <button type="button" id="liquidacion-empieza" class="btn btn-primary" disabled>Ejecutar</button>
@@ -117,14 +115,7 @@
         <div class="modal-body">
 
           <ul class="list-group">
-            <!--  ESTE ITEM SE CARGARA AUTOMATICO CON LOS LOGS DEL SERVIDOR
-            <li class="list-group-item active">Cras justo odio</li>
-            <li class='list-group-item'>
-              <a class='ui-all' tabindex='-1'>
-                Canada
-              </a>
-            </li>
--->
+
           </ul>
 
         </div>
@@ -189,6 +180,24 @@
 
 
     $(document).ready(function () {
+
+
+let date=new Date()
+    // let mesActual=m.getFullYear()+"-"((m.getMonth() + 1) > 9 ? (m.getMonth() + 1) : '0' + (m.getMonth() + 1))+"-01"
+     let mesAnterior=""
+     //si el mes actual es enero, se debe setear diciembre del mes anterior
+     if(m.getMonth==0){
+      mesAnterior=m.getFullYear()-1+"-12-01"
+     }else{
+      mesAnterior=m.getFullYear()+"-"((m.getMonth() ) > 9 ? (m.getMonth()) : '0' + (m.getMonth()))+"-01"
+     }
+  
+
+      //valores del select
+      $('#mes-select').empty()
+    
+      $('#mes-select').append(`<option selected value="`+mesAnterior+`"> `+mesAnterior.substr(0,7)+`</option>`); 
+
       //saveFile("Example.txt", "data:attachment/text", "Hello, world.");
       //socket.emit("getFile","holaaaa");
       //esto hace que se dupliquen los archivos pues se llama al getFilename que carga lista de archivos
@@ -206,114 +215,28 @@
 
  
 
-
     $('#liquidacion-log-modal-button').click(function () {
       var empresa = $("#empresa-select").val();
-      socket.emit("getFileName", "liquidacion", empresa);
+      socket.emit("getFileName", "liquidacionCobranzas", empresa);
       $('ul.list-group').empty()
 
 
-
     });
-
-    $('#reliquidacion-log-modal-button').click(function () {
-      var empresa = $("#empresa-select").val();
-      socket.emit("getFileName", "reliquidacion", empresa);
-      $('ul.list-group').empty()
-
-    });
-
-    $('#previred-log-modal-button').click(function () {
-      var empresa = $("#empresa-select").val();
-      socket.emit("getFileName", "previred", empresa);
-      $('ul.list-group').empty()
-
-    });
-
-    //al ejecutar alguno de los procesos
-
-   /*
-   $('#liquidacion-empieza').click(function () {
-      var empresa = $("#empresa-select").val();
-      var mes = $("#mes-select").val();
-      $("[name='liquidacion-loader']").show()
-      socket.emit("getLiquidaciones", { empresa: empresa, mes: mes });
-
-    });
-
-    */
-
-    //$('#reliquidacion-empieza').click(function () {
-    //  var empresa = $("#empresa-select").val();
-    //  var mes = $("#mes-select").val();
-    //  $("[name='reliquidacion-loader']").show()
-    //  socket.emit("getReliquidaciones", { empresa: empresa, mes: mes });
-
-    //});
-    /*
- $('#previred-empieza').click(function () {
-      $('#previred-alert').hide(); 
-
-    //  $(".alert").alert('close')
-    
-  
-
-    });
-    
-    */
 
 
         $('#liquidacion-empieza').on("click", function () {
-      
      
-      procesoSelected="liquidacion"
+      procesoSelected="liquidacionCobranzas"
       let empresa = $("#empresa-select").val();
       let mes = $("#mes-select").val();      
       //se consulta si ya existe el proceso via socket, la respuesta llega en on resExistsDirDestino , si no existe se ejecuta el proceso executeProcess, si existe se levantarà popup
       socket.emit("getExistsDirDestino", { empresa: empresa, mes: mes,proceso:procesoSelected });
 
      
-    //previred-modal-file-upload
-    console.log("test")
-    //proceso=reliquidacion
-    //mes=mes select
-    //
 
 
     });
     
-    $('#reliquidacion-empieza').on("click", function () {
-      
-     
-      procesoSelected="reliquidacion"
-      let empresa = $("#empresa-select").val();
-      let mes = $("#mes-select").val();      
-      socket.emit("getExistsDirDestino", { empresa: empresa, mes: mes,proceso:procesoSelected });
-
-     
-    //previred-modal-file-upload
-    console.log("test")
-    //proceso=reliquidacion
-    //mes=mes select
-    //
-
-
-    });
-
-
-    $('#previred-empieza').click(function () {
-      $('#previred-alert').hide(); 
-
-    
-    procesoSelected="previred"
-      let empresa = $("#empresa-select").val();
-      let mes = $("#mes-select").val();      
-      socket.emit("getExistsDirDestino", { empresa: empresa, mes: mes,proceso:procesoSelected });
-  
-
-    });
-
-
 
 
     //ojo que para reconocer los elementos dinamicos se debe usar el on click y no click como funcion
@@ -326,26 +249,9 @@
       socket.emit("getFile", $(this).text());
     });
 
-        $('#previred-upload-archivo').on("change",function () {
-          if($('#previred-upload-archivo').val()!=''){
-          $("#previred-upload-button").attr("disabled", false);
- console.log("holaa")
- }
-         else{
-           console.log("cambio y ningun archivo seleccionado")
-          $("#previred-upload-button").attr("disabled", true);
-         }
- //$('#previred-upload-archivo').val('')
-    });
-
-
-    
-
     socket.on('sendfile', function (data, fileName) {
       saveFile(fileName, "data:attachment/text", data);
     })
-
-
 
     socket.on('sendFileNames', function (data) {
 
@@ -375,10 +281,10 @@
 
     //cuando el back envía eventos de actualización de procesos
 
-    socket.on('getStatusLiquidacion', function (data) {
+    socket.on('getStatusLiquidacionCobranzas', function (data) {
       //    $("#messages").append('<li class="list-group-item">'+msg+'</li>');
       //console.log("Termina "+msg)
-
+     console.log(data)
       if (!data.isExecuting) {
         $("#mes-select").attr("disabled", false);
         $("#empresa-select").attr("disabled", false);
@@ -390,7 +296,7 @@
       }
 
       else {
-        console.log(data)
+       
         $("#mes-select").attr("disabled", true);
         $("#empresa-select").attr("disabled", true);
         //muestra en el select la empresa que se está ejecutando
@@ -404,65 +310,6 @@
         $('#liquidacion-progress').text(data.percent + "%")
       }
     });
-
-    socket.on('getStatusReliquidacion', function (data) {
-
-      if (!data.isExecuting) {
-       
-        $("#mes-select").attr("disabled", false);
-        $("#empresa-select").attr("disabled", false);
-
-        $("[name='reliquidacion-loader']").hide()
-        $('#reliquidacion-empieza').attr("disabled", false);
-        $('#reliquidacion-cc-status').text("")
-      }
-
-      else {
-        $("#mes-select").attr("disabled", true);
-        $("#empresa-select").attr("disabled", true);
-        //muestra en el select la empresa que se está ejecutando
-        $("#empresa-select").val(data.userParams.empresa);
-        $("#mes-select").val(data.userParams.mes);
-
-        $("[name='reliquidacion-loader']").show()
-        $('#reliquidacion-empieza').attr("disabled", true);
-        $('#reliquidacion-cc-status').text(data.msgs[0])
-        $('#reliquidacion-progress').attr('style', "width:" + data.percent + "%")
-        $('#reliquidacion-progress').attr('aria-valuenow', data.percent)
-        $('#reliquidacion-progress').text(data.percent + "%")
-      }
-    });
-
-
-
-    socket.on('getStatusPrevired', function (data) {
-
-      if (!data.isExecuting) {
-        
-        $("#mes-select").attr("disabled", false);
-        $("#empresa-select").attr("disabled", false);
-
-        $("[name='previred-loader']").hide()
-        $('#previred-empieza').attr("disabled", false);
-        $('#previred-cc-status').text("")
-      }
-
-      else {
-        $("#mes-select").attr("disabled", true);
-        $("#empresa-select").attr("disabled", true);
-        //muestra en el select la empresa que se está ejecutando
-        $("#empresa-select").val(data.userParams.empresa);
-        $("#mes-select").val(data.userParams.mes);
-
-        $("[name='previred-loader']").show()
-        $('#previred-empieza').attr("disabled", true);
-        $('#previred-cc-status').text(data.msgs[0])
-        $('#previred-progress').attr('style', "width:" + data.percent + "%")
-        $('#previred-progress').attr('aria-valuenow', data.percent)
-        $('#previred-progress').text(data.percent + "%")
-      }
-    });
-
 
         socket.on('getGlobalAlert', function (data) {
         //data.type: error (rojo), success (verde), warning (amarillo)
@@ -489,34 +336,17 @@ function executeProcess(){
 //  $('#process-modal-backup').modal('hide'); 
 console.log("ejecutando proceso",procesoSelected)
 
-if(procesoSelected=="liquidacion"){
+if(procesoSelected=="liquidacionCobranzas"){
 
   var empresa = $("#empresa-select").val();
   var mes = $("#mes-select").val();
   $("[name='liquidacion-loader']").show()
-  socket.emit("getLiquidaciones", { empresa: empresa, mes: mes });
-
-
-}if(procesoSelected=="reliquidacion"){
-
-    var empresa = $("#empresa-select").val();
-    var mes = $("#mes-select").val();
-    $("[name='reliquidacion-loader']").show()
-    socket.emit("getReliquidaciones", { empresa: empresa, mes: mes });
-
-
-}if(procesoSelected=="previred"){
-
-$('#previred-modal-file-upload').modal('show'); 
-
+  socket.emit("getLiquidacionesCobranzas", { empresa: empresa, mes: mes });
 
 }
 
 
 }
-
-
-
 
    //descarga archivo al cliente
 
@@ -534,73 +364,6 @@ $('#previred-modal-file-upload').modal('show');
     }
 
 
-    $("#previred-upload-button").click(function (event) {
-    //se quitan los mensajes
-    $('#previred-alert').hide(); 
-
-//stop submit the form, we will post it manually.
-event.preventDefault();
-
-// Get form
-var form = $('#fileUploadForm')[0];
-
-// Create an FormData object
-var data = new FormData(form);
-
-// If you want to add an extra field for the FormData
-//añadimos a la data la empresa y el mes 
- let empresa=$("#empresa-select").val()
- let mes=$("#mes-select").val()
-data.append('empresa',empresa );
-data.append('mes', mes);
-
- $("#previred-upload-button").attr("disabled", true);
-
-$.ajax({
-    type: "POST",
-    enctype: 'multipart/form-data',
-    url: "/readPdf/fileupload",
-    data: data,
-    processData: false,
-    contentType: false,
-    cache: false,
-    timeout: 600000,
-    success: function (data) {
-
-        $("#result").text(data);
-        console.log("SUCCESS : ", data);
-        $("#previred-upload-button").attr("disabled", false);
-        
-        
-       if (data.status=="ok"){
-        $('#previred-modal-file-upload').modal('hide')
-        socket.emit('getPrevired',data.path,empresa,mes)
-       }else{
-
-         //si hay algun error el status no será OK, por lo que se debe eliminar la referencia del archivo subido, mandando triguer on chanque val('') este evento (on change) hara que se desactive
-         // y mostrar el mensaje
-         console.log("no hay ruts")
-        $('#previred-upload-archivo').val('')
-        $('#previred-upload-archivo').trigger('change');
-        $('#previred-alert').text(data.messaje); 
-        $('#previred-alert').show(); 
-       
-        
-       }
-    
-        
-    },
-    error: function (e) {
-
-        $("#result").text(e.responseText);
-        console.log("ERROR : ", e);
-        $('.alert').alert()
-        $("#btnSubmit").prop("disabled", false);
-
-    }
-});
-
-});
 
   </script>
 

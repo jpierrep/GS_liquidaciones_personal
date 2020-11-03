@@ -30,7 +30,8 @@ function getPathServerSobreLaboral(){
 
 
      function getDirDestinoProceso(proceso,mesProceso,empresa){
-         proceso=proceso.toLowerCase()
+        
+        proceso=proceso.toLowerCase()
          let nameProceso=''
         if (proceso=='liquidacion'){
             nameProceso='liquidaciones'
@@ -38,6 +39,8 @@ function getPathServerSobreLaboral(){
             nameProceso='reliquidaciones'
         }if (proceso=='previred'){
             nameProceso='certificados'
+        } if (proceso=='liquidacioncobranzas'){
+            nameProceso='liquidaciones-cobranzas'
         }
 
         //empresa no se utilizará de momento pero podrìa separse eventualmente carpetas por empresa

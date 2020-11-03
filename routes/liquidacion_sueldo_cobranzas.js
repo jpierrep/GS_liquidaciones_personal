@@ -33,7 +33,9 @@ var StatusLiquidacionTemplate = {
 
   isExecuting: false,
   percent: 0,
-  msgs: []
+  msgs: [],
+  userParams:{}
+
 }
 
 //No puede ir dentro de una funcion pues lo utilizan los sockets
@@ -41,16 +43,11 @@ let pathLogs = 'data-logs/'
 
 
 var StatusLiquidacion = JSON.parse(JSON.stringify(StatusLiquidacionTemplate))
-var StatusReliquidacion = JSON.parse(JSON.stringify(StatusLiquidacionTemplate))
+
 
 
 console.log("liquidacion")
 
-
-api.get("/testView2", function (req, res) {
-  console.log("he")
-  res.render("../views/controla_proceso", { hola: "hola" });
-})
 
 
 //carga plantilla db
@@ -64,8 +61,7 @@ var templateDB = require('../config/template_liquidacion_guard.json')
 io.on('connection', (socket) => {
 
   //socket.on('estadoActual')
-  socket.emit('getStatusLiquidacion', StatusLiquidacion)
-  socket.emit('getStatusReliquidacion', StatusReliquidacion)
+  socket.emit('getStatusLiquidacionCobranzas', StatusLiquidacion)
 
   console.log("a user connected via socket!")
   socket.on('disconnect', () => {
@@ -74,125 +70,30 @@ io.on('connection', (socket) => {
 
 
 
-  socket.on('getLiquidaciones', async (dataUser) => {
+  socket.on('getLiquidacionesCobranzas', async (dataUser) => {
 
     //data trae la info del mes y la empresa del proceso
-    console.log("se empieza a ejecutar proceso Reliquidaciones: " + dataUser["mes"] + dataUser["empresa"])
+    console.log("se empieza a ejecutar proceso liquidaciones: " + dataUser["mes"] + dataUser["empresa"])
 
 
     StatusLiquidacion = JSON.parse(JSON.stringify(StatusLiquidacionTemplate))
     StatusLiquidacion.isExecuting = true
-
-    io.emit('getStatusLiquidacion', StatusLiquidacion)
-    await getLiquidaciones("Liquidacion", dataUser)
+    StatusLiquidacion.userParams={mes:dataUser["mes"],empresa:dataUser["empresa"]}
+    io.emit('getStatusLiquidacionCobranzas', StatusLiquidacion)
+    await getLiquidaciones("liquidacionCobranzas", dataUser)
     StatusLiquidacion.isExecuting = 0
-    io.emit('getStatusLiquidacion', StatusLiquidacion)     
+    io.emit('getStatusLiquidacionCobranzas', StatusLiquidacion)     
 
   });
 
 
 
-  socket.on("getFile", function (fileName) {
-    //lee un archivo segun parametro de nombre
-    //let filedata=fs.readFileSync(pathLogs+'/liquida-01-01-01-019191.txt')
-    let filedata = fs.readFileSync(pathLogs + '/' + fileName)
 
-    socket.emit("sendfile", filedata.toString(), fileName);
-
-
-  });
-
-
-  socket.on("getFileName", async (proceso, empresa) => {
-    let controlProceso = ""
-    let controlEmpresa = "-" + empresa + "-"
-
-    //añadiendo el guion en el nombre del proceso se puede identificar sin problemas
-    if (proceso == "reliquidacion")
-      controlProceso = "-reliquida"
-    if (proceso == "liquidacion")
-      controlProceso = "-liquida"
-      if (proceso == "previred")
-      controlProceso = "-previred"
-
-      
-
-    console.log("aaaa" + controlProceso)
-
-    //obtiene el listado de archivos del log
-    //theString.match(/^.*abc$/) //filter proceso
-
-    // let archivos=fs.readdirSync(pathLogs).filter(x=>x.match(`/^.*`+controlProceso+`$/`))
-
-    
-    let archivos = fs.readdirSync(pathLogs).filter(x => x.indexOf(controlProceso) > -1).filter(x => x.indexOf(controlEmpresa) > -1).sort().reverse().slice(0, 9)
-    socket.emit("sendFileNames", archivos);
-    console.log(archivos)
-   
-
-  });
-
-
-
-  socket.on('getReliquidaciones', async (dataUser) => {
-
-
-    //data trae la info del mes y la empresa del proceso
-    console.log("se empieza a ejecutar proceso Reliquidaciones: " + dataUser["mes"] + dataUser["empresa"])
-
-    StatusReliquidacion = JSON.parse(JSON.stringify(StatusLiquidacionTemplate))
-    StatusReliquidacion.isExecuting = true
-    io.emit('getStatusReliquidacion', StatusReliquidacion)
-    await getLiquidaciones("Reliquidacion", dataUser)
-    StatusReliquidacion.isExecuting = 0
-    io.emit('getStatusReliquidacion', StatusReliquidacion)
-
-  });
-
-
-
-  api.get("/vistaProcesos", function (req, res) {
-
-
-
-    var fecha
-    var fechaProceso
-    fecha = new Date()
-    if (fecha.getDate() > 5) {
-      //entre el 1 y el 5 no se mueven los valores, porque se estan reliquidando el mes anterior
-
-      fechaProceso = new Date(fecha.getFullYear(), fecha.getMonth(), 1).toISOString().substr(0, 10)
-    } else {
-
-      fecha.setMonth(fecha.getMonth() - 1);
-      fechaProceso = new Date(fecha.getFullYear(), fecha.getMonth(), 1).toISOString().substr(0, 10)
-    }
-    console.log(fechaProceso)
-
-    console.log("he")
-
-
-    var fecha = new Date();
-    //mes pasado
-    fecha.setMonth(fecha.getMonth() - 1);
-    var primerDiaMesPasado = new Date(fecha.getFullYear(), fecha.getMonth(), 1).toISOString().substr(0, 10)
-    var fecha2 = new Date()
-    var primerDiaMesActual = new Date(fecha2.getFullYear(), fecha2.getMonth(), 1).toISOString().substr(0, 10)
-
-    console.log(primerDiaMesPasado, primerDiaMesActual)
-    /*
-    let date=new Date()
-    var primerDia = new Date(date.getFullYear(), date.getMonth(), 1);
-    let mesAnterior=primerDia.setMonth(primerDia.getMonth()-1)
-    var ultimoDia = new Date(date.getFullYear(), date.getMonth() + 1, 0);
-    
-    console.log(primerDia,ultimoDia,mesAnterior)
-    
-    */
-    res.render("../views/controla_proceso", { hola: "hola" });
+  
+  api.get("/vistaProcesosCobranzas", function (req, res) {
+  //http://localhost:3800/liquidacion_sueldo_cobranzas/vistaProcesosCobranzas
+    res.render("../views/controla_proceso_cobranzas", { hola: "hola" });
   })
-
-
 
 
 
@@ -210,8 +111,9 @@ io.on('connection', (socket) => {
  * @return {Promise} 
 */
   async function getLiquidaciones(tipoProceso, dataUser) {
+    console.log("proceso liquidacionesCobranzas")
 
-
+    
     let dataValidar = [] //[{ficha:ficha1,valor:valorLiquidoficha1}]
 
     //let empresa = 2
@@ -231,18 +133,16 @@ io.on('connection', (socket) => {
     var empresaDetalle = constants.EMPRESAS.find(x => x.ID == empresa)
     let templateDB = require('../config/' + empresaDetalle["TEMPLATE_LIQUIDACION"]) //archivo json con la plantilla para generar liquidaciones
 
-
-    let pathBase=FileServer.getPathServerSobreLaboral() //revisa acceso a carpeta destino (carpeta compartida)
+    let dirDestino=FileServer.getDirDestinoProceso(tipoProceso,mesProceso,empresa)
+    //let pathBase=FileServer.getPathServerSobreLaboral() //revisa acceso a carpeta destino (carpeta compartida)
     
-    if (!pathBase){
+    if (!dirDestino){
       socket.emit('getGlobalAlert', {messaje:"Error, no hay acceso a carpeta de sobre laboral",type:'error'})
       return
     }
-    let nameEmpresa
-    if (empresa==0) nameEmpresa='GUARD'
-    if (empresa==2) nameEmpresa='OUTSOURCING'
 
-    let dirDestino=pathBase+"/"+(new Date().getFullYear())+"/"+Utils.getMesName(mesProceso).toUpperCase()+"/LIQUIDACIONES/"+nameEmpresa  //path completo EJ \\192.168.100.69\sobrelaboral\Sistema_de_documentacion_laboral\2020\AGOSTO\LIQUIDACIONES\OUTSOURCING
+
+   // let dirDestino=pathBase+"/"+(new Date().getFullYear())+"/"+Utils.getMesName(mesProceso).toUpperCase()+"/LIQUIDACIONES/"+nameEmpresa  //path completo EJ \\192.168.100.69\sobrelaboral\Sistema_de_documentacion_laboral\2020\AGOSTO\LIQUIDACIONES\OUTSOURCING
       console.log("dir",dirDestino)
     
       // crea carpeta del mes en destino, si no existe 
@@ -251,7 +151,8 @@ io.on('connection', (socket) => {
       fs.mkdirSync(dirDestino,{recursive:true});
       console.log("no existe carpeta, creada la carpeta del mes")
   }else{
-    console.log("existe la carpeta, se debe elimnar el contenido ")
+    console.log("existe la carpeta, se debe respaldar el contenido ")
+    FileServer.backupFiles(dirDestino,empresa)
 
   }
 
@@ -259,8 +160,8 @@ io.on('connection', (socket) => {
 
   
 
-    //tipo:"Liquidacion","Reliquidacion"
-    if (tipoProceso == "Liquidacion") {
+    //tipo:"liquidacion","reliquidacion"
+    if (tipoProceso == "liquidacionCobranzas") {
 
 
       //para liquidaciones, se extraen todas las peronas que tengan valor>0 en variableBase (h303 liquido pago)
@@ -269,27 +170,11 @@ io.on('connection', (socket) => {
       variableValidacion='H303'
       console.log("el mes seleccionado es")
         //dirDestino = "dataTest/testLiquidaciones"
-      nameLogFile = 'liquida' // nombre del log proceso
-      nameFileSuffix=' LIQUIDACION' //sufijo del nombre archivos
+      nameLogFile = 'liquidaCobranzas' // nombre del log proceso
+      nameFileSuffix='-LIQUIDACION['+Utils.getDateFormat().substr(0,10)+']'//sufijo del nombre archivos
 
   
-    } if (tipoProceso == "Reliquidacion") {
-
-      //El mes de consulta para reliquidaciones es solo a mes pasado ya que en el mes en curso aún no hay data
-      //para reliquidaciones, se extraen todas las peronas que tengan valor>0 en variableBase (h068 diferencia con cheque)
-      variableBase = 'H068'
-      //variable para hacer realizar validacion del proceso (comparar al extraer data y luego despues de  generar pdfs)
-      variableValidacion='H303'
-
-      console.log("el mes seleccionado es",mesProceso)
-      //mesProceso=mesPasado
-     // dirDestino = "dataTest/testReliquidaciones/"
-      nameLogFile = 'reliquida' // nombre del log proceso
-      nameFileSuffix=' RELIQUIDACION'//sufijo del nombre archivos 
-
-    
-
-  }
+    } 
    
 
     return new Promise(async (resolve, reject) => {
@@ -312,10 +197,10 @@ io.on('connection', (socket) => {
   select distinct ficha
   FROM [SISTEMA_CENTRAL].[dbo].[sw_variablepersona]
   where 
-   emp_codi='`+ empresa + `' and fecha='` + mesProceso + `'
-  ---REGLA POR EL MOMENTO CAMBIARLA
-   --and codVariable='`+ variableBase + `' and valor>0
-  -- and codVariable='`+ variableBase + `' 
+  emp_codi='`+ empresa + `' and fecha='` + mesProceso + `'
+  ---SOLO FILTRO PARA COBRANZAS
+  --and codVariable='`+ variableBase + `' and valor>0
+
 `
           , {
 
@@ -355,6 +240,7 @@ io.on('connection', (socket) => {
    where 
    emp_codi=`+ empresa + `
    and fecha='`+ mesProceso + `'
+   ---SOLO FILTRO PARA COBRANZAS
   -- and codVariable in (`+ variablesTemplate + `)
    
    `
@@ -462,8 +348,8 @@ io.on('connection', (socket) => {
               //    res.setHeader('Content-Type', 'application/pdf');
               //    stream.pipe(res);
               if (stream && !err) {
-
-                stream.pipe(fs.createWriteStream(dirDestino+"/" + centro_costo +nameFileSuffix+ ".pdf"));
+                //ejemplo de nombre de archivo 001-001[0]-RELIQUIDACION[2020-11-12]
+                stream.pipe(fs.createWriteStream(dirDestino+"/" + centro_costo+ "-["+empresa+"]"+nameFileSuffix+ ".pdf"));
                 // stream.pipe(res);
 
 
@@ -474,9 +360,10 @@ io.on('connection', (socket) => {
                 templates_persona.forEach(persona => {
                   let ficha = persona.ficha
                  // console.log(persona["data"])
-                  //-------------------------let monto = persona["data"].find(x => x["VAR_CODI"] == variableValidacion)["VAR_VALOR"]
-
-                  dataValidar.push({ ficha: ficha, monto: 0 })
+                 let monto = persona["data"].find(x => x["VAR_CODI"] == variableValidacion)
+                 if (monto) monto=monto["VAR_VALOR"] 
+                 else monto=null
+                  dataValidar.push({ ficha: ficha, monto: monto })
                 })
 
                 resolves()
@@ -489,15 +376,11 @@ io.on('connection', (socket) => {
                 rejects()
                 console.log("error en stream, " + centro_costo, err)
 
-                if (tipoProceso == "Liquidacion") {
+                if (tipoProceso == "liquidacionCobranzas") {
                   StatusLiquidacion.msgs[0] = "falloo el centro " + centro_costo + " " + err
                   // StatusLiquidacion.percent = parseInt((i + 1) / distinctCC.length * 100)
-                  io.emit('getStatusLiquidacion', StatusLiquidacion)
-                } if (tipoProceso == "Reliquidacion") {
-                  StatusReliquidacion.msgs[0] = "falloo el centro " + centro_costo + " " + err
-                  // StatusLiquidacion.percent = parseInt((i + 1) / distinctCC.length * 100)
-                  io.emit('getStatusReliquidacion', StatusReliquidacion)
-                }
+                  io.emit('getStatusLiquidacionCobranzas', StatusLiquidacion)
+                } 
 
 
               }
@@ -516,15 +399,11 @@ io.on('connection', (socket) => {
         //   await Promise.all(getFilesPromises)
         console.log("todos los trabajos terminados iteracion ", i)
         //aca esta ok, asi que emitimos evento    
-        if (tipoProceso == "Liquidacion") {
+        if (tipoProceso == "liquidacionCobranzas") {
           StatusLiquidacion.msgs[0] = centro_costo
           StatusLiquidacion.percent = parseInt((i + 1) / distinctCC.length * 100)
-          io.emit('getStatusLiquidacion', StatusLiquidacion)
-        } if (tipoProceso == "Reliquidacion") {
-          StatusReliquidacion.msgs[0] = centro_costo
-          StatusReliquidacion.percent = parseInt((i + 1) / distinctCC.length * 100)
-          io.emit('getStatusReliquidacion', StatusReliquidacion)
-        }
+          io.emit('getStatusLiquidacionCobranzas', StatusLiquidacion)
+        } 
 
         //termina
 
@@ -543,6 +422,7 @@ io.on('connection', (socket) => {
 
       // console.log("eeee",dataVariablesPersona.filter(x=>x["codVariable"]=='H303'))
       dataVariablesPersona.filter(x => x["codVariable"] == variableValidacion).forEach(persona => {
+        //aca, si la persona existe y no tiene monto pasará la prueba porque quedará null
         let existe = dataValidar.find(x => x.ficha == persona.ficha)
         if (!existe || persona["valor"] != existe["monto"]) {
           console.log("error en la ficha", persona.ficha)
@@ -555,14 +435,11 @@ io.on('connection', (socket) => {
       })
       //guarda logs de las validaciones
 
-      var m = new Date();
-      let formatDate = (m.getFullYear() > 9 ? m.getFullYear() : '0' + m.getFullYear()) + "-" + ((m.getMonth() + 1) > 9 ? (m.getMonth() + 1) : '0' + (m.getMonth() + 1)) + "-" + (m.getDate() > 9 ? m.getDate() : '0' + m.getDate())
-
-      let formatHour = (m.getHours() > 9 ? m.getHours() : '0' + m.getHours()) + "-" + (m.getMinutes() > 9 ? m.getMinutes() : '0' + m.getMinutes()) + "-" + (m.getSeconds() > 9 ? m.getSeconds() : '0' + m.getSeconds())
-      console.log(formatDate + "-" + formatHour)
+ 
+      let formatDate = Utils.getDateFormat()
 
       //path +validacion (OK,ERR)+proceso(Liq,reliq)+empresa(0,1,2), fecha (yyy-mm-dd-hh-mm-ss), tiempo demora (s)
-      fs.appendFileSync(pathLogs + statusValidacion + "-" + nameLogFile + "-" + empresa + "-" + formatDate + "-" + formatHour + "-" + demoraSeconds + ".txt", JSON.stringify(dataValidar));
+      fs.appendFileSync(pathLogs + statusValidacion + "-" + nameLogFile + "-" + empresa + "-" + formatDate + "-" + demoraSeconds + ".txt", JSON.stringify(dataValidar));
       console.log("todos las validaciones hechas")
       io.emit('getGlobalAlert', {messaje:"Proceso concluido exitosamente",type:'success'})
       //return res.status(200).send({ status: "ok" })
@@ -576,232 +453,8 @@ io.on('connection', (socket) => {
 
 
 
-//realiza cruce de datos según ficha
 
-async function getLiquidacionFichaMes(res, ficha, mes, empresa, path) {
 
-  return new Promise(async resolve => {
-
-    //let ficha="JUZCFLPM70"
-    //let mes="2019-05-01"
-
-    //let empresa=0
-    //http://192.168.0.130:3800/liquidacion_sueldo/liquidacion_persona_pdf/JUZCFLPM70/2019-05-01/0
-
-    //let ficha = req.params.ficha
-    //let mes = req.params.mes
-    let empresa = 0
-    let empresaDetalle = constants.EMPRESAS.find(x => x.ID == empresa)
-
-    console.log(ficha, mes, empresa)
-
-    //obtenemos la variable persona
-    let variablesPersona = await VariablesFicha.findAll({
-      where: {
-        emp_codi: empresa,
-        ficha: ficha,
-        fecha: mes
-      }
-    })
-    let infoPersona = (await SoftlandController.getFichasInfoPromise([ficha], 0))[0]
-    console.log("la info persona", infoPersona)
-
-    var templateBase = JSON.parse(JSON.stringify(templateDB))
-
-    var filledTemplate = fillTemplate(templateBase, variablesPersona)
-
-    var template = formatTemplate(filledTemplate)
-
-    var options = {
-      format: 'Letter',
-      border: {
-        top: "1cm",
-        right: "1cm",
-        bottom: "2cm",
-        left: "1cm"
-      },
-
-    };
-
-
-    res.render("../views/liquidacion_sueldo", { template: template, persona: infoPersona, empresaDetalle: empresaDetalle, mes }, function (err, data) {
-      let liquidacionID = "10.010-JEAN-TEST"
-      let html = data;
-      //  console.log("HTML",html)
-      try {
-
-        //  setTimeout(function(){
-        pdf.create(html, options).toStream(function (err, stream) {
-
-          // res.setHeader('Content-disposition', 'inline; filename="Cotizacion-' + liquidacionID + '.pdf"');
-          //  res.setHeader('Content-Type', 'application/pdf');
-          console.log("hola")
-          stream.pipe(fs.createWriteStream(path));
-
-          console.log("hola2")
-          console.log("hola3")
-          // stream.pipe(res);
-          ///   res.status(200).send({ status: "ok" })
-
-          resolve({ status: "oka" })
-        })
-        // }, 5000);
-
-      } catch (e) {
-        console.log(e)
-      }
-
-
-
-    });
-
-    // resolve(resultTestAsist);
-  });
-
-
-}
-
-
-
-async function getLiquidacionCentroCosto(res, centro_costo, mes, empresa, path) {
-
-
-
-  return new Promise(async (resolve, reject) => {
-    // http://192.168.0.130:3800/liquidacion_sueldo/liquidacion_sueldo_cc/008-047/2019-08-01/0
-    //let ficha="JUZCFLPM70"
-    //let mes="2019-05-01"
-    //let empresa=0
-
-    //añadir empresa
-
-    //var centro_costo = req.params.centro_costo
-    //var mes = req.params.mes
-    //var empresa = 0
-    var empresaDetalle = constants.EMPRESAS.find(x => x.ID == empresa)
-    var options = {
-      format: 'Letter',
-      border: {
-        top: "1cm",
-        right: "1cm",
-        bottom: "2cm",
-        left: "1cm"
-      },
-
-    };
-
-
-    let fichasVigentes = (await sequelizeMssql
-      .query(`select FICHA from [Inteligencias].[dbo].[VIEW_SOFT_PERSONAL_VIGENTE] where FECHA_SOFT='` + mes + `'  and EMP_CODI=` + empresa + ` and CENCO2_CODI='` + centro_costo + `'`
-        , {
-
-          model: VariablesFicha,
-          mapToModel: true, // pass true here if you have any mapped fields
-          raw: true
-        })).map(x => x.FICHA)
-    console.log(JSON.parse(JSON.stringify(fichasVigentes)))
-
-    //  fichasVigentes=JSON.parse(JSON.stringify(fichasVigentes)).filter(x=>x=='ASMAR028'||x=='ASMAR001'||x=='ASMAR006')
-    //no esta  
-    // fichasVigentes=JSON.parse(JSON.stringify(fichasVigentes)).filter(x=>x!="ASMAR002")
-    // fichasVigentes=JSON.parse(JSON.stringify(fichasVigentes)).filter(x=>x=="ASMAR015")
-
-    let infoPersonas = (await SoftlandController.getFichasInfoPromiseMes(fichasVigentes, empresa, mes))
-    // console.log("la info personas",infoPersonas)
-
-
-    var templates_persona = []
-    let fichasVigentesPromises = fichasVigentes.map(async ficha => {
-
-      console.log(ficha, mes, empresa)
-
-      //obtenemos la variable persona
-      let variablesPersona = await VariablesFicha.findAll({
-        where: {
-          emp_codi: empresa,
-          ficha: ficha,
-          fecha: mes
-        }
-      })
-      //se ejecuta solo si la fichatiene liquido a pago
-      if (variablesPersona.find(x => x["codVariable"] == constants.VARIABLES_PARAMETERS.find(x => x["nombre"] == "LIQUIDO PAGO")["variable"])) {
-
-
-
-        var templateBase = JSON.parse(JSON.stringify(templateDB))
-        var filledTemplate = []
-        var template = []
-        filledTemplate = fillTemplate(templateBase, variablesPersona)
-
-        template = formatTemplate(filledTemplate)
-        let persona = infoPersonas.find(x => x["FICHA"] == ficha)
-        // console.log(persona)
-        //se añade la infor de una persona //CAMBIAR A LA PERSONA CORRESPONDIENTE (BUSCAR EN INFOPERSONA)
-        templates_persona.push({ ficha: ficha, persona: persona, template: template })
-      } else {
-        console.log("la ficha no encontrada es" + ficha)
-        //si la ficha no tiene liquido a pago se escribe en archivo
-        //fs.appendFile("dataTest/sinFicha/" + centro_costo + "-" + mes + ".csv", ficha + '\n', function (err) {
-        //   if (err) console.log( err);
-        //   console.log('Saved!');
-        // });
-      }
-
-    })
-
-    await Promise.all(fichasVigentesPromises)
-
-
-    console.log("antes_data")
-    ejs.renderFile("views/liquidacion_sueldo_multiple - copia.ejs", { templates_persona: templates_persona, empresaDetalle: empresaDetalle, mes }, {}, async function (err, data) {
-      if (err)
-        console.log(err)
-      //console.log("data",data)
-
-
-
-      let liquidacionID = "10.010-JEAN-TEST"
-      var html = data;
-
-
-      pdf.create(html, options).toStream(function (err, stream) {
-
-        //    res.setHeader('Content-disposition', 'inline; filename="Cotizacion-' + liquidacionID + '.pdf"');
-        //    res.setHeader('Content-Type', 'application/pdf');
-        //    stream.pipe(res);
-        if (stream && !err) {
-
-          stream.pipe(fs.createWriteStream("dataTest/testLiquidaciones/" + centro_costo + ".pdf"));
-          // stream.pipe(res);
-
-
-
-          resolve({ status: "oka" })
-          //con esto evitamos que se acumule la memoria, tambien el return lo hace  
-          //return next()
-        } else {
-          console.log("error en stream, " + centro_costo)
-          // stream.pipe(res);
-          reject(e)
-
-        }
-
-
-
-
-      })
-      // } catch (e) {
-      //   console.log("error en la plantilla", centro_costo)
-      //res.status(500).send({ error: 'error en  crear plantilla', exit: e })
-
-      //}
-
-
-
-    })
-  })
-
-}
 
 
 
@@ -832,7 +485,7 @@ function fillTemplate(templatebase, variablesPersona) {
     VAR_CODI: 'P052',
     SECTION: 'BODY',
     VAR_VALOR: '55' },
-  { VAR_NOMBRE: 'HH COMP. FESTIVOS ENAP',ç-
+  { VAR_NOMBRE: 'HH COMP. FESTIVOS ENAP',
     COLUMNA: 1,
     POSICION: 5,
     OFFSET: null,
@@ -974,6 +627,8 @@ function formatTemplate(templateBase) {
   return arrayFormat
 
 }
+
+
 
 
 

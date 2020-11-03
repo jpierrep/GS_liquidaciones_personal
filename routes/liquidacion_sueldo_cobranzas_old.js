@@ -33,9 +33,7 @@ var StatusLiquidacionTemplate = {
 
   isExecuting: false,
   percent: 0,
-  msgs: [],
-  userParams:{}
-
+  msgs: []
 }
 
 //No puede ir dentro de una funcion pues lo utilizan los sockets
@@ -51,33 +49,6 @@ console.log("liquidacion")
 
 api.get("/testView2", function (req, res) {
   console.log("he")
-
-  //backupFiles("a")
-/*
-  let oldPath = 'old/path/file.txt'
-  let newPath = 'new/path/file.txt'
-  
-  oldPath='\\\\192.168.100.69\\sobrelaboral\\Sistema_de_documentacion_laboral\\2020\\OCTUBRE\\liquidaciones\\test\\'
-  newPath='\\\\192.168.100.69\\sobrelaboral\\Sistema_de_documentacion_laboral\\2020\\OCTUBRE\\liquidaciones\\test\\respaldotest\\'
-  let files=[]
-  try{
-    console.log(oldPath)
-  files=fs.readdirSync(oldPath).filter(file=>/\.pdf$/.test(file))
-
-  console.log("holaa")
-}catch(e){
-  console.log(e)
-}
-  
-  console.log(files)
-  
-    files.forEach(file=>{
-      fs.renameSync(oldPath+file,newPath+file)
-
-    })
-    console.log("termino")
- */
-
   res.render("../views/controla_proceso", { hola: "hola" });
 })
 
@@ -111,9 +82,9 @@ io.on('connection', (socket) => {
 
     StatusLiquidacion = JSON.parse(JSON.stringify(StatusLiquidacionTemplate))
     StatusLiquidacion.isExecuting = true
-    StatusLiquidacion.userParams={mes:dataUser["mes"],empresa:dataUser["empresa"]}
+
     io.emit('getStatusLiquidacion', StatusLiquidacion)
-    await getLiquidaciones("liquidacion", dataUser)
+    await getLiquidaciones("Liquidacion", dataUser)
     StatusLiquidacion.isExecuting = 0
     io.emit('getStatusLiquidacion', StatusLiquidacion)     
 
@@ -131,37 +102,8 @@ io.on('connection', (socket) => {
 
   });
 
-  socket.on("getExistsDirDestino", function (dataUser) {
-    //dataUser["mes"],empresa:dataUser["empresa"]
-    //mes,proceso,empresa
-  let mes=dataUser["mes"]
-  let empresa=dataUser["empresa"]
-  let proceso=dataUser["proceso"]
-  let dirDestino=FileServer.getDirDestinoProceso(proceso,mes,empresa)
-
-  let existsDirDestino=false
-  
-  //validar si existen archivos tambien en el dir destino con la empresa
-  //files=fs.readdirSync(oldPath).filter(file=>/\.pdf$/.test(file))
-  
-  console.log("verificando la carpeta y la empresa")
-
-  if(fs.existsSync(dirDestino)) {
-    //existe la empresa
-  let files=fs.readdirSync(dirDestino).filter(file=>file.includes("["+empresa+"]"))
-    if(files.length>0) existsDirDestino=true
-  }
-  
- 
-
-   socket.emit("resExistsDirDestino", existsDirDestino);
-
-
-  });
-
 
   socket.on("getFileName", async (proceso, empresa) => {
-    console.log("el proceso es",proceso)
     let controlProceso = ""
     let controlEmpresa = "-" + empresa + "-"
 
@@ -172,8 +114,6 @@ io.on('connection', (socket) => {
       controlProceso = "-liquida"
       if (proceso == "previred")
       controlProceso = "-previred"
-      if (proceso == "liquidacionCobranzas")
-      controlProceso = "-liquidaCobranzas"
 
       
 
@@ -202,9 +142,8 @@ io.on('connection', (socket) => {
 
     StatusReliquidacion = JSON.parse(JSON.stringify(StatusLiquidacionTemplate))
     StatusReliquidacion.isExecuting = true
-    StatusReliquidacion.userParams={mes:dataUser["mes"],empresa:dataUser["empresa"]}
     io.emit('getStatusReliquidacion', StatusReliquidacion)
-    await getLiquidaciones("reliquidacion", dataUser)
+    await getLiquidaciones("Reliquidacion", dataUser)
     StatusReliquidacion.isExecuting = 0
     io.emit('getStatusReliquidacion', StatusReliquidacion)
 
@@ -241,15 +180,16 @@ io.on('connection', (socket) => {
     var primerDiaMesActual = new Date(fecha2.getFullYear(), fecha2.getMonth(), 1).toISOString().substr(0, 10)
 
     console.log(primerDiaMesPasado, primerDiaMesActual)
- 
+    /*
+    let date=new Date()
+    var primerDia = new Date(date.getFullYear(), date.getMonth(), 1);
+    let mesAnterior=primerDia.setMonth(primerDia.getMonth()-1)
+    var ultimoDia = new Date(date.getFullYear(), date.getMonth() + 1, 0);
+    
+    console.log(primerDia,ultimoDia,mesAnterior)
+    
+    */
     res.render("../views/controla_proceso", { hola: "hola" });
-  })
-
-
-  
-  api.get("/vistaProcesosCobranzas", function (req, res) {
-
-    res.render("../views/controla_proceso_cobranzas", { hola: "hola" });
   })
 
 
@@ -271,7 +211,7 @@ io.on('connection', (socket) => {
 */
   async function getLiquidaciones(tipoProceso, dataUser) {
 
-    
+
     let dataValidar = [] //[{ficha:ficha1,valor:valorLiquidoficha1}]
 
     //let empresa = 2
@@ -291,13 +231,36 @@ io.on('connection', (socket) => {
     var empresaDetalle = constants.EMPRESAS.find(x => x.ID == empresa)
     let templateDB = require('../config/' + empresaDetalle["TEMPLATE_LIQUIDACION"]) //archivo json con la plantilla para generar liquidaciones
 
-    let dirDestino=FileServer.getDirDestinoProceso(tipoProceso,mesProceso,empresa)
-    //let pathBase=FileServer.getPathServerSobreLaboral() //revisa acceso a carpeta destino (carpeta compartida)
-    
-   
 
-    //tipo:"liquidacion","reliquidacion"
-    if (tipoProceso == "liquidacion") {
+    let pathBase=FileServer.getPathServerSobreLaboral() //revisa acceso a carpeta destino (carpeta compartida)
+    
+    if (!pathBase){
+      socket.emit('getGlobalAlert', {messaje:"Error, no hay acceso a carpeta de sobre laboral",type:'error'})
+      return
+    }
+    let nameEmpresa
+    if (empresa==0) nameEmpresa='GUARD'
+    if (empresa==2) nameEmpresa='OUTSOURCING'
+
+    let dirDestino=pathBase+"/"+(new Date().getFullYear())+"/"+Utils.getMesName(mesProceso).toUpperCase()+"/LIQUIDACIONES/"+nameEmpresa  //path completo EJ \\192.168.100.69\sobrelaboral\Sistema_de_documentacion_laboral\2020\AGOSTO\LIQUIDACIONES\OUTSOURCING
+      console.log("dir",dirDestino)
+    
+      // crea carpeta del mes en destino, si no existe 
+    if (!fs.existsSync(dirDestino)){
+    
+      fs.mkdirSync(dirDestino,{recursive:true});
+      console.log("no existe carpeta, creada la carpeta del mes")
+  }else{
+    console.log("existe la carpeta, se debe elimnar el contenido ")
+
+  }
+
+
+
+  
+
+    //tipo:"Liquidacion","Reliquidacion"
+    if (tipoProceso == "Liquidacion") {
 
 
       //para liquidaciones, se extraen todas las peronas que tengan valor>0 en variableBase (h303 liquido pago)
@@ -307,17 +270,10 @@ io.on('connection', (socket) => {
       console.log("el mes seleccionado es")
         //dirDestino = "dataTest/testLiquidaciones"
       nameLogFile = 'liquida' // nombre del log proceso
-      nameFileSuffix='-LIQUIDACION['+Utils.getDateFormat().substr(0,10)+']'//sufijo del nombre archivos
-     
-      //proceso liquidaciones debe solo poder generarse en el mes en curso
-     
-      //let formatDate = (m.getFullYear() > 9 ? m.getFullYear() : '0' + m.getFullYear()) + separador + ((m.getMonth() + 1) 
-      if (parseInt(mesProceso.substr(5,2))< (new Date()).getMonth()+1 ){
-        socket.emit('getGlobalAlert', {messaje:"Error, no es posible generar el proceso para el mes solicitado",type:'error'})
-        return 
-      }
+      nameFileSuffix=' LIQUIDACION' //sufijo del nombre archivos
 
-    } if (tipoProceso == "reliquidacion") {
+  
+    } if (tipoProceso == "Reliquidacion") {
 
       //El mes de consulta para reliquidaciones es solo a mes pasado ya que en el mes en curso aún no hay data
       //para reliquidaciones, se extraen todas las peronas que tengan valor>0 en variableBase (h068 diferencia con cheque)
@@ -329,36 +285,11 @@ io.on('connection', (socket) => {
       //mesProceso=mesPasado
      // dirDestino = "dataTest/testReliquidaciones/"
       nameLogFile = 'reliquida' // nombre del log proceso
-      nameFileSuffix='-RELIQUIDACION['+Utils.getDateFormat().substr(0,10)+']'//sufijo del nombre archivos 
+      nameFileSuffix=' RELIQUIDACION'//sufijo del nombre archivos 
 
-       //proceso reliquidaciones debe solo puede generarse en meses anteriores
-     
-      
-      if (parseInt(mesProceso.substr(5,2))>= (new Date()).getMonth()+1 ){
-        socket.emit('getGlobalAlert', {messaje:"Error, no es posible generar el proceso para el mes solicitado",type:'error'})
-        return 
-      }
+    
 
   }
-
-  if (!dirDestino){
-    socket.emit('getGlobalAlert', {messaje:"Error, no hay acceso a carpeta de sobre laboral",type:'error'})
-    return
-  }
-
- // let dirDestino=pathBase+"/"+(new Date().getFullYear())+"/"+Utils.getMesName(mesProceso).toUpperCase()+"/LIQUIDACIONES/"+nameEmpresa  //path completo EJ \\192.168.100.69\sobrelaboral\Sistema_de_documentacion_laboral\2020\AGOSTO\LIQUIDACIONES\OUTSOURCING
-    console.log("dir",dirDestino)
-  
-    // crea carpeta del mes en destino, si no existe 
-  if (!fs.existsSync(dirDestino)){
-  
-    fs.mkdirSync(dirDestino,{recursive:true});
-    console.log("no existe carpeta, creada la carpeta del mes")
-}else{
-  console.log("existe la carpeta, se debe respaldar el contenido ")
-  FileServer.backupFiles(dirDestino,empresa)
-
-}
    
 
     return new Promise(async (resolve, reject) => {
@@ -381,9 +312,10 @@ io.on('connection', (socket) => {
   select distinct ficha
   FROM [SISTEMA_CENTRAL].[dbo].[sw_variablepersona]
   where 
-  emp_codi='`+ empresa + `' and fecha='` + mesProceso + `'
-  and codVariable='`+ variableBase + `' and valor>0
-
+   emp_codi='`+ empresa + `' and fecha='` + mesProceso + `'
+  ---REGLA POR EL MOMENTO CAMBIARLA
+   --and codVariable='`+ variableBase + `' and valor>0
+  -- and codVariable='`+ variableBase + `' 
 `
           , {
 
@@ -423,7 +355,7 @@ io.on('connection', (socket) => {
    where 
    emp_codi=`+ empresa + `
    and fecha='`+ mesProceso + `'
-  and codVariable in (`+ variablesTemplate + `)
+  -- and codVariable in (`+ variablesTemplate + `)
    
    `
           , {
@@ -530,8 +462,8 @@ io.on('connection', (socket) => {
               //    res.setHeader('Content-Type', 'application/pdf');
               //    stream.pipe(res);
               if (stream && !err) {
-                //ejemplo de nombre de archivo 001-001[0]-RELIQUIDACION[2020-11-12]
-                stream.pipe(fs.createWriteStream(dirDestino+"/" + centro_costo+ "-["+empresa+"]"+nameFileSuffix+ ".pdf"));
+
+                stream.pipe(fs.createWriteStream(dirDestino+"/" + centro_costo +nameFileSuffix+ ".pdf"));
                 // stream.pipe(res);
 
 
@@ -542,9 +474,9 @@ io.on('connection', (socket) => {
                 templates_persona.forEach(persona => {
                   let ficha = persona.ficha
                  // console.log(persona["data"])
-                 let monto = persona["data"].find(x => x["VAR_CODI"] == variableValidacion)["VAR_VALOR"]
+                  //-------------------------let monto = persona["data"].find(x => x["VAR_CODI"] == variableValidacion)["VAR_VALOR"]
 
-                  dataValidar.push({ ficha: ficha, monto: monto })
+                  dataValidar.push({ ficha: ficha, monto: 0 })
                 })
 
                 resolves()
@@ -557,11 +489,11 @@ io.on('connection', (socket) => {
                 rejects()
                 console.log("error en stream, " + centro_costo, err)
 
-                if (tipoProceso == "liquidacion") {
+                if (tipoProceso == "Liquidacion") {
                   StatusLiquidacion.msgs[0] = "falloo el centro " + centro_costo + " " + err
                   // StatusLiquidacion.percent = parseInt((i + 1) / distinctCC.length * 100)
                   io.emit('getStatusLiquidacion', StatusLiquidacion)
-                } if (tipoProceso == "reliquidacion") {
+                } if (tipoProceso == "Reliquidacion") {
                   StatusReliquidacion.msgs[0] = "falloo el centro " + centro_costo + " " + err
                   // StatusLiquidacion.percent = parseInt((i + 1) / distinctCC.length * 100)
                   io.emit('getStatusReliquidacion', StatusReliquidacion)
@@ -584,11 +516,11 @@ io.on('connection', (socket) => {
         //   await Promise.all(getFilesPromises)
         console.log("todos los trabajos terminados iteracion ", i)
         //aca esta ok, asi que emitimos evento    
-        if (tipoProceso == "liquidacion") {
+        if (tipoProceso == "Liquidacion") {
           StatusLiquidacion.msgs[0] = centro_costo
           StatusLiquidacion.percent = parseInt((i + 1) / distinctCC.length * 100)
           io.emit('getStatusLiquidacion', StatusLiquidacion)
-        } if (tipoProceso == "reliquidacion") {
+        } if (tipoProceso == "Reliquidacion") {
           StatusReliquidacion.msgs[0] = centro_costo
           StatusReliquidacion.percent = parseInt((i + 1) / distinctCC.length * 100)
           io.emit('getStatusReliquidacion', StatusReliquidacion)
@@ -623,11 +555,14 @@ io.on('connection', (socket) => {
       })
       //guarda logs de las validaciones
 
-    
-      let formatDate = Utils.getDateFormat()
+      var m = new Date();
+      let formatDate = (m.getFullYear() > 9 ? m.getFullYear() : '0' + m.getFullYear()) + "-" + ((m.getMonth() + 1) > 9 ? (m.getMonth() + 1) : '0' + (m.getMonth() + 1)) + "-" + (m.getDate() > 9 ? m.getDate() : '0' + m.getDate())
+
+      let formatHour = (m.getHours() > 9 ? m.getHours() : '0' + m.getHours()) + "-" + (m.getMinutes() > 9 ? m.getMinutes() : '0' + m.getMinutes()) + "-" + (m.getSeconds() > 9 ? m.getSeconds() : '0' + m.getSeconds())
+      console.log(formatDate + "-" + formatHour)
 
       //path +validacion (OK,ERR)+proceso(Liq,reliq)+empresa(0,1,2), fecha (yyy-mm-dd-hh-mm-ss), tiempo demora (s)
-      fs.appendFileSync(pathLogs + statusValidacion + "-" + nameLogFile + "-" + empresa + "-" + formatDate + "-" + demoraSeconds + ".txt", JSON.stringify(dataValidar));
+      fs.appendFileSync(pathLogs + statusValidacion + "-" + nameLogFile + "-" + empresa + "-" + formatDate + "-" + formatHour + "-" + demoraSeconds + ".txt", JSON.stringify(dataValidar));
       console.log("todos las validaciones hechas")
       io.emit('getGlobalAlert', {messaje:"Proceso concluido exitosamente",type:'success'})
       //return res.status(200).send({ status: "ok" })
@@ -897,7 +832,7 @@ function fillTemplate(templatebase, variablesPersona) {
     VAR_CODI: 'P052',
     SECTION: 'BODY',
     VAR_VALOR: '55' },
-  { VAR_NOMBRE: 'HH COMP. FESTIVOS ENAP',
+  { VAR_NOMBRE: 'HH COMP. FESTIVOS ENAP',ç-
     COLUMNA: 1,
     POSICION: 5,
     OFFSET: null,
@@ -1039,8 +974,6 @@ function formatTemplate(templateBase) {
   return arrayFormat
 
 }
-
-
 
 
 

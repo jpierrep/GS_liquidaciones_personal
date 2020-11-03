@@ -390,7 +390,7 @@ async function generaFiles(tablaMapPersonas,empresa,uploadFileName,dirDestino) {
     
     let child = await  new Promise ( (resolve,reject)=>{
      // exec('pdftk ' + uploadFileName + ' cat ' + pagesCC + ' output ' + path_output_base + centro_costo + '.pdf',
-     exec('pdftk ' + uploadFileName + ' cat ' + pagesCC + ' output ' + dirDestino+'\\' + centro_costo + '.pdf',
+     exec('pdftk ' + uploadFileName + ' cat ' + pagesCC + ' output ' + dirDestino+'\\' + centro_costo + "-["+empresa+"]"+'-PREVIRED['+Utils.getDateFormat().substr(0,10)+']'+'.pdf',
   
       function (error, stdout, stderr) {
         console.log('stdout: ' + stdout);

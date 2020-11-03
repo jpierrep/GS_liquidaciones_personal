@@ -43,12 +43,11 @@
         </select>
       </div>
       <div class="col-6"> Mes:
-        <select id="mes-select" class="custom-select custom-select-lg mb-3">
+        <select id="mes-select" onchange="bloqueaProcesos()" class="custom-select custom-select-lg mb-3">
 
-          <option selected value="2020-11-01">2020-11</option>
-          <option value="2020-09-01">2020-09</option>
+       <option selected value="2020-11-01">2020-11</option>
           <option value="2020-10-01">2020-10</option>
-          <option value="2020-08-01">2020-08</option>
+      
 
         </select>
       </div>
@@ -69,7 +68,7 @@
               </a>
             </h5>
 
-            <p class="card-text">Genera archivos de liquidaciones del mes actual.</p>
+            <p class="card-text">Genera archivos de liquidaciones del mes.</p>
             <div class="row">
               <div class="col-1">
                 <button type="button" id="liquidacion-empieza" class="btn btn-primary" disabled>Ejecutar</button>
@@ -297,9 +296,26 @@
     var procesoSelected=""
     
     
-
+   
 
     $(document).ready(function () {
+
+     let date=new Date()
+     let mesActual=m.getFullYear()+"-"((m.getMonth() + 1) > 9 ? (m.getMonth() + 1) : '0' + (m.getMonth() + 1))+"-01"
+     let mesAnterior=""
+     //si el mes actual es enero, se debe setear diciembre del mes anterior
+     if(m.getMonth==0){
+      mesAnterior=m.getFullYear()-1+"-12-01"
+     }else{
+      mesAnterior=m.getFullYear()+"-"((m.getMonth() ) > 9 ? (m.getMonth()) : '0' + (m.getMonth()))+"-01"
+     }
+  
+      bloqueaProcesos()
+      //valores del select
+      $('#mes-select').empty()
+      $('#mes-select').append(`<option selected value="`+mesActual+`">`+mesActual.substr(0,7)+`</option>`); 
+      $('#mes-select').append(`<option  value="`+mesAnterior+`"> `+mesAnterior.substr(0,7)+`</option>`); 
+
       //saveFile("Example.txt", "data:attachment/text", "Hello, world.");
       //socket.emit("getFile","holaaaa");
       //esto hace que se dupliquen los archivos pues se llama al getFilename que carga lista de archivos
@@ -498,6 +514,7 @@
         $('#liquidacion-empieza').attr("disabled", false); 
         $("[name='liquidacion-loader']").hide()
         $('#liquidacion-cc-status').text("")
+        bloqueaProcesos()
       }
 
       else {
@@ -513,6 +530,7 @@
         $('#liquidacion-progress').attr('style', "width:" + data.percent + "%")
         $('#liquidacion-progress').attr('aria-valuenow', data.percent)
         $('#liquidacion-progress').text(data.percent + "%")
+        bloqueaProcesos()
       }
     });
 
@@ -526,6 +544,7 @@
         $("[name='reliquidacion-loader']").hide()
         $('#reliquidacion-empieza').attr("disabled", false);
         $('#reliquidacion-cc-status').text("")
+        bloqueaProcesos()
       }
 
       else {
@@ -541,6 +560,7 @@
         $('#reliquidacion-progress').attr('style', "width:" + data.percent + "%")
         $('#reliquidacion-progress').attr('aria-valuenow', data.percent)
         $('#reliquidacion-progress').text(data.percent + "%")
+        bloqueaProcesos()
       }
     });
 
@@ -621,6 +641,22 @@ if(procesoSelected=="liquidacion"){
 $('#previred-modal-file-upload').modal('show'); 
 
 
+}
+
+
+}
+
+function bloqueaProcesos(){
+
+  console.log("el mes selected es",parseInt($("#mes-select").val().substr(5,2)),(new Date()).getMonth()+1 )
+  $('#liquidacion-empieza').attr("disabled", false);
+  $('#reliquidacion-empieza').attr("disabled", false);
+ if (parseInt($("#mes-select").val().substr(5,2))< (new Date()).getMonth()+1 ){
+  $('#liquidacion-empieza').attr("disabled", true); 
+}
+if (parseInt($("#mes-select").val().substr(5,2))>= (new Date()).getMonth()+1 ){
+  $('#reliquidacion-empieza').attr("disabled", true); 
+  
 }
 
 
