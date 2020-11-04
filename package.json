@@ -6,8 +6,8 @@
   "scripts": {
     "debug": "node debug index",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon index"
-	,"docs": "jsdoc -c ./.jsdoc.conf.json"
+    "start": "nodemon index",
+    "docs": "jsdoc -c ./.jsdoc.conf.json"
   },
   "author": "",
   "license": "ISC",
@@ -25,6 +25,7 @@
     "json-stringify": "^1.0.0",
     "moment": "^2.22.2",
     "mssql": "^3.3.0",
+    "mv": "^2.1.1",
     "mysql2": "^1.6.5",
     "nodemon": "^1.18.3",
     "npm": "^6.2.0",

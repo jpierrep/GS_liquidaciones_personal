@@ -4,6 +4,7 @@ const constants = require('../config/systems_constants')
 var FOLDER_PATH_FILES=constants.FOLDER_PATH_FILES
 const fs = require('fs');
 const Utils = require('../controllers/utils');
+var mv = require('mv');
 
 
 function getPathServerSobreLaboral(){
@@ -48,7 +49,7 @@ function getPathServerSobreLaboral(){
         let pathBase=getPathServerSobreLaboral() //revisa acceso a carpeta destino (carpeta compartida)
         if (!pathBase) return false //si no hay acceso a la carpeta se deberà entender como eerror
         
-        let dirDestino=pathBase+"/"+(new Date().getFullYear())+"/"+Utils.getMesName(mesProceso).toUpperCase()+"/"+nameProceso //path completo EJ \\192.168.100.69\sobrelaboral\Sistema_de_documentacion_laboral\2020\AGOSTO\LIQUIDACIONES\
+        let dirDestino=pathBase+"\\"+(new Date().getFullYear())+"\\"+Utils.getMesName(mesProceso).toUpperCase()+"\\"+nameProceso //path completo EJ \\192.168.100.69\sobrelaboral\Sistema_de_documentacion_laboral\2020\AGOSTO\LIQUIDACIONES\
         console.log("dirDestino",dirDestino)
         return dirDestino
      }
@@ -105,10 +106,19 @@ function getPathServerSobreLaboral(){
       
           console.log(" se respaldaran los archivos en la carpeta",newPath)
         
-          files.forEach(file=>{
-            fs.renameSync(oldPath+"\\"+file,newPath+'\\'+file)
+       //files rename no permite hacerlo entre particiones o distintos sistemas de archivos, es por ello que se reemplazó por mv Error: EXDEV: cross-device link not permitted, rename
+          //   files.forEach(file=>{
+        //    fs.renameSync(oldPath+"\\"+file,newPath+'\\'+file)
       
-          })
+        //  })
+
+        for (var i = files.length - 1; i >= 0; i--) {
+          var file = files[i];
+          mv(oldPath+"\\"+file, newPath+'\\'+file, function(err) {
+              if (err) throw err;
+             
+          });
+      }
           console.log("termino")
         
         }
