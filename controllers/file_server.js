@@ -54,7 +54,7 @@ function getPathServerSobreLaboral(){
         return dirDestino
      }
 
-     function backupFiles(oldPath,empresa){
+    async function backupFiles(oldPath,empresa){
 
         //metodo de respaldo
         //si ya existe la carpeta del mes y proceso esta se manda a carpeta respaldo del mes correspondiente
@@ -100,7 +100,7 @@ function getPathServerSobreLaboral(){
          
         //si no existe la carpeta respaldo y hay la carpeta fuente contiene archivos
         if (!fs.existsSync(newPath)&&files.length>0){
-          
+    
           fs.mkdirSync(newPath,{recursive:true});
           console.log("no existe carpeta, creada la carpeta de respaldo mes")
       
@@ -111,14 +111,19 @@ function getPathServerSobreLaboral(){
         //    fs.renameSync(oldPath+"\\"+file,newPath+'\\'+file)
       
         //  })
+        await  new Promise ( (resolve,reject)=>{
 
         for (var i = files.length - 1; i >= 0; i--) {
+          console.log("empezando mover archivos")
           var file = files[i];
-          mv(oldPath+"\\"+file, newPath+'\\'+file, function(err) {
-              if (err) throw err;
+          mv((oldPath+"\\"+file).replace(/\\/g, "/"), (newPath+'\\'+file).replace(/\\/g, "/"), function(err) {
+            console.log("empezando mover archivos2")
+              if (err) reject(err);
              
           });
       }
+      resolve()
+    })
           console.log("termino")
         
         }

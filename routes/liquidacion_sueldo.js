@@ -356,7 +356,7 @@ io.on('connection', (socket) => {
     console.log("no existe carpeta, creada la carpeta del mes")
 }else{
   console.log("existe la carpeta, se debe respaldar el contenido ")
-  FileServer.backupFiles(dirDestino,empresa)
+ await FileServer.backupFiles(dirDestino,empresa)
 
 }
    
