@@ -54,7 +54,7 @@ function getPathServerSobreLaboral(){
         return dirDestino
      }
 
-    async function backupFiles(oldPath,empresa){
+     function backupFiles(oldPath,empresa){
 
         //metodo de respaldo
         //si ya existe la carpeta del mes y proceso esta se manda a carpeta respaldo del mes correspondiente
@@ -111,23 +111,40 @@ function getPathServerSobreLaboral(){
         //    fs.renameSync(oldPath+"\\"+file,newPath+'\\'+file)
       
         //  })
-        await  new Promise ( (resolve,reject)=>{
-
+     
         for (var i = files.length - 1; i >= 0; i--) {
           console.log("empezando mover archivos")
           var file = files[i];
-          mv((oldPath+"\\"+file).replace(/\\/g, "/"), (newPath+'\\'+file).replace(/\\/g, "/"), function(err) {
-            console.log("empezando mover archivos2")
+    //      mv((oldPath+"\\"+file).replace(/\\/g, "/"), (newPath+'\\'+file).replace(/\\/g, "/"), function(err) {
+      mv(convertPath(oldPath+"\\"+file), convertPath(newPath+'\\'+file), function(err) {       
+    console.log("empezando mover archivos2")
               if (err) reject(err);
              
           });
       }
-      resolve()
-    })
+     
+  
           console.log("termino")
         
         }
       
       }
 
-     module.exports={getPathServerSobreLaboral,getDirDestinoProceso,backupFiles}
+
+    function convertPath(path){
+     // console.log("viendo path",path)
+      if (path.includes("\\\\")){
+      path=  path.replace(/\//g, '\\');
+        
+      //  console.log("el path es windows")
+      }else{
+        //path linux
+        path=  path.replace(/\\/g, "/");
+      //  console.log("el path es linux")
+      }
+     // console.log("nuevo path",path)
+     return path
+
+    }
+
+     module.exports={getPathServerSobreLaboral,getDirDestinoProceso,backupFiles,convertPath}

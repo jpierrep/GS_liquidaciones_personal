@@ -135,32 +135,6 @@ socket.on('getTest', async (uploadFileName) => {
       }
 
 
-  /*
-  let pathBase=FileServer.getPathServerSobreLaboral() //revisa acceso a carpeta destino (carpeta compartida)
-    
-  if (!pathBase){
-    socket.emit('getGlobalAlert', {messaje:"Error, no hay acceso a carpeta de sobre laboral",type:'error'})
-    return
-  }
-  let nameEmpresa
-  if (empresa==0) nameEmpresa='GUARD'
-  if (empresa==2) nameEmpresa='OUTSOURCING'
-
-  let dirDestino=pathBase+"/"+(new Date().getFullYear())+"/"+Utils.getMesName(mes).toUpperCase()+"/CERTIFICADOS/"+nameEmpresa  //path completo EJ \\192.168.100.69\sobrelaboral\Sistema_de_documentacion_laboral\2020\AGOSTO\LIQUIDACIONES\OUTSOURCING
-    console.log("dir",dirDestino)
-    
-  
-    // crea carpeta del mes en destino, si no existe 
-  if (!fs.existsSync(dirDestino)){
-  
-    fs.mkdirSync(dirDestino,{recursive:true});
-    console.log("no existe carpeta, creada la carpeta del mes")
-}else{
-  console.log("existe la carpeta, se debe elimnar el contenido ")
-
-}
-
-*/
 
 
 
@@ -390,7 +364,7 @@ async function generaFiles(tablaMapPersonas,empresa,uploadFileName,dirDestino) {
     
     let child = await  new Promise ( (resolve,reject)=>{
      // exec('pdftk ' + uploadFileName + ' cat ' + pagesCC + ' output ' + path_output_base + centro_costo + '.pdf',
-     exec('pdftk ' + uploadFileName + ' cat ' + pagesCC + ' output ' + dirDestino+'\\' + centro_costo + "-["+empresa+"]"+'-PREVIRED['+Utils.getDateFormat().substr(0,10)+']'+'.pdf',
+     exec('pdftk ' + uploadFileName + ' cat ' + pagesCC + ' output ' + FileServer.convertPath(dirDestino+'\\' + centro_costo) + "-["+empresa+"]"+'-PREVIRED['+Utils.getDateFormat().substr(0,10)+']'+'.pdf',
   
       function (error, stdout, stderr) {
         console.log('stdout: ' + stdout);

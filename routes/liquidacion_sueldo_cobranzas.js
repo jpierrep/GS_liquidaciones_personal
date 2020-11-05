@@ -152,7 +152,7 @@ io.on('connection', (socket) => {
       console.log("no existe carpeta, creada la carpeta del mes")
   }else{
     console.log("existe la carpeta, se debe respaldar el contenido ")
-    await FileServer.backupFiles(dirDestino,empresa)
+    FileServer.backupFiles(dirDestino,empresa)
 
   }
 
@@ -349,7 +349,7 @@ io.on('connection', (socket) => {
               //    stream.pipe(res);
               if (stream && !err) {
                 //ejemplo de nombre de archivo 001-001[0]-RELIQUIDACION[2020-11-12]
-                stream.pipe(fs.createWriteStream(dirDestino+"/" + centro_costo+ "-["+empresa+"]"+nameFileSuffix+ ".pdf"));
+                stream.pipe(fs.createWriteStream(FileServer.convertPath(dirDestino+"\\" + centro_costo+ "-["+empresa+"]"+nameFileSuffix+ ".pdf")));
                 // stream.pipe(res);
 
 
