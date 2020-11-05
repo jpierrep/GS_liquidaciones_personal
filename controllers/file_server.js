@@ -74,18 +74,21 @@ function getPathServerSobreLaboral(){
        let newPath=oldPath.split(pathBase)
       
         newPath=pathBase+'\\RESPALDO'+newPath[1]
-        console.log("new path",newPath)
+       
       
         //let oldPath = 'old/path/file.txt'
         //let newPath = 'new/path/file.txt'
       
          let fechaHoraString=Utils.getDateFormat() 
          newPath=newPath+"\\"+"["+empresa+"]"+fechaHoraString
-        
+        //normalizar paths antes de consultar directorios
+         oldPath=convertPath(oldPath)
+        newPath=convertPath(newPath)
+
          let files=[]
          try{
-           console.log(oldPath)
-      
+           console.log("oldPath",oldPath)
+           console.log("new path",newPath)
       
       
               //filtro de empresa
@@ -118,7 +121,7 @@ function getPathServerSobreLaboral(){
     //      mv((oldPath+"\\"+file).replace(/\\/g, "/"), (newPath+'\\'+file).replace(/\\/g, "/"), function(err) {
       mv(convertPath(oldPath+"\\"+file), convertPath(newPath+'\\'+file), function(err) {       
     console.log("empezando mover archivos2")
-              if (err) reject(err);
+              if (err) throw err;
              
           });
       }
