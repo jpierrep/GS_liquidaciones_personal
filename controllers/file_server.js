@@ -49,7 +49,7 @@ function getPathServerSobreLaboral(){
         let pathBase=getPathServerSobreLaboral() //revisa acceso a carpeta destino (carpeta compartida)
         if (!pathBase) return false //si no hay acceso a la carpeta se deberà entender como eerror
         
-        let dirDestino=pathBase+"\\"+(new Date().getFullYear())+"\\"+Utils.getMesName(mesProceso).toUpperCase()+"\\"+nameProceso //path completo EJ \\192.168.100.69\sobrelaboral\Sistema_de_documentacion_laboral\2020\AGOSTO\LIQUIDACIONES\
+        let dirDestino=convertPath(pathBase+"\\"+(new Date().getFullYear())+"\\"+Utils.getMesName(mesProceso).toUpperCase()+"\\"+nameProceso) //path completo EJ \\192.168.100.69\sobrelaboral\Sistema_de_documentacion_laboral\2020\AGOSTO\LIQUIDACIONES\
         console.log("dirDestino",dirDestino)
         return dirDestino
      }
