@@ -130,7 +130,9 @@ socket.on('getTest', async (uploadFileName) => {
           console.log("no existe carpeta, creada la carpeta del mes")
       }else{
         console.log("existe la carpeta, se debe respaldar el contenido ")
-       await FileServer.backupFiles(dirDestino,empresa)
+    
+       FileServer.backupFiles(dirDestino,empresa)
+   
     
       }
 

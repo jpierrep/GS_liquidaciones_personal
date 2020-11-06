@@ -357,7 +357,14 @@ io.on('connection', (socket) => {
 }else{
   console.log("existe la carpeta, se debe respaldar el contenido ")
   FileServer.backupFiles(dirDestino,empresa)
-
+ //if( err){
+ // console.log("errir en backup")
+ //   socket.emit('getGlobalAlert', {messaje:"Error, no es posible sobreescribir, pues existen archivos en uso "+e,type:'error'})
+  //  return
+ 
+ 
+  
+ 
 }
    
 

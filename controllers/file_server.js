@@ -119,12 +119,17 @@ function getPathServerSobreLaboral(){
           console.log("empezando mover archivos")
           var file = files[i];
     //      mv((oldPath+"\\"+file).replace(/\\/g, "/"), (newPath+'\\'+file).replace(/\\/g, "/"), function(err) {
-      mv(convertPath(oldPath+"\\"+file), convertPath(newPath+'\\'+file), function(err) {       
+   
+    mv(convertPath(oldPath+"\\"+file), convertPath(newPath+'\\'+file), function(err) {       
     console.log("empezando mover archivos2")
-              if (err) throw err;
+    if (err) throw err;
+       // if (err){ return err  }
+              
              
           });
-      }
+   
+        }
+    
      
   
           console.log("termino")
