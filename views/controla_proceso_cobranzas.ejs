@@ -186,7 +186,7 @@ let m=new Date()
     // let mesActual=m.getFullYear()+"-"((m.getMonth() + 1) > 9 ? (m.getMonth() + 1) : '0' + (m.getMonth() + 1))+"-01"
      let mesAnterior=""
      //si el mes actual es enero, se debe setear diciembre del mes anterior
-     if(m.getMonth==0){
+     if(m.getMonth()==0){
       mesAnterior=m.getFullYear()-1+"-12-01"
      }else{
       mesAnterior=m.getFullYear()+"-"+((m.getMonth() ) > 9 ? (m.getMonth()) : '0' + (m.getMonth()))+"-01"
