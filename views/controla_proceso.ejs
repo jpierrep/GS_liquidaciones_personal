@@ -650,17 +650,22 @@ $('#previred-modal-file-upload').modal('show');
 
 }
 
+
 function bloqueaProcesos(){
 
-  console.log("el mes selected es",parseInt($("#mes-select").val().substr(5,2)),(new Date()).getMonth()+1 )
-  $('#liquidacion-empieza').attr("disabled", false);
-  $('#reliquidacion-empieza').attr("disabled", false);
- if (parseInt($("#mes-select").val().substr(5,2))< (new Date()).getMonth()+1 ){
-  $('#liquidacion-empieza').attr("disabled", true); 
+let m=new Date()
+let mesActualInt =parseInt(m.getFullYear()+((m.getMonth()+1 ) > 9 ? (m.getMonth()+1) : '0' + (m.getMonth()+1)))
+
+//console.log("el mes selected es",parseInt($("#mes-select").val().substr(5,2)),(new Date()).getMonth()+1 )
+console.log("el mes selected es",parseInt($("#mes-select").val().substr(0,7).replace('-','')),mesActualInt)
+$('#liquidacion-empieza').attr("disabled", false);
+$('#reliquidacion-empieza').attr("disabled", false);
+if (parseInt($("#mes-select").val().substr(0,7).replace('-',''))< mesActualInt){
+$('#liquidacion-empieza').attr("disabled", true); 
 }
-if (parseInt($("#mes-select").val().substr(5,2))>= (new Date()).getMonth()+1 ){
-  $('#reliquidacion-empieza').attr("disabled", true); 
-  
+if (parseInt($("#mes-select").val().substr(0,7).replace('-',''))>= mesActualInt){
+$('#reliquidacion-empieza').attr("disabled", true); 
+
 }
 
 
