@@ -321,9 +321,19 @@
       "VAR_VALOR": 10000
     },
     {
-      "VAR_NOMBRE": "ASIGNACION DE COLACION POR HORA",
+      "VAR_NOMBRE": "ASIG. ESPECIAL EVENTUAL",
       "COLUMNA": 1,
       "POSICION": 33,
+      "OFFSET": null,
+      "TIPO": "NORMAL",
+      "VAR_CODI": "P096",
+      "SECTION": "BODY",
+      "VAR_VALOR": 10000
+    },
+    {
+      "VAR_NOMBRE": "ASIGNACION DE COLACION POR HORA",
+      "COLUMNA": 1,
+      "POSICION": 34,
       "OFFSET": null,
       "TIPO": "NORMAL",
       "VAR_CODI": "H063",
@@ -333,7 +343,7 @@
     {
       "VAR_NOMBRE": "ASIGNACION DE COLACION POR DIA",
       "COLUMNA": 1,
-      "POSICION": 34,
+      "POSICION": 35,
       "OFFSET": null,
       "TIPO": "NORMAL",
       "VAR_CODI": "H065",
@@ -343,7 +353,7 @@
     {
       "VAR_NOMBRE": "ASIGNACION POR PERDIDA DE CAJA ",
       "COLUMNA": 1,
-      "POSICION": 35,
+      "POSICION": 36,
       "OFFSET": null,
       "TIPO": "NORMAL",
       "VAR_CODI": "H025",
@@ -353,7 +363,7 @@
     {
       "VAR_NOMBRE": "ASIGNACION POR PERDIDA DE CAJA POR DIA",
       "COLUMNA": 1,
-      "POSICION": 36,
+      "POSICION": 37,
       "OFFSET": null,
       "TIPO": "NORMAL",
       "VAR_CODI": "H027",
@@ -363,7 +373,7 @@
     {
       "VAR_NOMBRE": "ASIGNACION POR PERDIDA DE CAJA POR HORA",
       "COLUMNA": 1,
-      "POSICION": 37,
+      "POSICION": 38,
       "OFFSET": null,
       "TIPO": "NORMAL",
       "VAR_CODI": "H026",
@@ -373,7 +383,7 @@
     {
       "VAR_NOMBRE": "ASIGNACION MOV.ADIC.PACTADA",
       "COLUMNA": 1,
-      "POSICION": 38,
+      "POSICION": 39,
       "OFFSET": null,
       "TIPO": "NORMAL",
       "VAR_CODI": "H085",
@@ -383,7 +393,7 @@
     {
       "VAR_NOMBRE": "BONO LEY 20262",
       "COLUMNA": 1,
-      "POSICION": 39,
+      "POSICION": 40,
       "OFFSET": null,
       "TIPO": "NORMAL",
       "VAR_CODI": "H080",
@@ -393,7 +403,7 @@
     {
       "VAR_NOMBRE": "ASIGNACION FAMILIAR RETROACTIVA",
       "COLUMNA": 1,
-      "POSICION": 40,
+      "POSICION": 41,
       "OFFSET": null,
       "TIPO": "NORMAL",
       "VAR_CODI": "H072",
@@ -403,7 +413,7 @@
     {
       "VAR_NOMBRE": "ASIGNACION DE MOVILIZACION ADICIONAL",
       "COLUMNA": 1,
-      "POSICION": 41,
+      "POSICION": 42,
       "OFFSET": null,
       "TIPO": "NORMAL",
       "VAR_CODI": "H073",
@@ -413,7 +423,7 @@
     {
       "VAR_NOMBRE": "ASIGNACION FAMILIAR DEL MES",
       "COLUMNA": 1,
-      "POSICION": 42,
+      "POSICION": 43,
       "OFFSET": null,
       "TIPO": "NORMAL",
       "VAR_CODI": "H071",
@@ -423,7 +433,7 @@
     {
       "VAR_NOMBRE": "ASIG.USO VEHICULO",
       "COLUMNA": 1,
-      "POSICION": 43,
+      "POSICION": 44,
       "OFFSET": 1,
       "TIPO": "NORMAL",
       "VAR_CODI": "H351",
@@ -433,7 +443,7 @@
     {
       "VAR_NOMBRE": "TOTAL HABERES NO IMPONIBLES",
       "COLUMNA": 1,
-      "POSICION": 44,
+      "POSICION": 45,
       "OFFSET": 1,
       "TIPO": "TOTAL",
       "VAR_CODI": "H200",
@@ -443,7 +453,7 @@
     {
       "VAR_NOMBRE": "TOTAL HABERES",
       "COLUMNA": 1,
-      "POSICION": 45,
+      "POSICION": 46,
       "OFFSET": 1,
       "TIPO": "TOTAL",
       "VAR_CODI": "H300",
