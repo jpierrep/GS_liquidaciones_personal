@@ -167,13 +167,13 @@ io.on('connection', (socket) => {
 
     //añadiendo el guion en el nombre del proceso se puede identificar sin problemas
     if (proceso == "reliquidacion")
-      controlProceso = "-reliquida"
+      controlProceso = "-reliquida-"
     if (proceso == "liquidacion")
-      controlProceso = "-liquida"
+      controlProceso = "-liquida-"
       if (proceso == "previred")
-      controlProceso = "-previred"
+      controlProceso = "-previred-"
       if (proceso == "liquidacionCobranzas")
-      controlProceso = "-liquidaCobranzas"
+      controlProceso = "-liquidaCobranzas-"
 
       
 
