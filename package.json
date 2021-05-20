@@ -18,7 +18,7 @@
     "ejs": "^2.7.1",
     "express": "^4.16.3",
     "express-myconnection": "^1.0.4",
-    "html-pdf": "^2.2.0",
+    "html-pdf": "^3.0.1",
     "json-stringify": "^1.0.0",
     "moment": "^2.22.2",
     "mssql": "^3.3.0",
