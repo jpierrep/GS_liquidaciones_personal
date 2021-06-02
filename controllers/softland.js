@@ -103,6 +103,9 @@ async function getFichasInfoPromiseMes(fichas, empresa, mes) {
   per.ficha as FICHA,per.nombres as NOMBRES,per.rut as RUT,c.CarNom as CARGO_DESC,cc.CodiCC as CENCO2_CODI,cc1.DescCC as CENCO1_DESC,cc.DescCC  as CENCO2_DESC
   ,area.codArn as AREA_CODI,area_desc.DesArn as AREA_DESC,per.tipoPago as TIPO_PAGO,isapre.CodIsapre as ISAPRE_CODI,isapre.nombre as ISAPRE_NOMBRE,afp.CodAFP as AFP_CODI, afp.nombre as AFP_NOMBRE,cargas.cant_cargas as CANT_CARGAS
   ,isnull(per.numCtaCte,'') as NUM_CUENTA
+  ,per.CodTipEfe as COD_TIP_EFE
+  ,per.codBancoSuc as COD_BANCO_SUC
+  ,banco.descripcion as BANCO_DESC
   FROM 
                            `+ empresaDetalle + `.softland.sw_personal AS per INNER JOIN
                            `+ empresaDetalle + `.softland.sw_cargoper AS cp ON cp.ficha = per.Ficha AND '` + mes + `' between cp.vigDesde and cp.vigHasta  INNER JOIN
@@ -117,6 +120,7 @@ async function getFichasInfoPromiseMes(fichas, empresa, mes) {
                            `+ empresaDetalle + `.softland.sw_isapreper as isapre_per on isapre_per.ficha=per.ficha  AND '` + mes + `' between isapre_per.vigDesde and isapre_per.vigHasta   LEFT OUTER JOIN
                            `+ empresaDetalle + `.softland.sw_isapre as isapre on isapre.CodIsapre=isapre_per.codIsapre LEFT OUTER JOIN
                            `+ empresaDetalle + `.softland.cwtaren AS area_desc ON area.codArn = area_desc.CodArn  LEFT OUTER JOIN
+                           `+ empresaDetalle + `.softland.sw_banco_suc as banco on per.codBancoSuc=banco.codBancoSuc LEFT OUTER JOIN
                            (SELECT ficha,count(*) as cant_cargas  FROM `+ empresaDetalle + `.softland.sw_cargas where  '` + mes + `' between vigDesde and vigHasta	group by ficha) cargas  on cargas.ficha=per.ficha
   
                            where per.ficha in (:fichas)

@@ -42,9 +42,12 @@ var ip='0.0.0.0';
     var liquidacion_sueldo=require('./routes/liquidacion_sueldo')
     var liquidacion_sueldo_cobranzas=require('./routes/liquidacion_sueldo_cobranzas')
     var read_pdf=require('./routes/read_pdf_certificado')
+    var nomina_bancaria=require('./routes/nomina_bancaria')
+
      app.use('/liquidacion_sueldo',liquidacion_sueldo)
      app.use('/liquidacion_sueldo_cobranzas',liquidacion_sueldo_cobranzas)
      app.use('/readPdf',read_pdf)
+     app.use('/nomina_bancaria',nomina_bancaria)
      console.log("Holaa")
    
     
