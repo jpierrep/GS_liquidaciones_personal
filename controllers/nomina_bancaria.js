@@ -15,6 +15,7 @@ const Utils = require('../controllers/utils');
 var sql = require('../config/connections')
 var fs = require('fs');
 var formidable = require('formidable');
+var pdf = require('html-pdf');
 var utils = require('./utils')
 let data=require('../data.json')
 const io = require('../index');
@@ -159,9 +160,70 @@ return persona
 
 })
 
+
+var options = {
+    format: 'Letter',
+    header:{height: "80mm"},
+    footer: {
+        height: "28mm",
+        contents: {
+
+       //   default: '<span style="color: #444;">{{page}}</span>/<span>{{pages}}</span>'// fallback value
+       default: '<span style="color: #444;">Página {{page}}</span>'// fallback value    
+    }
+        },
+    orientation:'landscape',
+    border: {
+      top: "1cm",
+      right: "1cm",
+      bottom: "2cm",
+      left: "1cm"
+    },
+    timeout: 30000,
+
+  };
+     
+     let sumNomina= nominaPago.reduce((sum, b) => { return sum + parseInt(b.valor) }, 0);
+     let cantRegistros=nominaPago.length
+     let datosNomina={MONTO_TOTAL:sumNomina,NUM_REGISTROS:cantRegistros}
+
+               console.log("sum nomina",sumNomina)
+
+
 //res.status(200).send(infoPersonas)
 
-res.render("../views/nomina_bancaria", { nomina: infoPersonas });
+res.render("../views/nomina_bancaria", { nomina: infoPersonas,datosNomina:datosNomina }, async function (err, data) {
+
+    let liquidacionID = "10.010-JEAN-TEST"
+    let html = data;
+    //   console.log("HTML",html)
+    try {
+
+
+      pdf.create(html, options).toStream(function (err, stream) {
+
+        res.setHeader('Content-disposition', 'inline; filename="Cotizacion-' + liquidacionID + '.pdf"');
+        res.setHeader('Content-Type', 'application/pdf');
+        stream.pipe(res);
+
+      })
+
+
+
+
+
+
+
+    } catch (e) {
+      console.log(e)
+    }
+
+
+
+  });
+
+
+
 
 
   
