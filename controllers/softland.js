@@ -99,8 +99,8 @@ async function getFichasInfoPromiseMes(fichas, empresa, mes) {
   //console.log("mes proceso", mesIndiceSoftland)
 
   return new Promise(async  resolve => {
-    let fichasInfo = await sequelizeMssql.query(`SELECT     
-  per.ficha as FICHA,per.nombres as NOMBRES,per.rut as RUT,c.CarNom as CARGO_DESC,cc.CodiCC as CENCO2_CODI,cc1.DescCC as CENCO1_DESC,cc.DescCC  as CENCO2_DESC
+    let fichasInfo = await sequelizeMssql.query(`SELECT  per.nombre+' '+per.appaterno+' '+per.appaterno as NOMBRES_ORD  
+  ,per.ficha as FICHA,per.nombres as NOMBRES,per.rut as RUT,c.CarNom as CARGO_DESC,cc.CodiCC as CENCO2_CODI,cc1.CodiCC as CENCO1_CODI,cc1.DescCC as CENCO1_DESC,cc.DescCC  as CENCO2_DESC
   ,area.codArn as AREA_CODI,area_desc.DesArn as AREA_DESC,per.tipoPago as TIPO_PAGO,isapre.CodIsapre as ISAPRE_CODI,isapre.nombre as ISAPRE_NOMBRE,afp.CodAFP as AFP_CODI, afp.nombre as AFP_NOMBRE,cargas.cant_cargas as CANT_CARGAS
   ,isnull(per.numCtaCte,'') as NUM_CUENTA
   ,per.CodTipEfe as COD_TIP_EFE

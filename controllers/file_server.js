@@ -42,7 +42,9 @@ function getPathServerSobreLaboral(){
             nameProceso='certificados'
         } if (proceso=='liquidacioncobranzas'){
             nameProceso='liquidaciones-cobranzas'
-        }
+        } if (proceso=='nominabancaria'){
+          nameProceso='nominas-bancarias'
+      }
 
         //empresa no se utilizará de momento pero podrìa separse eventualmente carpetas por empresa
 

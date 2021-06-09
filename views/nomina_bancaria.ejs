@@ -41,19 +41,19 @@
     <tbody class="u-table-body u-block-e21a-61">
         <tr style="height: 26px;">
             <td class="u-table-cell u-block-e21a-62">Rut</td>
-            <td class="u-table-cell u-block-e21a-63">79xxxxxx</td>
-            <td class="u-table-cell u-block-e21a-64"></td><td class="u-table-cell u-block-e21a-79">Nomina</td><td class="u-table-cell u-block-e21a-80">xxxx</td><td class="u-table-cell u-block-e21a-81"></td><td class="u-table-cell u-block-e21a-92">&nbsp;Fecha Pago</td><td class="u-table-cell u-block-e21a-97">xxxx</td>
+            <td class="u-table-cell u-block-e21a-63">76,924,640</td>
+            <td class="u-table-cell u-block-e21a-64"></td><td class="u-table-cell u-block-e21a-79">Nomina</td><td class="u-table-cell u-block-e21a-80">PRIMERA QUINCENAPT</td><td class="u-table-cell u-block-e21a-81"></td><td class="u-table-cell u-block-e21a-92">&nbsp;Fecha Pago</td><td class="u-table-cell u-block-e21a-97">30-05-2021</td>
         </tr>
         <tr style="height: 41px;">
             <td class="u-table-cell u-block-e21a-65">Fecha Actual<br></td>
-            <td class="u-table-cell u-block-e21a-66">xxxxx</td>
-            <td class="u-table-cell u-block-e21a-67"></td><td class="u-table-cell u-block-e21a-82">Tipo</td><td class="u-table-cell u-block-e21a-83">xxxx</td><td class="u-table-cell u-block-e21a-84"></td><td class="u-table-cell u-block-e21a-93">Monto Total</td><td class="u-table-cell u-block-e21a-98"><%= datosNomina.MONTO_TOTAL %></td>
+            <td class="u-table-cell u-block-e21a-66">07-06-2021</td>
+            <td class="u-table-cell u-block-e21a-67"></td><td class="u-table-cell u-block-e21a-82">Tipo</td><td class="u-table-cell u-block-e21a-83">REMUNERACIONES</td><td class="u-table-cell u-block-e21a-84"></td><td class="u-table-cell u-block-e21a-93">Monto Total</td><td class="u-table-cell u-block-e21a-98"><%= datosNomina.MONTO_TOTAL %></td>
         </tr>
         <tr style="height: 44px;">
             <td class="u-table-cell u-block-e21a-68">Hora</td>
-            <td class="u-table-cell u-block-e21a-69">xxxxxxx</td>
-            <td class="u-table-cell u-block-e21a-70"></td><td class="u-table-cell u-block-e21a-85">&nbsp;Convenio</td><td class="u-table-cell u-block-e21a-86">xxxxx</td><td class="u-table-cell u-block-e21a-87"></td><td class="u-table-cell u-block-e21a-94">Tipo de Proceso</td><td class="u-table-cell u-block-e21a-99">xxxx</td>
-        </tr><tr style="height: 48px;"><td class="u-table-cell u-block-e21a-101">No Registros</td><td class="u-table-cell u-block-e21a-102"><%= datosNomina.NUM_REGISTROS %></td><td class="u-table-cell u-block-e21a-103"></td><td class="u-table-cell u-block-e21a-104"></td><td class="u-table-cell u-block-e21a-105"></td><td class="u-table-cell u-block-e21a-106"></td><td class="u-table-cell u-block-e21a-107"></td><td class="u-table-cell u-block-e21a-108"></td></tr>
+            <td class="u-table-cell u-block-e21a-69">12:11:20</td>
+            <td class="u-table-cell u-block-e21a-70"></td><td class="u-table-cell u-block-e21a-85">&nbsp;Convenio</td><td class="u-table-cell u-block-e21a-86">001</td><td class="u-table-cell u-block-e21a-87"></td><td class="u-table-cell u-block-e21a-94">Tipo de Proceso</td><td class="u-table-cell u-block-e21a-99">PAGOS</td>
+        </tr><tr style="height: 48px;"><td class="u-table-cell u-block-e21a-101">Nº Registros</td><td class="u-table-cell u-block-e21a-102"><%= datosNomina.NUM_REGISTROS %></td><td class="u-table-cell u-block-e21a-103"></td><td class="u-table-cell u-block-e21a-104"></td><td class="u-table-cell u-block-e21a-105"></td><td class="u-table-cell u-block-e21a-106"></td><td class="u-table-cell u-block-e21a-107"></td><td class="u-table-cell u-block-e21a-108"></td></tr>
     </tbody>
     <tfoot class="hidden u-table-footer u-block-e21a-71">
         <tr class="hidden u-block-e21a-72">
@@ -90,13 +90,13 @@
         
         <% for (var i = 0;i < nomina.length;i++){ %>
             <tr style="height: 40px;">
-                <td ><%= nomina[i].NOMBRES %></td>
-                <td ><%= nomina[i].RUT %></td>
+                <td ><%= nomina[i].NOMBRES_ORD %></td>
+                <td ><%= new Intl.NumberFormat('en-US', {style: 'decimal'}).format(nomina[i].RUT.substr(0,(nomina[i].RUT.length-2)).replace(/\./g,'')) + nomina[i].RUT.substr(nomina[i].RUT.length-2,2)%></td>
                 <td ><%= nomina[i].MEDIO_PAGO %></td>
                 <td ><%= nomina[i].OF_DESTINO %></td>
                 <td ><%= nomina[i].BANCO_GLOSA %></td>
                 <td ><%= nomina[i].NUM_CUENTA %></td>
-                <td ><%= nomina[i].MONTO %></td>
+                <td ><%= new Intl.NumberFormat('en-US', {style: 'decimal'}).format(nomina[i].MONTO)  %></td>
                
                
                 
