@@ -170,20 +170,20 @@ return persona
 
 var options = {
     format: 'Letter',
-    header:{height: "80mm"},
+    header:{height: "83mm"},
     footer: {
         height: "18mm",
         contents: {
 
        //   default: '<span style="color: #444;">{{page}}</span>/<span>{{pages}}</span>'// fallback value
-       default: '<span style="color: #444;">Página {{page}}</span>'// fallback value    
+       default: '<span style="color: #444;  font-size: 11px; font-weight: bold; font-family: Courier New, Courier, monospace;">Página {{page}}</span>'// fallback value    
     }
         },
     orientation:'landscape',
     border: {
-      top: "1cm",
+      top: "0cm",
       right: "1cm",
-      bottom: "1cm",
+      bottom: "0cm",
       left: "1cm"
     },
     timeout: 30000,
@@ -406,31 +406,27 @@ await generaFiles(infoPersonas,'NOMBRES',dirDestino+"/PERSONA",empresa)
 
 async function generaFiles(data, filterField,dirDestino,empresa){
 
-
-
-
   var options = {
     format: 'Letter',
-    header:{height: "80mm"},
+    header:{height: "83mm"},
     footer: {
         height: "18mm",
         contents: {
 
        //   default: '<span style="color: #444;">{{page}}</span>/<span>{{pages}}</span>'// fallback value
-       default: '<span style="color: #444;">Página {{page}}</span>'// fallback value    
+       default: '<span style="color: #444;  font-size: 11px; font-weight: bold; font-family: Courier New, Courier, monospace;">Página {{page}}</span>'// fallback value    
     }
         },
     orientation:'landscape',
     border: {
-      top: "1cm",
+      top: "0cm",
       right: "1cm",
-      bottom: "1cm",
+      bottom: "0cm",
       left: "1cm"
     },
     timeout: 30000,
 
   };
-
 
   let distinctFiles= data.map(x => { return x[filterField] }).filter(unique)
  
