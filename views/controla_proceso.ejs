@@ -164,6 +164,41 @@
         </div>
       </div>
 
+<!--      NOMINAS BANCARIAS     -->
+      <div class="col-sm-12">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">Nóminas Bancarias
+              <a class='ui-all' style=" font-weight: normal;font-size: 1rem;" tabindex='-1' id="nominas-log-modal-button"
+                data-toggle="modal" data-target="#exampleModalCenter">
+                [logs]
+              </a>
+
+            </h5> <!-- Button trigger modal -->
+
+
+            <p class="card-text">Genera Nominas de pago del mes.</p>
+            <div class="row">
+              <div class="col-1">
+                <button type="button" id="nominas-empieza" class="btn btn-primary">Ejecutar</button>
+              </div>
+              <div class="col-8 " style="padding:10px;margin: auto">
+
+                <div name="nominas-loader" class=" progress">
+                  <div id='nominas-progress' class="progress-bar progress-bar-striped progress-bar-animated "
+                    role="progressbar" aria-valuenow="5" aria-valuemin="0" aria-valuemax="100" style="width: 5%">5%</div>
+
+                </div>
+
+              </div>
+              <div class="col-1">
+                <span name="nominas-loader " id="nominas-cc-status"> </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+<!--    FIN  NOMINAS BANCARIAS     -->
 
     </div>
 
@@ -443,6 +478,20 @@
     });
 
 
+    $('#nominas-empieza').click(function () {
+      $('#nominas-alert').hide(); 
+
+    
+    procesoSelected="nominabancaria"
+      let empresa = $("#empresa-select").val();
+      let mes = $("#mes-select").val();      
+      socket.emit("getExistsDirDestino", { empresa: empresa, mes: mes,proceso:procesoSelected });
+  
+
+    });
+
+
+
 
 
     //ojo que para reconocer los elementos dinamicos se debe usar el on click y no click como funcion
@@ -599,6 +648,35 @@
     });
 
 
+    socket.on('getStatusNominasBancarias', function (data) {
+
+if (!data.isExecuting) {
+  
+  $("#mes-select").attr("disabled", false);
+  $("#empresa-select").attr("disabled", false);
+
+  $("[name='nominas-loader']").hide()
+  $('#nominas-empieza').attr("disabled", false);
+  $('#nominas-cc-status').text("")
+}
+
+else {
+  $("#mes-select").attr("disabled", true);
+  $("#empresa-select").attr("disabled", true);
+  //muestra en el select la empresa que se está ejecutando
+  $("#empresa-select").val(data.userParams.empresa);
+  $("#mes-select").val(data.userParams.mes);
+
+  $("[name='nominas-loader']").show()
+  $('#nominas-empieza').attr("disabled", true);
+  $('#nominas-cc-status').text(data.msgs[0])
+  $('#nominas-progress').attr('style', "width:" + data.percent + "%")
+  $('#nominas-progress').attr('aria-valuenow', data.percent)
+  $('#nominas-progress').text(data.percent + "%")
+}
+});
+
+
         socket.on('getGlobalAlert', function (data) {
         //data.type: error (rojo), success (verde), warning (amarillo)
         var alertClass
@@ -645,7 +723,17 @@ if(procesoSelected=="liquidacion"){
 $('#previred-modal-file-upload').modal('show'); 
 
 
+}if(procesoSelected=="nominabancaria"){
+
+var empresa = $("#empresa-select").val();
+var mes = $("#mes-select").val();
+$("[name='nominas-loader']").show()
+socket.emit("getNominasBancarias", { empresa: empresa, mes: mes });
+
+
 }
+
+
 
 
 }

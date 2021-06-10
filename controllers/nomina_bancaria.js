@@ -1,7 +1,7 @@
 'use strict'
 
     /**
-    * Métodos para la generación de archivos pdf Previred
+    * Métodos para la generación de archivos pdf NominasBancarias
     * @module /controllers/read_pdf_certificado
     */
 var express = require('express');
@@ -238,11 +238,87 @@ res.render("../views/nomina_bancaria", { nomina: infoPersonas,datosNomina:datosN
 }
 
 
-async function getMontosNominaFiles (req,res) {
+var StatusNominasBancariasTemplate = {
+
+  isExecuting: false,
+  percent: 0,
+  msgs: []
+}
+
+var StatusNominasBancarias = JSON.parse(JSON.stringify(StatusNominasBancariasTemplate))
+
+/** 
+ * Funcion del socket
+ * @constructor
+ * @param {socket} socket - El directorio local donde se subió el archivo pdf necesario para el proces.
+
+*/
+
+
+io.on('connection', (socket) => {
+
+  socket.emit('getStatusNominasBancarias', StatusNominasBancarias)
+
+  socket.on('getTest', async (uploadFileName) => {
+  })
+  
+    socket.on('getNominasBancarias', async (empresa,mes) => {
+  
+      //data trae la info del mes y la empresa del proceso
+      console.log("se empieza a ejecutar proceso Nominas: "+empresa+" "+mes)
+  
+    
+      StatusNominasBancarias = JSON.parse(JSON.stringify(StatusNominasBancariasTemplate))
+      StatusNominasBancarias.isExecuting = true
+      StatusNominasBancarias.userParams={mes:mes,empresa:empresa}
+     // StatusNominasBancarias.userParams={mes:dataUser["mes"],empresa:dataUser["empresa"]}
+  
+      io.emit('getStatusNominasBancarias', StatusNominasBancarias)
+      await getNominasBancarias(empresa,mes)
+      StatusNominasBancarias.isExecuting = 0
+      io.emit('getStatusNominasBancarias', StatusNominasBancarias)
+  
+    });
+  
+
+
+async function getNominasBancarias () {
+
+  
+
+	var startTime = new Date();
+
+	let pathLogs = 'data-logs/'
+  let nameLogFile='previred'
 
   let variableBase='D066'
   let mesProceso='2021-05-01'
   let empresa=0
+
+  console.log("comienza el proceso nominas bancarias",empresa,mesProceso)
+
+
+  let dirDestino=FileServer.getDirDestinoProceso('nominabancaria',mesProceso,empresa)
+  if (!dirDestino){
+    socket.emit('getGlobalAlert', {messaje:"Error, no hay acceso a carpeta de sobre laboral",type:'error'})
+    return
+  }
+
+        // crea carpeta del mes en destino, si no existe 
+        if (!fs.existsSync(dirDestino)){
+    
+          fs.mkdirSync(dirDestino,{recursive:true});
+
+          console.log("no existe carpeta, creada la carpeta del mes")
+      }else{
+        console.log("existe la carpeta, se debe respaldar el contenido ")
+    
+     ////BACKUP FILES  FileServer.backupFiles(dirDestino,empresa)
+   
+    
+      }
+
+
 
   let nominaPago = await sequelizeMssql
       .query(`
@@ -305,66 +381,19 @@ return persona
              console.log("sum nomina",sumNomina)
 
 
-//res.status(200).send(infoPersonas)
 
 
-//config fileserver
-let tipoProceso='nominabancaria'
-let dirDestino=FileServer.getDirDestinoProceso(tipoProceso,mesProceso,empresa)
+    fs.mkdirSync(dirDestino+"/CLIENTE",{recursive:true});
+
+  await generaFiles(infoPersonas,'CENCO1_CODI',dirDestino+"/CLIENTE",empresa)
 
 
-
-dirDestino='./testNominas/CLIENTE'
-
-    // crea carpeta del mes en destino, si no existe 
-    if (!fs.existsSync(dirDestino)){
-  
-      fs.mkdirSync(dirDestino,{recursive:true});
-      console.log("no existe carpeta, creada la carpeta del mes")
-  }else{
-    console.log("existe la carpeta, se debe respaldar el contenido ")
-    //////// activarla al final FileServer.backupFiles(dirDestino,empresa)
+  fs.mkdirSync(dirDestino+"/INSTALACION",{recursive:true});
+  await generaFiles(infoPersonas,'CENCO2_CODI',dirDestino+"/INSTALACION",empresa)
 
 
-  }
-
-  await generaFiles(infoPersonas,'CENCO1_CODI',dirDestino,empresa)
-
-
-
-  dirDestino='./testNominas/INSTALACION'
-
-    // crea carpeta del mes en destino, si no existe 
-    if (!fs.existsSync(dirDestino)){
-  
-      fs.mkdirSync(dirDestino,{recursive:true});
-      console.log("no existe carpeta, creada la carpeta del mes")
-  }else{
-    console.log("existe la carpeta, se debe respaldar el contenido ")
-    //////// activarla al final FileServer.backupFiles(dirDestino,empresa)
-
-
-  }
-
-  await generaFiles(infoPersonas,'CENCO2_CODI',dirDestino,empresa)
-
-
-
-  dirDestino='./testNominas/PERSONA'
-
-  // crea carpeta del mes en destino, si no existe 
-  if (!fs.existsSync(dirDestino)){
-
-    fs.mkdirSync(dirDestino,{recursive:true});
-    console.log("no existe carpeta, creada la carpeta del mes")
-}else{
-  console.log("existe la carpeta, se debe respaldar el contenido ")
-  //////// activarla al final FileServer.backupFiles(dirDestino,empresa)
-
-
-}
-
-await generaFiles(infoPersonas,'NOMBRES',dirDestino,empresa)
+  fs.mkdirSync(dirDestino+"/PERSONA",{recursive:true});
+await generaFiles(infoPersonas,'NOMBRES',dirDestino+"/PERSONA",empresa)
 
 
 
@@ -460,7 +489,10 @@ var options = {
     }))
     //termina iteracion
 
-  
+
+    StatusNominasBancarias.msgs[0] = distinctFile
+    StatusNominasBancarias.percent = parseInt((i + 1) / distinctFiles.length * 100)
+    io.emit('getStatusNominasBancarias', StatusNominasBancarias)
   }
   //termina for de nominas
 
@@ -470,11 +502,16 @@ var options = {
 
 }
 
+})
+//cierra socket
+
+
 
 var unique = (value, index, self) => {
     return self.indexOf(value) == index;
   }
 
+
 module.exports = {
-    getMontosNomina,getMontosNominaPDF,getMontosNominaFiles
+    getMontosNomina,getMontosNominaPDF
   }

@@ -5,6 +5,6 @@ var NominaBancariaController=require('../controllers/nomina_bancaria');
 
 api.get('/test',NominaBancariaController.getMontosNomina);
 api.get('/testPDF',NominaBancariaController.getMontosNominaPDF);
-api.get('/testFiles',NominaBancariaController.getMontosNominaFiles);
+//api.get('/testFiles',NominaBancariaController.getMontosNominaFiles);
 
 module.exports=api;
