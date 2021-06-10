@@ -73,18 +73,6 @@
 </div>
 
 <table class="unstyledTable">
-
-  <colgroup>
-     
-    <col width="15%">
-    <col width="8%">
-    <col width="18%">
-    <col width="10%">
-    <col width="13%">
-    <col width="15%">
-    <col width="15%">
-   
-</colgroup>
     <thead>
     <tr>
     <th>Nombre</th>
@@ -101,12 +89,12 @@
 
         
         <% for (var i = 0;i < nomina.length;i++){ %>
-            <tr >
-                <td ><%= nomina[i].NOMBRES_ORD.substr(0,23) %></td>
+            <tr style="height: 40px;">
+                <td ><%= nomina[i].NOMBRES_ORD %></td>
                 <td ><%= new Intl.NumberFormat('en-US', {style: 'decimal'}).format(nomina[i].RUT.substr(0,(nomina[i].RUT.length-2)).replace(/\./g,'')) + nomina[i].RUT.substr(nomina[i].RUT.length-2,2)%></td>
-                <td ><%= nomina[i].MEDIO_PAGO.substr(0,30) %></td>
+                <td ><%= nomina[i].MEDIO_PAGO %></td>
                 <td ><%= nomina[i].OF_DESTINO %></td>
-                <td ><%= nomina[i].BANCO_GLOSA.substr(0,21) %></td>
+                <td ><%= nomina[i].BANCO_GLOSA %></td>
                 <td ><%= nomina[i].NUM_CUENTA %></td>
                 <td ><%= new Intl.NumberFormat('en-US', {style: 'decimal'}).format(nomina[i].MONTO)  %></td>
                
@@ -180,27 +168,18 @@
 <style>
     table.unstyledTable {
   font-family: "Courier New", Courier, monospace;
-  border-spacing: 0px;
- 
-  
+
 }
 
 table.unstyledTable tbody td {
-  font-size: 10px;
-
+  font-size: 12px;
 }
-table.unstyledTable tbody tr {
-  height: 20px;
-
+table.unstyledTable td, table.unstyledTable th {
+  border: 0px solid #AAAAAA;
+  padding: 4px 6px;
 }
-table.unstyledTable td, table.unstyledTable th, table.unstyledTable th {
-  /*border: 3px solid #190fa3; */
-  padding: 0px 1px;
-  margin: 0px; 
-  
-   
-}
-
+table.unstyledTable thead {
+  }
 table.unstyledTable thead th {
   font-size: 15px;
   font-weight: bold;

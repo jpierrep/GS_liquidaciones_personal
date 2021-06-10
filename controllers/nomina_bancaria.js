@@ -172,7 +172,7 @@ var options = {
     format: 'Letter',
     header:{height: "80mm"},
     footer: {
-        height: "28mm",
+        height: "18mm",
         contents: {
 
        //   default: '<span style="color: #444;">{{page}}</span>/<span>{{pages}}</span>'// fallback value
@@ -183,7 +183,7 @@ var options = {
     border: {
       top: "1cm",
       right: "1cm",
-      bottom: "2cm",
+      bottom: "1cm",
       left: "1cm"
     },
     timeout: 30000,
@@ -409,27 +409,27 @@ async function generaFiles(data, filterField,dirDestino,empresa){
 
 
 
-var options = {
-  format: 'Letter',
-  header:{height: "80mm"},
-  footer: {
-      height: "28mm",
-      contents: {
+  var options = {
+    format: 'Letter',
+    header:{height: "80mm"},
+    footer: {
+        height: "18mm",
+        contents: {
 
-     //   default: '<span style="color: #444;">{{page}}</span>/<span>{{pages}}</span>'// fallback value
-     default: '<span style="color: #444;">Página {{page}}</span>'// fallback value    
-  }
-      },
-  orientation:'landscape',
-  border: {
-    top: "1cm",
-    right: "1cm",
-    bottom: "2cm",
-    left: "1cm"
-  },
-  timeout: 30000,
+       //   default: '<span style="color: #444;">{{page}}</span>/<span>{{pages}}</span>'// fallback value
+       default: '<span style="color: #444;">Página {{page}}</span>'// fallback value    
+    }
+        },
+    orientation:'landscape',
+    border: {
+      top: "1cm",
+      right: "1cm",
+      bottom: "1cm",
+      left: "1cm"
+    },
+    timeout: 30000,
 
-};
+  };
 
 
   let distinctFiles= data.map(x => { return x[filterField] }).filter(unique)
