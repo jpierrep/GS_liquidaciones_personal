@@ -26,6 +26,7 @@ var ProcessActual = 0
 var sequelizeMssql = require('../config/connection_mssql')
 var SoftlandController = require('../controllers/softland');
 const VariablesFicha = sequelizeMssql.import('../models/soft_variables_ficha');
+var  VariablesNominasBancarias = require('../config/' + constants.NOMINAS_BANCARIAS_VARIABLES["FILENAME"]) 
 
 
 async function getMontosNomina (req,res) {
@@ -140,6 +141,8 @@ async function getMontosNominaPDF (req,res) {
   let fichasNominaPago = nominaPago.map(x => { return x.ficha }).filter(unique)//.slice(0, 3)
 
 let infoPersonas = (await SoftlandController.getFichasInfoPromiseMes(fichasNominaPago, empresa, mesProceso))
+//quita personas con rol privado y ordena por nombre
+infoPersonas=infoPersonas.filter(x=>x["ROL_PRIVADO"]=='N').sort((a, b) => (a["NOMBRES_ORD"] > b["NOMBRES_ORD"]) ? 1 : -1)
 
 infoPersonas=infoPersonas.map(persona=>{
     persona["MEDIO_PAGO"]=''
@@ -261,11 +264,22 @@ io.on('connection', (socket) => {
 
   socket.on('getTest', async (uploadFileName) => {
   })
+
+  socket.on('getVariablesNominasBancarias', async () => {
+
+    socket.emit('resVariablesNominasBancarias', VariablesNominasBancarias)
+
+  });
   
-    socket.on('getNominasBancarias', async (empresa,mes) => {
+    socket.on('getNominasBancarias', async (data) => {
+
+      let empresa=data.empresa
+      let mes=data.mes
+      let fechaPago=data.fechaPago
+      let variableBase=data.codigoNomina
   
       //data trae la info del mes y la empresa del proceso
-      console.log("se empieza a ejecutar proceso Nominas: "+empresa+" "+mes)
+      console.log("se empieza a ejecutar proceso Nominas: "+empresa+" "+mes+" "+fechaPago+" "+variableBase)
   
     
       StatusNominasBancarias = JSON.parse(JSON.stringify(StatusNominasBancariasTemplate))
@@ -274,7 +288,7 @@ io.on('connection', (socket) => {
      // StatusNominasBancarias.userParams={mes:dataUser["mes"],empresa:dataUser["empresa"]}
   
       io.emit('getStatusNominasBancarias', StatusNominasBancarias)
-      await getNominasBancarias(empresa,mes)
+      await getNominasBancarias(empresa,mes,variableBase,fechaPago)
       StatusNominasBancarias.isExecuting = 0
       io.emit('getStatusNominasBancarias', StatusNominasBancarias)
   
@@ -282,7 +296,7 @@ io.on('connection', (socket) => {
   
 
 
-async function getNominasBancarias () {
+async function getNominasBancarias (empresa,mesProceso,variableBase,fechaPago) {
 
   
 
@@ -291,9 +305,9 @@ async function getNominasBancarias () {
 	let pathLogs = 'data-logs/'
   let nameLogFile='previred'
 
-  let variableBase='D066'
-  let mesProceso='2021-05-01'
-  let empresa=0
+  //let variableBase='D066'
+  //let mesProceso='2021-05-01'
+  //let empresa=0
 
   console.log("comienza el proceso nominas bancarias",empresa,mesProceso)
 
@@ -345,6 +359,9 @@ let fichasNominaPago = nominaPago.map(x => { return x.ficha }).filter(unique)//.
 
 let infoPersonas = (await SoftlandController.getFichasInfoPromiseMes(fichasNominaPago, empresa, mesProceso))
 
+//quita personas con rol privado y ordena por nombre
+ infoPersonas=infoPersonas.filter(x=>x["ROL_PRIVADO"]=='N').sort((a, b) => (a["NOMBRES_ORD"] > b["NOMBRES_ORD"]) ? 1 : -1)
+
 infoPersonas=infoPersonas.map(persona=>{
   persona["MEDIO_PAGO"]=''
   persona["OF_DESTINO"]='Central'
@@ -370,9 +387,6 @@ persona["MONTO"]=nominaPago.find(x=>x["ficha"]==persona["FICHA"])["valor"]
 return persona
 
 })
-
-
-
    
    let sumNomina= nominaPago.reduce((sum, b) => { return sum + parseInt(b.valor) }, 0);
    let cantRegistros=nominaPago.length
@@ -383,17 +397,17 @@ return persona
 
 
 
-    fs.mkdirSync(dirDestino+"/CLIENTE",{recursive:true});
+    fs.mkdirSync(dirDestino+"/"+variableBase+"/CLIENTE",{recursive:true});
 
-  await generaFiles(infoPersonas,'CENCO1_CODI',dirDestino+"/CLIENTE",empresa)
-
-
-  fs.mkdirSync(dirDestino+"/INSTALACION",{recursive:true});
-  await generaFiles(infoPersonas,'CENCO2_CODI',dirDestino+"/INSTALACION",empresa)
+  await generaFiles(infoPersonas,'CENCO1_CODI',dirDestino+"/"+variableBase+"/CLIENTE",empresa)
 
 
-  fs.mkdirSync(dirDestino+"/PERSONA",{recursive:true});
-await generaFiles(infoPersonas,'NOMBRES',dirDestino+"/PERSONA",empresa)
+  fs.mkdirSync(dirDestino+"/"+variableBase+"/INSTALACION",{recursive:true});
+  await generaFiles(infoPersonas,'CENCO2_CODI',dirDestino+"/"+variableBase+"/INSTALACION",empresa)
+
+
+  fs.mkdirSync(dirDestino+"/"+variableBase+"/PERSONA",{recursive:true});
+await generaFiles(infoPersonas,'NOMBRES',dirDestino+"/"+variableBase+"/PERSONA",empresa)
 
 
 

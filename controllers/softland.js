@@ -106,6 +106,7 @@ async function getFichasInfoPromiseMes(fichas, empresa, mes) {
   ,per.CodTipEfe as COD_TIP_EFE
   ,per.codBancoSuc as COD_BANCO_SUC
   ,banco.descripcion as BANCO_DESC
+  ,per.RolPrivado as ROL_PRIVADO
   FROM 
                            `+ empresaDetalle + `.softland.sw_personal AS per INNER JOIN
                            `+ empresaDetalle + `.softland.sw_cargoper AS cp ON cp.ficha = per.Ficha AND '` + mes + `' between cp.vigDesde and cp.vigHasta  INNER JOIN
