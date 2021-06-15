@@ -51,16 +51,16 @@ jI5NiaWEySTIK+6VmCucik498SLXJm2i4nZEE6NPWu7GI+GG9gWV3WJnEvn7ZNa9MJ6gUFwuf/RNzlce
 
 <tr >
   <td >Rut</td>
-  <td >	: 76,924,640</td>
+  <td >	: <%= new Intl.NumberFormat('en-US', {style: 'decimal'}).format(datosNominaHeader.RUT_EMPRESA.substr(0,(datosNominaHeader.RUT_EMPRESA.length-2)).replace(/\./g,'')) + datosNominaHeader.RUT_EMPRESA.substr(datosNominaHeader.RUT_EMPRESA.length-2,2)%> </td>
   <td > Nomina</td>
-  <td >: PRIMERA QUINCENAPT	</td>
+  <td >: <%= datosNominaHeader.NOMBRE_NOMINA %></td>
   <td > Fecha Pago</td>
-  <td >: 30-05-2021</td>
+  <td >: <%= datosNominaHeader.FECHA_PAGO %></td>
 
 </tr>
 <tr >
   <td >Fecha Actual</td>
-  <td >: 07-06-2021</td>
+  <td >: <%= datosNominaHeader.FECHA_ACTUAL %></td>
   <td >Tipo</td>
   <td >: REMUNERACIONES	</td>
   <td > Monto Total</td>
@@ -69,7 +69,7 @@ jI5NiaWEySTIK+6VmCucik498SLXJm2i4nZEE6NPWu7GI+GG9gWV3WJnEvn7ZNa9MJ6gUFwuf/RNzlce
 </tr>
 <tr >
   <td >Hora</td>
-  <td >: 17:23:11</td>
+  <td >: <%= datosNominaHeader.HORA_ACTUAL %></td>
   <td >Convenio</td>
   <td >: 001	</td>
   <td > Tipo de Proceso</td>

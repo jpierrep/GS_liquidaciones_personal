@@ -389,8 +389,14 @@
       //carga datos de nominas bancarias en select nominas
       socket.emit('getVariablesNominasBancarias')
 
+
+      
      let m=new Date()
      let mesActual=m.getFullYear()+"-"+((m.getMonth() + 1) > 9 ? (m.getMonth() + 1) : '0' + (m.getMonth() + 1))+"-01"
+
+     //señala fecha de pago en formulario
+     $("#nominas-fecha-pago").val(mesActual);
+     
      let mesAnterior=""
    
      //si el mes actual es enero, se debe setear diciembre del mes anterior
@@ -614,7 +620,7 @@
   
    $('#nominas-select').empty()
    variablesEmpresa.forEach(variable=>{
-    $('#nominas-select').append(`<option  value="`+variable["COD_VARIABLE"]+`"> `+variable["COD_VARIABLE"]+"-"+variable["NOMBRE_LABEL"]+`</option>`); 
+    $('#nominas-select').append(`<option  value="`+variable["COD_VARIABLE"]+`"> `+variable["COD_VARIABLE"]+"-"+variable["NOMBRE_NOMINA_DETALLE"]+`</option>`); 
 
    })
 

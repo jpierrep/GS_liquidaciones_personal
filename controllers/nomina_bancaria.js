@@ -311,6 +311,25 @@ async function getNominasBancarias (empresa,mesProceso,variableBase,fechaPago) {
 
   console.log("comienza el proceso nominas bancarias",empresa,mesProceso)
 
+  //datos variables nominas (fecha, nombre, etc)
+  var empresaDetalle = constants.EMPRESAS.find(x => x.ID == empresa)
+  let variableNominaDetalle=VariablesNominasBancarias.find(x=>x["COD_VARIABLE"]==variableBase)
+  console.log(variableNominaDetalle)
+
+let nombreNomina=variableNominaDetalle["NOMBRE_NOMINA"]
+let rutEmpresa=empresaDetalle["RUT"]
+ let fechaHora=Utils.getDateFormat('-')
+  console.log(fechaHora)
+  //2021/06/14/23/27/38 retorna 
+
+  let fechaActual=fechaHora.substr(8,2)+"/"+fechaHora.substr(5,2)+"/"+fechaHora.substr(0,4)
+  let horaActual=fechaHora.substr(11,10).replace(/-/g, ':');
+  let fechaPagoFormat=fechaPago.substr(8,2)+"/"+fechaPago.substr(5,2)+"/"+fechaPago.substr(0,4)
+  console.log(horaActual,fechaActual,fechaPagoFormat,empresaDetalle.RUT,nombreNomina)
+  let datosNominaHeader={FECHA_ACTUAL:fechaActual,HORA_ACTUAL:horaActual,FECHA_PAGO:fechaPagoFormat,RUT_EMPRESA:rutEmpresa,NOMBRE_NOMINA:nombreNomina}
+
+
+
 
   let dirDestino=FileServer.getDirDestinoProceso('nominabancaria',mesProceso,empresa)
   if (!dirDestino){
@@ -351,6 +370,18 @@ and codVariable='`+ variableBase + `' and valor>0
         })
 
   console.log(nominaPago.length)
+
+            //si no existen fichas, se termina el proceso
+            if (nominaPago.length==0){
+              console.log("no hay fichas,termina el proceso")
+              socket.emit('getGlobalAlert', {messaje:"Error, no hay data para el proceso",type:'error'})
+          
+  
+             //emitir mensaje de error
+              //termina el promise
+              //sale de la funcion, si no hay return, continua ejecutando lo siguiente
+             return
+            }
 
 
 
@@ -395,19 +426,20 @@ return persona
              console.log("sum nomina",sumNomina)
 
 
+let dirDestinoCliente=dirDestino+"/"+variableBase+"-["+variableNominaDetalle["NOMBRE_NOMINA"]+"]"+ "/CLIENTE"
+let dirDestinoInstalacion=dirDestino+"/"+variableBase+"-["+variableNominaDetalle["NOMBRE_NOMINA"]+"]"+ "/INSTALACION"
+
+    fs.mkdirSync(dirDestinoCliente,{recursive:true});
+
+  await generaFiles(infoPersonas,'CENCO1_CODI',dirDestinoCliente,empresa,datosNominaHeader)
 
 
-    fs.mkdirSync(dirDestino+"/"+variableBase+"/CLIENTE",{recursive:true});
-
-  await generaFiles(infoPersonas,'CENCO1_CODI',dirDestino+"/"+variableBase+"/CLIENTE",empresa)
-
-
-  fs.mkdirSync(dirDestino+"/"+variableBase+"/INSTALACION",{recursive:true});
-  await generaFiles(infoPersonas,'CENCO2_CODI',dirDestino+"/"+variableBase+"/INSTALACION",empresa)
+  fs.mkdirSync(dirDestinoInstalacion,{recursive:true});
+  await generaFiles(infoPersonas,'CENCO2_CODI',dirDestinoInstalacion,empresa,datosNominaHeader)
 
 
-  fs.mkdirSync(dirDestino+"/"+variableBase+"/PERSONA",{recursive:true});
-await generaFiles(infoPersonas,'NOMBRES',dirDestino+"/"+variableBase+"/PERSONA",empresa)
+ // fs.mkdirSync(dirDestino+"/"+variableBase+"/PERSONA",{recursive:true});
+//await generaFiles(infoPersonas,'NOMBRES',dirDestino+"/"+variableBase+"/PERSONA",empresa)
 
 
 
@@ -418,7 +450,7 @@ await generaFiles(infoPersonas,'NOMBRES',dirDestino+"/"+variableBase+"/PERSONA",
 
 
 
-async function generaFiles(data, filterField,dirDestino,empresa){
+async function generaFiles(data, filterField,dirDestino,empresa,datosNominaHeader){
 
   var options = {
     format: 'Letter',
@@ -461,7 +493,7 @@ async function generaFiles(data, filterField,dirDestino,empresa){
        let datosNominaCC={MONTO_TOTAL:sumNominaCC,NUM_REGISTROS:cantRegistrosCC}
 
 
-       ejs.renderFile("views/nomina_bancaria.ejs", { nomina: infoPersonasCC,datosNomina:datosNominaCC }, {}, function (err, data) {
+       ejs.renderFile("views/nomina_bancaria.ejs", { nomina: infoPersonasCC,datosNomina:datosNominaCC,datosNominaHeader:datosNominaHeader }, {}, function (err, data) {
         if (err)
         console.log(err)
       //console.log("data",data)
