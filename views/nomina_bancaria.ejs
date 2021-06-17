@@ -44,7 +44,7 @@ jI5NiaWEySTIK+6VmCucik498SLXJm2i4nZEE6NPWu7GI+GG9gWV3WJnEvn7ZNa9MJ6gUFwuf/RNzlce
     <col width="7%">
     <col width="25%">
     <col width="12%">
-    <col width="9%">
+    <col width="11%">
 
    
 </colgroup>
@@ -53,7 +53,7 @@ jI5NiaWEySTIK+6VmCucik498SLXJm2i4nZEE6NPWu7GI+GG9gWV3WJnEvn7ZNa9MJ6gUFwuf/RNzlce
   <td >Rut</td>
   <td >	: <%= new Intl.NumberFormat('en-US', {style: 'decimal'}).format(datosNominaHeader.RUT_EMPRESA.substr(0,(datosNominaHeader.RUT_EMPRESA.length-2)).replace(/\./g,'')) + datosNominaHeader.RUT_EMPRESA.substr(datosNominaHeader.RUT_EMPRESA.length-2,2)%> </td>
   <td > Nomina</td>
-  <td >: <%= datosNominaHeader.NOMBRE_NOMINA %></td>
+  <td >: <%= datosNomina.NOMBRE_NOMINA.substr(0,22) %></td>
   <td > Fecha Pago</td>
   <td >: <%= datosNominaHeader.FECHA_PAGO %></td>
 

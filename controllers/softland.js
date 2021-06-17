@@ -99,7 +99,7 @@ async function getFichasInfoPromiseMes(fichas, empresa, mes) {
   //console.log("mes proceso", mesIndiceSoftland)
 
   return new Promise(async  resolve => {
-    let fichasInfo = await sequelizeMssql.query(`SELECT  per.nombre+' '+per.appaterno+' '+per.appaterno as NOMBRES_ORD  
+    let fichasInfo = await sequelizeMssql.query(`SELECT  per.nombre+' '+per.appaterno+' '+per.apmaterno as NOMBRES_ORD  
   ,per.ficha as FICHA,per.nombres as NOMBRES,per.rut as RUT,c.CarNom as CARGO_DESC,cc.CodiCC as CENCO2_CODI,cc1.CodiCC as CENCO1_CODI,cc1.DescCC as CENCO1_DESC,cc.DescCC  as CENCO2_DESC
   ,area.codArn as AREA_CODI,area_desc.DesArn as AREA_DESC,per.tipoPago as TIPO_PAGO,isapre.CodIsapre as ISAPRE_CODI,isapre.nombre as ISAPRE_NOMBRE,afp.CodAFP as AFP_CODI, afp.nombre as AFP_NOMBRE,cargas.cant_cargas as CANT_CARGAS
   ,isnull(per.numCtaCte,'') as NUM_CUENTA
@@ -109,20 +109,20 @@ async function getFichasInfoPromiseMes(fichas, empresa, mes) {
   ,per.RolPrivado as ROL_PRIVADO
   FROM 
                            `+ empresaDetalle + `.softland.sw_personal AS per INNER JOIN
-                           `+ empresaDetalle + `.softland.sw_cargoper AS cp ON cp.ficha = per.Ficha AND '` + mes + `' between cp.vigDesde and cp.vigHasta  INNER JOIN
-                           `+ empresaDetalle + `.softland.sw_areanegper AS area ON area.ficha = per.ficha AND '` + mes + `' between area.vigDesde and area.vigHasta  INNER JOIN
+                           `+ empresaDetalle + `.softland.sw_cargoper AS cp ON cp.ficha = per.Ficha AND '` + mes + `'>= cp.vigDesde and '` + mes + `'< cp.vigHasta  INNER JOIN
+                           `+ empresaDetalle + `.softland.sw_areanegper AS area ON area.ficha = per.ficha AND '` + mes + `'>= area.vigDesde and '` + mes + `'< area.vigHasta  INNER JOIN
                            `+ empresaDetalle + `.softland.cwtcarg AS c ON c.CarCod = cp.carCod INNER JOIN
-                           `+ empresaDetalle + `.softland.sw_ccostoper AS ccp ON ccp.ficha = per.ficha AND '` + mes + `' between ccp.vigDesde and ccp.vigHasta  INNER JOIN
+                           `+ empresaDetalle + `.softland.sw_ccostoper AS ccp ON ccp.ficha = per.ficha AND '` + mes + `' >= ccp.vigDesde and '` + mes + `'< ccp.vigHasta  INNER JOIN
                            `+ empresaDetalle + `.softland.cwtccos AS cc ON cc.CodiCC = ccp.codiCC LEFT OUTER JOIN
                            `+ empresaDetalle + `.softland.sw_glosafiniquito AS fini ON fini.Ficha = per.ficha LEFT OUTER JOIN
                            `+ empresaDetalle + `.softland.cwtccos AS cc1 ON cc1.CodiCC = substring(ccp.codiCC,1,3)+'-000'  LEFT OUTER JOIN
-                           `+ empresaDetalle + `.softland.sw_afpper as afp_per on afp_per.ficha=per.ficha AND '` + mes + `' between afp_per.vigDesde and afp_per.vigHasta  LEFT OUTER JOIN
+                           `+ empresaDetalle + `.softland.sw_afpper as afp_per on afp_per.ficha=per.ficha AND '` + mes + `'>= afp_per.vigDesde and '` + mes + `'< afp_per.vigHasta  LEFT OUTER JOIN
                            `+ empresaDetalle + `.softland.sw_afp as afp on afp.CodAFP=afp_per.codAFP LEFT OUTER JOIN
-                           `+ empresaDetalle + `.softland.sw_isapreper as isapre_per on isapre_per.ficha=per.ficha  AND '` + mes + `' between isapre_per.vigDesde and isapre_per.vigHasta   LEFT OUTER JOIN
+                           `+ empresaDetalle + `.softland.sw_isapreper as isapre_per on isapre_per.ficha=per.ficha  AND '` + mes + `' >= isapre_per.vigDesde and '` + mes + `'< isapre_per.vigHasta   LEFT OUTER JOIN
                            `+ empresaDetalle + `.softland.sw_isapre as isapre on isapre.CodIsapre=isapre_per.codIsapre LEFT OUTER JOIN
                            `+ empresaDetalle + `.softland.cwtaren AS area_desc ON area.codArn = area_desc.CodArn  LEFT OUTER JOIN
                            `+ empresaDetalle + `.softland.sw_banco_suc as banco on per.codBancoSuc=banco.codBancoSuc LEFT OUTER JOIN
-                           (SELECT ficha,count(*) as cant_cargas  FROM `+ empresaDetalle + `.softland.sw_cargas where  '` + mes + `' between vigDesde and vigHasta	group by ficha) cargas  on cargas.ficha=per.ficha
+                           (SELECT ficha,count(*) as cant_cargas  FROM `+ empresaDetalle + `.softland.sw_cargas where  '` + mes + `' >= vigDesde and '` + mes + `'< vigHasta	group by ficha) cargas  on cargas.ficha=per.ficha
   
                            where per.ficha in (:fichas)
                            order by CENCO2_CODI asc,NOMBRES asc
