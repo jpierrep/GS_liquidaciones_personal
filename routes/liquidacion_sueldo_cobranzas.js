@@ -14,7 +14,7 @@ var Sequelize = require('sequelize');
 
 var sequelizeMssql = require('../config/connection_mssql')
 const VariablesFicha = sequelizeMssql.import('../models/soft_variables_ficha');
-
+const TemplateLiquidacion = sequelizeMssql.import('../models/liquidacion_template');
 var SoftlandController = require('../controllers/softland');
 var api = express.Router();
 const constants = require('../config/systems_constants')
@@ -131,7 +131,14 @@ io.on('connection', (socket) => {
     //para calcular la demora del proceso
     var startTime = new Date();
     var empresaDetalle = constants.EMPRESAS.find(x => x.ID == empresa)
-    let templateDB = require('../config/' + empresaDetalle["TEMPLATE_LIQUIDACION"]) //archivo json con la plantilla para generar liquidaciones
+
+    //let templateDB = require('../config/' + empresaDetalle["TEMPLATE_LIQUIDACION"]) //archivo json con la plantilla para generar liquidaciones
+    let templateDB = (await sequelizeMssql  .query(` SELECT  [VAR_NOMBRE]      ,[COLUMNA]      ,[POSICION]      ,[OFFSET]      ,[TIPO]      ,[VAR_CODI]      ,[SECTION]      ,[VAR_VALOR]      ,[EMPRESA]
+  FROM `+constants.TABLE_TEMPLATE_LIQUIDACION.database+`.dbo.`+constants.TABLE_TEMPLATE_LIQUIDACION.table  
+        , { model: TemplateLiquidacion,
+          mapToModel: true, // pass true here if you have any mapped fields
+          raw: true
+        })).filter(x=>x.EMPRESA==empresa)
 
     let dirDestino=FileServer.getDirDestinoProceso(tipoProceso,mesProceso,empresa)
     //let pathBase=FileServer.getPathServerSobreLaboral() //revisa acceso a carpeta destino (carpeta compartida)
