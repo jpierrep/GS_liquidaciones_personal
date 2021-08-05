@@ -131,28 +131,14 @@ res.render("../views/nomina_bancaria", { nomina: infoPersonas,datosNomina:datosN
 
 async function getMontosNominaPDF (req,res) {
 
-    let variableBase='D066'
-    let mesProceso='2021-05-01'
+    let variableBase='H303'
+    let mesProceso='2021-03-01'
     let empresa=0
-    let fechaPago='2021-05-30'
+    let fechaPago='2021-03-30'
+    let filtro='CENCO1_CODI'
+    let filtroDesc='CENCO1_DESC'
+    let filtroValor=['956-000']
 
-
-      //datos variables nominas (fecha, nombre, etc)
-  var empresaDetalle = constants.EMPRESAS.find(x => x.ID == empresa)
-  let variableNominaDetalle=VariablesNominasBancarias.find(x=>x["COD_VARIABLE"]==variableBase)
-  console.log(variableNominaDetalle)
-
-let nombreNomina=variableNominaDetalle["NOMBRE_NOMINA"]
-let rutEmpresa=empresaDetalle["RUT"]
- let fechaHora=Utils.getDateFormat('-')
-  console.log(fechaHora)
-  //2021/06/14/23/27/38 retorna 
-
-  let fechaActual=fechaHora.substr(8,2)+"/"+fechaHora.substr(5,2)+"/"+fechaHora.substr(0,4)
-  let horaActual=fechaHora.substr(11,10).replace(/-/g, ':');
-  let fechaPagoFormat=fechaPago.substr(8,2)+"/"+fechaPago.substr(5,2)+"/"+fechaPago.substr(0,4)
-  console.log(horaActual,fechaActual,fechaPagoFormat,empresaDetalle.RUT,nombreNomina)
-  let datosNominaHeader={FECHA_ACTUAL:fechaActual,HORA_ACTUAL:horaActual,FECHA_PAGO:fechaPagoFormat,RUT_EMPRESA:rutEmpresa,NOMBRE_NOMINA:nombreNomina}
 
 
     let nominaPago = await sequelizeMssql
@@ -185,6 +171,8 @@ let rutEmpresa=empresaDetalle["RUT"]
 let infoPersonas = (await SoftlandController.getFichasInfoPromiseMes(fichasNominaPago, empresa, mesProceso))
 //quita personas con rol privado y ordena por nombre
 infoPersonas=infoPersonas.filter(x=>x["ROL_PRIVADO"]=='N').sort((a, b) => (a["NOMBRES_ORD"] > b["NOMBRES_ORD"]) ? 1 : -1)
+//carga filtro personalizado definido al comienzo
+infoPersonas=infoPersonas.filter(x=>x[filtro]==filtroValor)
 
 infoPersonas=infoPersonas.map(persona=>{
     persona["MEDIO_PAGO"]=''
@@ -234,10 +222,31 @@ var options = {
     timeout: 30000,
 
   };
+
+
+
+      //datos variables nominas (fecha, nombre, etc)
+      var empresaDetalle = constants.EMPRESAS.find(x => x.ID == empresa)
+      let variableNominaDetalle=VariablesNominasBancarias.find(x=>x["COD_VARIABLE"]==variableBase)
+      console.log(variableNominaDetalle)
+    
+
+    let rutEmpresa=empresaDetalle["RUT"]
+     let fechaHora=Utils.getDateFormat('-')
+      console.log(fechaHora)
+      //2021/06/14/23/27/38 retorna 
+    
+      let fechaActual=fechaHora.substr(8,2)+"/"+fechaHora.substr(5,2)+"/"+fechaHora.substr(0,4)
+      let horaActual=fechaHora.substr(11,10).replace(/-/g, ':');
+      let fechaPagoFormat=fechaPago.substr(8,2)+"/"+fechaPago.substr(5,2)+"/"+fechaPago.substr(0,4)
+
+      let datosNominaHeader={FECHA_ACTUAL:fechaActual,HORA_ACTUAL:horaActual,FECHA_PAGO:fechaPagoFormat,RUT_EMPRESA:rutEmpresa,NOMBRE_NOMINA:""}
+    
+     let nombreNomina= variableBase+"-"+ infoPersonas.find(x=>x[filtro]==filtroValor)[filtroDesc]
      
-     let sumNomina= nominaPago.reduce((sum, b) => { return sum + parseInt(b.valor) }, 0);
-     let cantRegistros=nominaPago.length
-     let datosNomina={MONTO_TOTAL:sumNomina,NUM_REGISTROS:cantRegistros,NOMBRE_NOMINA:"TEST NOMINA"}
+     let sumNomina= infoPersonas.reduce((sum, b) => { return sum + parseInt(b.MONTO) }, 0);
+     let cantRegistros=infoPersonas.length
+     let datosNomina={MONTO_TOTAL:sumNomina,NUM_REGISTROS:cantRegistros,NOMBRE_NOMINA:nombreNomina}
 
                console.log("sum nomina",sumNomina)
 
