@@ -544,8 +544,9 @@
     
     procesoSelected="nominabancaria"
       let empresa = $("#empresa-select").val();
-      let mes = $("#mes-select").val();      
-      socket.emit("getExistsDirDestino", { empresa: empresa, mes: mes,proceso:procesoSelected });
+      let mes = $("#mes-select").val();
+      let subproceso=$("#nominas-select").val();    
+      socket.emit("getExistsDirDestino", { empresa: empresa, mes: mes,proceso:procesoSelected,subproceso:subproceso });
   
 
     });
@@ -810,6 +811,7 @@ $("[name='nominas-loader']").show()
 socket.emit("getNominasBancarias", { empresa: empresa, mes: mes });
 */
 $('#nominas-selected-modal').modal('show'); 
+
 }
 
 
