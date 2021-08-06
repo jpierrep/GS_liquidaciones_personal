@@ -539,6 +539,8 @@
 
 
     $('#nominas-empieza').click(function () {
+
+      /*
       $('#nominas-alert').hide(); 
 
     
@@ -547,7 +549,8 @@
       let mes = $("#mes-select").val();
       let subproceso=$("#nominas-select").val();    
       socket.emit("getExistsDirDestino", { empresa: empresa, mes: mes,proceso:procesoSelected,subproceso:subproceso });
-  
+  */
+  $('#nominas-selected-modal').modal('show'); 
 
     });
 
@@ -749,7 +752,7 @@ else {
 
   $("[name='nominas-loader']").show()
   $('#nominas-empieza').attr("disabled", true);
-  $('#nominas-cc-status').text(data.msgs[0])
+  $('#nominas-cc-status').text(data.msgs[0].substr(0,10))
   $('#nominas-progress').attr('style', "width:" + data.percent + "%")
   $('#nominas-progress').attr('aria-valuenow', data.percent)
   $('#nominas-progress').text(data.percent + "%")
@@ -810,7 +813,18 @@ var mes = $("#mes-select").val();
 $("[name='nominas-loader']").show()
 socket.emit("getNominasBancarias", { empresa: empresa, mes: mes });
 */
-$('#nominas-selected-modal').modal('show'); 
+
+
+//$('#nominas-selected-modal').modal('show'); 
+
+var empresa = $("#empresa-select").val();
+var mes = $("#mes-select").val();
+var fechaPago= $("#nominas-fecha-pago").val();
+var codigoNomina=$("#nominas-select").val();
+
+$("[name='nominas-loader']").show()
+socket.emit("getNominasBancarias", { empresa: empresa, mes: mes,fechaPago:fechaPago,codigoNomina:codigoNomina });
+
 
 }
 
@@ -943,6 +957,16 @@ $.ajax({
 
 $("#nominas-selected-button").click(function (event) {
 
+  $('#nominas-alert').hide(); 
+
+    
+procesoSelected="nominabancaria"
+  let empresa = $("#empresa-select").val();
+  let mes = $("#mes-select").val();
+  let subproceso=$("#nominas-select").val();    
+  socket.emit("getExistsDirDestino", { empresa: empresa, mes: mes,proceso:procesoSelected,subproceso:subproceso });
+
+/*
  var empresa = $("#empresa-select").val();
 var mes = $("#mes-select").val();
 var fechaPago= $("#nominas-fecha-pago").val();
@@ -950,6 +974,8 @@ var codigoNomina=$("#nominas-select").val();
 
 $("[name='nominas-loader']").show()
 socket.emit("getNominasBancarias", { empresa: empresa, mes: mes,fechaPago:fechaPago,codigoNomina:codigoNomina });
+
+*/
 })
 
 

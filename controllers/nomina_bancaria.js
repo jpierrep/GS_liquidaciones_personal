@@ -383,6 +383,15 @@ let rutEmpresa=empresaDetalle["RUT"]
 
 
   let dirDestino=FileServer.getDirDestinoProceso('nominabancaria',mesProceso,empresa)
+
+
+
+  
+  
+   dirDestino= dirDestino+"\\"+variableBase+"-["+variableNominaDetalle["NOMBRE_NOMINA"].replace(/\s/g, '-')+"]"
+    console.log(dirDestino,' carpeta subproceso nomina')
+  
+   
   if (!dirDestino){
     socket.emit('getGlobalAlert', {messaje:"Error, no hay acceso a carpeta de sobre laboral",type:'error'})
     return
@@ -395,9 +404,12 @@ let rutEmpresa=empresaDetalle["RUT"]
 
           console.log("no existe carpeta, creada la carpeta del mes")
       }else{
-        console.log("existe la carpeta, se debe respaldar el contenido ")
-    
-     ////BACKUP FILES  FileServer.backupFiles(dirDestino,empresa)
+        console.log("existe la carpeta, se debe respaldar el contenido ", dirDestino)
+      
+     ////BACKUP FILES  de cada directorio 
+     FileServer.backupFiles(dirDestino+'\\CLIENTE',empresa)
+     FileServer.backupFiles(dirDestino+'\\INSTALACION',empresa)
+     FileServer.backupFiles(dirDestino+'\\PERSONA',empresa)
    
     
       }
@@ -483,9 +495,13 @@ return persona
              console.log("sum nomina",sumNomina)
 
 
-let dirDestinoCliente=dirDestino+"/"+variableBase+"-["+variableNominaDetalle["NOMBRE_NOMINA"]+"]"+ "/CLIENTE"
-let dirDestinoInstalacion=dirDestino+"/"+variableBase+"-["+variableNominaDetalle["NOMBRE_NOMINA"]+"]"+ "/INSTALACION"
-let dirDestinoPersona=dirDestino+"/"+variableBase+"-["+variableNominaDetalle["NOMBRE_NOMINA"]+"]"+ "/PERSONA"
+//let dirDestinoCliente=dirDestino+"/"+variableBase+"-["+variableNominaDetalle["NOMBRE_NOMINA"].replace(/\s/g, '-')+"]"+ "/CLIENTE"
+//let dirDestinoInstalacion=dirDestino+"/"+variableBase+"-["+variableNominaDetalle["NOMBRE_NOMINA"].replace(/\s/g, '-')+"]"+ "/INSTALACION"
+//let dirDestinoPersona=dirDestino+"/"+variableBase+"-["+variableNominaDetalle["NOMBRE_NOMINA"].replace(/\s/g, '-')+"]"+ "/PERSONA"
+
+let dirDestinoCliente=dirDestino+"/CLIENTE"
+let dirDestinoInstalacion=dirDestino+"/INSTALACION"
+let dirDestinoPersona=dirDestino+"/PERSONA"
     fs.mkdirSync(dirDestinoCliente,{recursive:true});
 
   await generaFiles(infoPersonas,'CENCO1_CODI',dirDestinoCliente,empresa,datosNominaHeader)
