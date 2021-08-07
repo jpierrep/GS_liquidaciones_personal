@@ -148,7 +148,7 @@ io.on('connection', (socket) => {
  
   let  VariablesNominasBancarias = require('../config/' + constants.NOMINAS_BANCARIAS_VARIABLES["FILENAME"])
   let variableNominaDetalle=VariablesNominasBancarias.find(x=>x["COD_VARIABLE"]==subproceso)
- dirDestino= dirDestino+"\\"+subproceso+"-["+variableNominaDetalle["NOMBRE_NOMINA"].replace(/\s/g, '-')+"]\\CLIENTE"
+ dirDestino=FileServer.convertPath( dirDestino+"\\"+subproceso+"-["+variableNominaDetalle["NOMBRE_NOMINA"].replace(/\s/g, '-')+"]\\CLIENTE")
   console.log(dirDestino,' carpeta subproceso nomina')
 
   }
