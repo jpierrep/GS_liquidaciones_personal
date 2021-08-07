@@ -407,9 +407,9 @@ let rutEmpresa=empresaDetalle["RUT"]
         console.log("existe la carpeta, se debe respaldar el contenido ", dirDestino)
       
      ////BACKUP FILES  de cada directorio 
-     FileServer.backupFiles(FileServer.convertPath(dirDestino+'\\CLIENTE',empresa))
-     FileServer.backupFiles(FileServer.convertPath(dirDestino+'\\INSTALACION',empresa))
-     FileServer.backupFiles(FileServer.convertPath(dirDestino+'\\PERSONA',empresa))
+     FileServer.backupFiles(FileServer.convertPath(dirDestino+'\\CLIENTE'),empresa)
+     FileServer.backupFiles(FileServer.convertPath(dirDestino+'\\INSTALACION'),empresa)
+     FileServer.backupFiles(FileServer.convertPath(dirDestino+'\\PERSONA'),empresa)
    
     
       }
@@ -499,9 +499,9 @@ return persona
 //let dirDestinoInstalacion=dirDestino+"/"+variableBase+"-["+variableNominaDetalle["NOMBRE_NOMINA"].replace(/\s/g, '-')+"]"+ "/INSTALACION"
 //let dirDestinoPersona=dirDestino+"/"+variableBase+"-["+variableNominaDetalle["NOMBRE_NOMINA"].replace(/\s/g, '-')+"]"+ "/PERSONA"
 
-let dirDestinoCliente=dirDestino+"/CLIENTE"
-let dirDestinoInstalacion=dirDestino+"/INSTALACION"
-let dirDestinoPersona=dirDestino+"/PERSONA"
+let dirDestinoCliente=FileServer.convertPath( dirDestino+"\\CLIENTE")
+let dirDestinoInstalacion=FileServer.convertPath(dirDestino+"\\INSTALACION")
+let dirDestinoPersona=FileServer.convertPath(dirDestino+"\\PERSONA")
     fs.mkdirSync(dirDestinoCliente,{recursive:true});
 
   await generaFiles(infoPersonas,'CENCO1_CODI',dirDestinoCliente,empresa,datosNominaHeader)
