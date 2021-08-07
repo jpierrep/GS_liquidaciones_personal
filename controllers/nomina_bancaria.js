@@ -599,7 +599,7 @@ async function generaFiles(data, filterField,dirDestino,empresa,datosNominaHeade
           //ejemplo de nombre de archivo 001-001[0]-RELIQUIDACION[2020-11-12]
     //      stream.pipe(fs.createWriteStream(FileServer.convertPath(dirDestino+"\\" + centro_costo+ "-["+empresa+"]"+nameFileSuffix+ ".pdf")));
 
-    stream.pipe(fs.createWriteStream(FileServer.convertPath(dirDestino+"\\" + distinctFile+ "-["+empresa+"]"+ ".pdf")));
+    stream.pipe(fs.createWriteStream(FileServer.convertPath(dirDestino+"\\" + distinctFile+ "-["+empresa+"]"+"-NOMINA.pdf")));
 
           resolves()
 

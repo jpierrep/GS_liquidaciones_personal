@@ -35,7 +35,7 @@
     <div class="row">
 
       <div class="col-6"> Empresa:
-        <select id="empresa-select" class="custom-select custom-select-lg mb-3">
+        <select id="empresa-select" onchange="cambiaSelectEmpresa()" class="custom-select custom-select-lg mb-3">
 
           <option selected value="0">Guard Service Seguridad S.A.</option>
           <option value="2">GS Outsourcing S.A.</option>
@@ -94,6 +94,43 @@
       </div>
 
 
+
+
+      <!--      NOMINAS BANCARIAS     -->
+      <div class="col-sm-12">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">Nóminas Bancarias
+              <a class='ui-all' style=" font-weight: normal;font-size: 1rem;" tabindex='-1' id="nominas-log-modal-button"
+                data-toggle="modal" data-target="#exampleModalCenter">
+                [logs]
+              </a>
+
+            </h5> <!-- Button trigger modal -->
+
+
+            <p class="card-text">Genera Nominas de pago del mes.</p>
+            <div class="row">
+              <div class="col-1">
+                <button type="button" id="nominas-empieza" class="btn btn-primary">Ejecutar</button>
+              </div>
+              <div class="col-8 " style="padding:10px;margin: auto">
+
+                <div name="nominas-loader" class=" progress">
+                  <div id='nominas-progress' class="progress-bar progress-bar-striped progress-bar-animated "
+                    role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%">0%</div>
+
+                </div>
+
+              </div>
+              <div class="col-1">
+                <span name="nominas-loader " id="nominas-cc-status"> </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+<!--    FIN  NOMINAS BANCARIAS     -->
 
 
 
@@ -155,6 +192,58 @@
 </div>
 
 
+    <!-- Modal Selecciona Variable-->
+    <div class="modal fade" id="nominas-selected-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLongTitle">Seleccione Proceso</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+
+        <div class="modal-body">
+
+  <form  id="nomina.selected-form" method="post" enctype="multipart/form-data" >
+    
+
+      <div class="form-group row">
+        <label for="nominas-select" class="col-4 col-form-label">Proceso:</label>
+        <div class="col-8">
+          <select id="nominas-select" class="custom-select  mb-2">
+        
+            <option selected value="D067">Nomina 1</option>
+            <option value="d071">Nomina 2</option>
+  
+          </select>
+        </div>
+        </div>
+<div class="form-group row">
+  <label for="example-date-input" class="col-4 col-form-label">Fecha Pago:</label>
+  <div class="col-8">
+    <input class="form-control" type="date" value="2011-08-19" id="nominas-fecha-pago">
+  </div>
+      </div>
+  
+    </form>
+
+ 
+
+        </div>
+        <div class="modal-footer">
+            <div class="alert alert-danger" id="nominas-alert" role="alert" style="display:none;">
+                <strong>Error!</strong> Archivo sin formato o sin ruts.
+              </div>
+           
+       <!--   <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button> -->
+       <button type="button" class="btn btn-secondary" data-dismiss="modal" id="nominas-selected-button" >Cargar</button>
+
+        </div>
+      </div>
+    </div>
+  </div>
 
 
 
@@ -181,8 +270,16 @@
 
     $(document).ready(function () {
 
+         //carga datos de nominas bancarias en select nominas
+         socket.emit('getVariablesNominasBancarias')
 
-let m=new Date()
+         let m=new Date()
+     let mesActual=m.getFullYear()+"-"+((m.getMonth() + 1) > 9 ? (m.getMonth() + 1) : '0' + (m.getMonth() + 1))+"-01"
+
+     //señala fecha de pago en formulario
+     $("#nominas-fecha-pago").val(mesActual);
+
+  m=new Date()
     // let mesActual=m.getFullYear()+"-"((m.getMonth() + 1) > 9 ? (m.getMonth() + 1) : '0' + (m.getMonth() + 1))+"-01"
      let mesAnterior=""
      //si el mes actual es enero, se debe setear diciembre del mes anterior
@@ -236,6 +333,23 @@ let m=new Date()
 
 
     });
+
+    $('#nominas-empieza').click(function () {
+
+/*
+$('#nominas-alert').hide(); 
+
+
+procesoSelected="nominabancaria"
+let empresa = $("#empresa-select").val();
+let mes = $("#mes-select").val();
+let subproceso=$("#nominas-select").val();    
+socket.emit("getExistsDirDestino", { empresa: empresa, mes: mes,proceso:procesoSelected,subproceso:subproceso });
+*/
+$('#nominas-selected-modal').modal('show'); 
+
+});
+
     
 
 
@@ -279,6 +393,26 @@ let m=new Date()
 
 
 
+   socket.on('resVariablesNominasBancarias', function (data) {
+
+//[{EMPRESA: 0, COD_VARIABLE: "D060", NOMBRE_VARIABLE: "ANTICIPO DE SUELDO", NOMBRE_LABEL: "ANTICIPOS"},{EMPRESA: 0, COD_VARIABLE: "D066", NOMBRE_VARIABLE: "PRIMERA QUINCENA PJ", NOMBRE_LABEL: "PRIMERA QUINCENA PJ"}]
+  console.log(data)
+
+  var empresa = $("#empresa-select").val();
+  let variablesEmpresa=data.filter(x=>x["EMPRESA"]==empresa)
+ 
+  $('#nominas-select').empty()
+  variablesEmpresa.forEach(variable=>{
+   $('#nominas-select').append(`<option  value="`+variable["COD_VARIABLE"]+`"> `+variable["COD_VARIABLE"]+"-"+variable["NOMBRE_NOMINA_DETALLE"]+`</option>`); 
+
+  })
+
+ 
+  
+  })
+
+
+
     //cuando el back envía eventos de actualización de procesos
 
     socket.on('getStatusLiquidacionCobranzas', function (data) {
@@ -310,6 +444,35 @@ let m=new Date()
         $('#liquidacion-progress').text(data.percent + "%")
       }
     });
+
+
+    socket.on('getStatusNominasBancarias', function (data) {
+
+if (!data.isExecuting) {
+  
+  $("#mes-select").attr("disabled", false);
+  $("#empresa-select").attr("disabled", false);
+
+  $("[name='nominas-loader']").hide()
+  $('#nominas-empieza').attr("disabled", false);
+  $('#nominas-cc-status').text("")
+}
+
+else {
+  $("#mes-select").attr("disabled", true);
+  $("#empresa-select").attr("disabled", true);
+  //muestra en el select la empresa que se está ejecutando
+  $("#empresa-select").val(data.userParams.empresa);
+  $("#mes-select").val(data.userParams.mes);
+
+  $("[name='nominas-loader']").show()
+  $('#nominas-empieza').attr("disabled", true);
+  $('#nominas-cc-status').text(data.msgs[0].substr(0,10))
+  $('#nominas-progress').attr('style', "width:" + data.percent + "%")
+  $('#nominas-progress').attr('aria-valuenow', data.percent)
+  $('#nominas-progress').text(data.percent + "%")
+}
+});
 
         socket.on('getGlobalAlert', function (data) {
         //data.type: error (rojo), success (verde), warning (amarillo)
@@ -343,8 +506,36 @@ if(procesoSelected=="liquidacionCobranzas"){
   $("[name='liquidacion-loader']").show()
   socket.emit("getLiquidacionesCobranzas", { empresa: empresa, mes: mes });
 
+}if(procesoSelected=="nominabancaria"){
+/*
+var empresa = $("#empresa-select").val();
+var mes = $("#mes-select").val();
+$("[name='nominas-loader']").show()
+socket.emit("getNominasBancarias", { empresa: empresa, mes: mes });
+*/
+
+
+//$('#nominas-selected-modal').modal('show'); 
+
+var empresa = $("#empresa-select").val();
+var mes = $("#mes-select").val();
+var fechaPago= $("#nominas-fecha-pago").val();
+var codigoNomina=$("#nominas-select").val();
+
+$("[name='nominas-loader']").show()
+socket.emit("getNominasBancarias", { empresa: empresa, mes: mes,fechaPago:fechaPago,codigoNomina:codigoNomina });
+
+
 }
 
+
+
+}
+
+
+function cambiaSelectEmpresa(){
+
+socket.emit('getVariablesNominasBancarias')
 
 }
 
@@ -362,6 +553,32 @@ if(procesoSelected=="liquidacionCobranzas"){
       window.URL.revokeObjectURL(url);
       a.remove();
     }
+
+
+    // BOTON DE GENERACION DE NOMINAS
+
+$("#nominas-selected-button").click(function (event) {
+
+$('#nominas-alert').hide(); 
+
+  
+procesoSelected="nominabancaria"
+let empresa = $("#empresa-select").val();
+let mes = $("#mes-select").val();
+let subproceso=$("#nominas-select").val();    
+socket.emit("getExistsDirDestino", { empresa: empresa, mes: mes,proceso:procesoSelected,subproceso:subproceso });
+
+/*
+var empresa = $("#empresa-select").val();
+var mes = $("#mes-select").val();
+var fechaPago= $("#nominas-fecha-pago").val();
+var codigoNomina=$("#nominas-select").val();
+
+$("[name='nominas-loader']").show()
+socket.emit("getNominasBancarias", { empresa: empresa, mes: mes,fechaPago:fechaPago,codigoNomina:codigoNomina });
+
+*/
+})
 
 
 
