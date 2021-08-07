@@ -2,3 +2,10 @@
 - Añade validaciones multiempresa
 - Añade validaciones archivo (ruts correspondan a empresa,no hay ruts, si hay ruts no vigentes, entrega error para que se activen en softland )
 - carga respaldo archivo ,elimina al terminar el de la carpeta temp
+
+06-08-2021
+
+ -Añade proceso de nominas bancarias (funcionadno hace 2 meses)
+ -Añade en liquidaciones fuente de template liquidacion en bd sistema central
+ -habilita  vista de nominas en rrhh y cobranzas
+ -Añade respaldo de nominas bancarias siguiendo mismo modelo
