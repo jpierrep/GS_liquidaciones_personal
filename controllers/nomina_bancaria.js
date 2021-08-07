@@ -388,7 +388,7 @@ let rutEmpresa=empresaDetalle["RUT"]
 
   
   
-   dirDestino= dirDestino+"\\"+variableBase+"-["+variableNominaDetalle["NOMBRE_NOMINA"].replace(/\s/g, '-')+"]"
+   dirDestino= FileServer.convertPath(dirDestino+"\\"+variableBase+"-["+variableNominaDetalle["NOMBRE_NOMINA"].replace(/\s/g, '-')+"]")
     console.log(dirDestino,' carpeta subproceso nomina')
   
    
@@ -407,9 +407,9 @@ let rutEmpresa=empresaDetalle["RUT"]
         console.log("existe la carpeta, se debe respaldar el contenido ", dirDestino)
       
      ////BACKUP FILES  de cada directorio 
-     FileServer.backupFiles(dirDestino+'\\CLIENTE',empresa)
-     FileServer.backupFiles(dirDestino+'\\INSTALACION',empresa)
-     FileServer.backupFiles(dirDestino+'\\PERSONA',empresa)
+     FileServer.backupFiles(FileServer.convertPath(dirDestino+'\\CLIENTE',empresa))
+     FileServer.backupFiles(FileServer.convertPath(dirDestino+'\\INSTALACION',empresa))
+     FileServer.backupFiles(FileServer.convertPath(dirDestino+'\\PERSONA',empresa))
    
     
       }

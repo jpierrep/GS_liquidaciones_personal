@@ -10,7 +10,7 @@ var system_constants ={
     TABLE_VARIABLES_PERSONA:{database:'SISTEMA_CENTRAL', table:'sw_variablepersona'},
     TABLE_TEMPLATE_LIQUIDACION:{database:'SISTEMA_CENTRAL', table:'bi_liquidaciones_template'},
     VARIABLES_PARAMETERS:[{nombre:"LIQUIDO PAGO",variable:'H303'},{nombre:"RELIQUIDACION",variable:'H068'}],
-    FOLDER_PATH_FILES:{linux:'/mnt/win_share',windows:'\\\\192.168.100.69\\sobrelaboral\\Sistema_de_documentacion_laboral\\RESPALDO\\TEST'},
+    FOLDER_PATH_FILES:{linux:'/mnt/win_share',windows:'\\\\192.168.100.69\\sobrelaboral\\Sistema_de_documentacion_laboral'},
     NOMINAS_BANCARIAS_VARIABLES:{FILENAME:'nominas_bancarias.json'}
   
 }

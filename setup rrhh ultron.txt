@@ -25,3 +25,8 @@ referencia:  https://stackoverrun.com/es/q/4203914 http://servidor.dokry.com/el-
 //en el archivo plantilla views/liquidacion_sueldo_multiple - copia.ejs mover el numero del zoom con el que quedará el pdf en windows esta con 0.65 en linux quedo con 0.5 pues con más se queda sin formato (0.6 linux , 0.8 windows)
  
 //revisar carpetas de archivos deben existir directorio liquidaciones, reliquidaciones, previred, data-logs (directorio de logs), respaldo_file uploads (respaldo files previred subidos), 
+
+
+//TESTEAR nuevos paths para carga de archivo
+
+ FOLDER_PATH_FILES:{linux:'/mnt/win_share',windows:'\\\\192.168.100.69\\sobrelaboral\\Sistema_de_documentacion_laboral\\RESPALDO\\TEST'},
