@@ -456,6 +456,7 @@ let infoPersonas = (await SoftlandController.getFichasInfoPromiseMes(fichasNomin
 //añadiremos campo para realizar agrupacion en archivos este es nombres + cenco2_codi
 infoPersonas=infoPersonas.map(x=>{
   x["NOMBRES_CENCO2_CODI"]=x["NOMBRES"]+"-["+x["CENCO2_CODI"]+"]"
+  x["FICHA"]=x["FICHA"].replace(/Ñ/g, 'N')
   return x
 })
 
