@@ -470,7 +470,11 @@ socket.emit('getGlobalAlert', {messaje:"Error, no es posible generar el proceso 
 
 
       let infoPersonas = (await SoftlandController.getFichasInfoPromiseMes(fichasVigentes, empresa, mesProceso))
-
+      
+      infoPersonas=infoPersonas.map(x=>{
+        x["FICHA"]=x["FICHA"].replace(/Ñ/g, 'N')
+        return x
+      })
 
       //distinct cc
       let unique = (value, index, self) => {
