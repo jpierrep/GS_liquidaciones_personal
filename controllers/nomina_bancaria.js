@@ -28,7 +28,9 @@ var SoftlandController = require('../controllers/softland');
 const VariablesFicha = sequelizeMssql.import('../models/soft_variables_ficha');
 var  VariablesNominasBancarias = require('../config/' + constants.NOMINAS_BANCARIAS_VARIABLES["FILENAME"]) 
 
-var ConfigAperturaPersona=[{EMP_CODI:2,TIPO:"EMPRESA"},{EMP_CODI:0,CENCO1_CODI:"031-000",TIPO:"CLIENTE"},{EMP_CODI:0,CENCO1_CODI:"005-000",TIPO:"CLIENTE"},{EMP_CODI:0,CENCO1_CODI:"090-000",TIPO:"CLIENTE"},{EMP_CODI:0,CENCO1_CODI:"163-000",TIPO:"CLIENTE"}]
+var ConfigAperturaPersona=[{EMP_CODI:2,TIPO:"EMPRESA"},{EMP_CODI:0,CENCO1_CODI:"031-000",TIPO:"CLIENTE"},{EMP_CODI:0,CENCO1_CODI:"005-000",TIPO:"CLIENTE"},{EMP_CODI:0,CENCO1_CODI:"090-000",TIPO:"CLIENTE"}
+,{EMP_CODI:0,CENCO1_CODI:"962-000",TIPO:"CLIENTE"}
+,{EMP_CODI:0,CENCO1_CODI:"163-000",TIPO:"CLIENTE"}]
 
 
 async function getMontosNomina (req,res) {
