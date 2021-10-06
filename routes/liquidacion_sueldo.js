@@ -335,7 +335,7 @@ io.on('connection', (socket) => {
      
       //let formatDate = (m.getFullYear() > 9 ? m.getFullYear() : '0' + m.getFullYear()) + separador + ((m.getMonth() + 1) 
       let m=new Date()
-      let mesActualInt =parseInt(m.getFullYear()+((m.getMonth()+1 ) > 9 ? (m.getMonth()+1) : '0' + (m.getMonth()+1)))
+      let mesActualInt =parseInt(m.getFullYear()+String(((m.getMonth()+1 ) > 9 ? (m.getMonth()+1) : '0' + (m.getMonth()+1))))
       if (parseInt(mesProceso.substr(0,7).replace('-',''))< mesActualInt){ 
         socket.emit('getGlobalAlert', {messaje:"Error, no es posible generar el proceso para el mes solicitado",type:'error'})
         return 
@@ -359,7 +359,7 @@ io.on('connection', (socket) => {
      
       
         let m=new Date()
-let mesActualInt =parseInt(m.getFullYear()+((m.getMonth()+1 ) > 9 ? (m.getMonth()+1) : '0' + (m.getMonth()+1)))
+let mesActualInt =parseInt(m.getFullYear()+String(((m.getMonth()+1 ) > 9 ? (m.getMonth()+1) : '0' + (m.getMonth()+1))))
 if (parseInt(mesProceso.substr(0,7).replace('-',''))>= mesActualInt){       
 socket.emit('getGlobalAlert', {messaje:"Error, no es posible generar el proceso para el mes solicitado",type:'error'})
         return 
