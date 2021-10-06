@@ -837,7 +837,7 @@ socket.emit("getNominasBancarias", { empresa: empresa, mes: mes,fechaPago:fechaP
 function bloqueaProcesos(){
 
 let m=new Date()
-let mesActualInt =parseInt(m.getFullYear()+((m.getMonth()+1 ) > 9 ? (m.getMonth()+1) : '0' + (m.getMonth()+1)))
+let mesActualInt =parseInt(m.getFullYear()+String(((m.getMonth()+1 ) > 9 ? (m.getMonth()+1) : '0' + (m.getMonth()+1))))
 
 //console.log("el mes selected es",parseInt($("#mes-select").val().substr(5,2)),(new Date()).getMonth()+1 )
 console.log("el mes selected es",parseInt($("#mes-select").val().substr(0,7).replace('-','')),mesActualInt)
