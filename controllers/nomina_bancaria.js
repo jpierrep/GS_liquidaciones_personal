@@ -81,6 +81,14 @@ async function getMontosNomina (req,res) {
     console.log(nominaPago.length)
 
 
+
+    //añadiremos campo para normalizar ñ
+    nominaPago=nominaPago.map(x=>{
+  x["ficha"]=x["ficha"].replace(/Ñ/g, 'N')
+  return x
+})
+
+
   //distinct cc
   let unique = (value, index, self) => {
     return self.indexOf(value) == index;
@@ -447,6 +455,12 @@ and codVariable='`+ variableBase + `' and valor>0
           raw: true
         })
 
+           //añadiremos campo para normalizar ñ
+    nominaPago=nominaPago.map(x=>{
+      x["ficha"]=x["ficha"].replace(/Ñ/g, 'N')
+      return x
+    })
+
   console.log(nominaPago.length)
 
             //si no existen fichas, se termina el proceso
@@ -498,6 +512,7 @@ else if(persona["COD_TIP_EFE"]=='002'){
   persona["MEDIO_PAGO"]='Abono en Cta. Cte. de otros' 
   persona["BANCO_GLOSA"]= persona["BANCO_DESC"]
 }
+//console.log("persona",persona)
 persona["MONTO"]=nominaPago.find(x=>x["ficha"]==persona["FICHA"])["valor"]
 
 return persona
