@@ -259,7 +259,11 @@ io.on('connection', (socket) => {
           })).filter(x => fichasVigentes.includes(x.ficha))
       
       //.map(x => x.CENCO2_CODI)//.slice(0,50)  //para control de cantidad de cc para testear
-
+                     //añadiremos campo para normalizar ñ
+                     dataVariablesPersona=dataVariablesPersona.map(x=>{
+                      x["ficha"]=x["ficha"].replace(/Ñ/g, 'N')
+                      return x
+                    })
 
       let infoPersonas = (await SoftlandController.getFichasInfoPromiseMes(fichasVigentes, empresa, mesProceso))
 

@@ -465,6 +465,12 @@ socket.emit('getGlobalAlert', {messaje:"Error, no es posible generar el proceso 
             mapToModel: true, // pass true here if you have any mapped fields
             raw: true
           })).filter(x => fichasVigentes.includes(x.ficha))
+
+                     //añadiremos campo para normalizar ñ
+      dataVariablesPersona=dataVariablesPersona.map(x=>{
+      x["ficha"]=x["ficha"].replace(/Ñ/g, 'N')
+      return x
+    })
       
       //.map(x => x.CENCO2_CODI)//.slice(0,50)  //para control de cantidad de cc para testear
 
@@ -578,8 +584,10 @@ socket.emit('getGlobalAlert', {messaje:"Error, no es posible generar el proceso 
 
                 templates_persona.forEach(persona => {
                   let ficha = persona.ficha
-                 // console.log(persona["data"])
-                 let monto = persona["data"].find(x => x["VAR_CODI"] == variableValidacion)["VAR_VALOR"]
+                 console.log(ficha)
+                 let monto = persona["data"].find(x => x["VAR_CODI"] == variableValidacion)
+                 if (monto) monto=monto["VAR_VALOR"] 
+                 else monto=null
 
                   dataValidar.push({ ficha: ficha, monto: monto })
                 })
