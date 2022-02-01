@@ -85,6 +85,115 @@ api.get("/testView2", async function (req, res) {
 })
 
 
+api.get("/liquidacion_persona_pdf/:ficha/:mes/:empresa", async function (req, res) {
+//http://192.168.0.158:3800/liquidacion_sueldo/liquidacion_persona_pdf/JUZLEVIC09/2022-01-01/0
+  //let ficha="JUZCFLPM70"
+  //let mes="2019-05-01"
+  //let empresa=0
+  //http://192.168.0.130:3800/liquidacion_sueldo/liquidacion_persona_pdf/JUZCFLPM70/2019-05-01/0
+
+  let ficha = req.params.ficha
+  let mes = req.params.mes
+  //let empresa = 0
+  let empresa = req.params.empresa
+  let empresaDetalle = constants.EMPRESAS.find(x => x.ID == empresa)
+
+  let templateDB = (await sequelizeMssql  .query(` SELECT  [VAR_NOMBRE]      ,[COLUMNA]      ,[POSICION]      ,[OFFSET]      ,[TIPO]      ,[VAR_CODI]      ,[SECTION]      ,[VAR_VALOR]      ,[EMPRESA]
+  FROM `+constants.TABLE_TEMPLATE_LIQUIDACION.database+`.dbo.`+constants.TABLE_TEMPLATE_LIQUIDACION.table  
+        , { model: TemplateLiquidacion,
+          mapToModel: true, // pass true here if you have any mapped fields
+          raw: true
+        })).filter(x=>x.EMPRESA==empresa)
+
+
+  console.log(ficha, mes, empresa)
+
+  let variablesTemplate = templateDB.filter(x => x["VAR_CODI"]).map(x => x["VAR_CODI"])
+  variablesTemplate = JSON.stringify(variablesTemplate).replace('[', '').replace(']', '').replace(/"/g, "'")
+  //obtenemos la variable persona
+  let dataVariablesPersona = (await sequelizeMssql
+    .query(`
+SELECT *
+FROM [SISTEMA_CENTRAL].[dbo].[sw_variablepersona]
+-- where emp_codi=0 and codVariable='H303' 
+
+where 
+emp_codi=`+ empresa + `
+and fecha='`+ mes + `'
+and codVariable in (`+ variablesTemplate + `)
+and ficha='`+ ficha + `'
+
+`
+      , {
+        // replacements: { variablesTemplate: variablesTemplate },
+        model: VariablesFicha,
+        mapToModel: true, // pass true here if you have any mapped fields
+        raw: true
+      }))
+
+
+let infoPersona = (await SoftlandController.getFichasInfoPromiseMes([ficha], empresa, mes))
+      
+
+  var templateBase = JSON.parse(JSON.stringify(templateDB))
+  var filledTemplate = []
+  var template = []
+  filledTemplate = fillTemplate(templateBase, dataVariablesPersona)
+
+  template = formatTemplate(filledTemplate)
+  //let persona = infoPersonasCC.find(x => x.FICHA == ficha)
+
+  // console.log(persona)
+  //se añade la infor de una persona //CAMBIAR A LA PERSONA CORRESPONDIENTE (BUSCAR EN INFOPERSONA)
+  //se pasa filled template pues ahí se pueden recorrer la data para validar, template viene formateada con columnasy es mas dificil recorrer
+  let templates_persona=[]
+  templates_persona.push({ ficha: ficha, persona: infoPersona[0], template: template, data: filledTemplate })
+  console.log("persona",infoPersona)
+  
+
+  var options = {
+    format: 'Letter',
+    border: {
+      top: "1cm",
+      right: "1cm",
+      bottom: "2cm",
+      left: "1cm"
+    },
+
+  };
+// ejs.renderFile("views/liquidacion_sueldo_multiple - copia.ejs", { templates_persona: templates_persona, empresaDetalle: empresaDetalle, mes: mesProceso }, {}, function (err, data) {
+  //res.render("../views/liquidacion_sueldo", { templates_persona: templates_persona, empresaDetalle: empresaDetalle, mes: mes   }, function (err, data) {
+    ejs.renderFile("views/liquidacion_sueldo_multiple - copia.ejs", {templates_persona: templates_persona, empresaDetalle: empresaDetalle, mes: mes  }, {}, function (err, data) {
+    let liquidacionID = "10.010-JEAN-TEST"
+    let html = data;
+     console.log("error",err)
+
+
+     try {
+
+      //  setTimeout(function(){
+      pdf.create(html, options).toStream(function (err, stream) {
+
+        res.setHeader('Content-disposition', 'inline; filename="Cotizacion-' + liquidacionID + '.pdf"');
+        res.setHeader('Content-Type', 'application/pdf');
+        stream.pipe(res);
+
+      })
+      // }, 5000);
+
+    } catch (e) {
+      console.log(e)
+    }
+
+
+
+  });
+
+});
+
+
+
+
 //carga plantilla db para prueba
 var templateDB = require('../config/template_liquidacion_guard.json');
 
