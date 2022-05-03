@@ -364,10 +364,15 @@ async function generaFiles(tablaMapPersonas,empresa,uploadFileName,dirDestino) {
 
   //limitar cantidad de archivos
   //for (const cc of distinctCC.slice(0,5)) {
+
+
+    
      for (const centro_costo of distinctCC) {
     console.log("Empezando el ..." + centro_costo)
  
-    let pagesCC = tablaMapPersonas.filter(x => x["CENCO2_CODI"] == centro_costo).map(x => x["PAGINA"]).join(" ")
+    let pagesCC = tablaMapPersonas.filter(x => x["CENCO2_CODI"] == centro_costo).sort((a, b) => (a["NOMBRE_SINGLE"] > b["NOMBRE_SINGLE"]) ? 1 : -1)
+
+    pagesCC=tablaMapPersonas.map(x => x["PAGINA"]).join(" ")
     console.log("pagesCC", pagesCC)
     
     let child = await  new Promise ( (resolve,reject)=>{
