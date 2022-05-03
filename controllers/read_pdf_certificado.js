@@ -374,7 +374,7 @@ async function generaFiles(tablaMapPersonas,empresa,uploadFileName,dirDestino) {
   
     pagesCC=tablaMapPersonas.map(x => x["PAGINA"]).join(" ")
     console.log("pagesCC", pagesCC)
-    //console.log("nombres",tablaMapPersonas.map(x => x["NOMBRES"]).join(" "))
+    console.log("nombres",tablaMapPersonas.map(x => x["NOMBRES"]).join(" "))
     
     let child = await  new Promise ( (resolve,reject)=>{
      // exec('pdftk ' + uploadFileName + ' cat ' + pagesCC + ' output ' + path_output_base + centro_costo + '.pdf',
