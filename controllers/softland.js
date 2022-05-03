@@ -175,8 +175,9 @@ async function getFichasVigentes(mes,empresa) {
     on ep.Ficha = per.ficha INNER JOIN
     `+ empresaDetalle + `.softland.sw_cargoper AS cp ON cp.ficha = ep.Ficha AND cp.vigHasta = '9999-12-01' inner join
     `+ empresaDetalle + `.softland.cwtcarg AS c ON c.CarCod = cp.carCod inner join
-    `+ empresaDetalle + `.softland.sw_ccostoper AS ccp ON ccp.ficha = per.ficha AND ccp.vigHasta = '9999-12-01' 
-    where estado='V'
+    `+ empresaDetalle + `.softland.sw_ccostoper AS ccp ON ccp.ficha = per.ficha AND ccp.vigHasta = '9999-12-01' inner join
+ `+ empresaDetalle + `.softland.sw_areanegper as area  ON area.ficha = per.ficha AND area.vigHasta = '9999-12-01'
+    where estado='V' and codArn<>'001'  --filtra fichas que se habilitaron para pago gratificaciones
     and ep.FechaMes=' `+mes+ `'
     order by RUT asc, FECHA_INGRESO desc,FECHA_FINIQUITO desc
     
@@ -192,6 +193,58 @@ async function getFichasVigentes(mes,empresa) {
 }
 
 
+async function UpdateLiquidacionesIntranetMes(mes,empresa) {
+
+  console.log("testupdate",mes,empresa)
+  //no depende de fechas 
+
+  let empresaDetalle = constants.EMPRESAS.find(x => x.ID == empresa).BD_SOFTLAND
+  //  let mesIndiceSoftland = await sequelizeMssql.query(` SELECT IndiceMes from ` + empresaDetalle.BD_SOFTLAND + `.softland.sw_vsnpRetornaFechaMesExistentes where FechaMes=:mes `,
+  //  { replacements: { mes: proceso.Mes }, type: sequelize.QueryTypes.SELECT, raw: true })
+  //mesIndiceSoftland = mesIndiceSoftland[0].IndiceMes
+  //console.log("mes proceso", mesIndiceSoftland)
+
+  return new Promise(async  (resolve,reject) => {
+    try {
+      await sequelizeMssql.query(      `
+      delete from [SISTEMA_CENTRAL].[dbo].[bi_liquidaciones_variable_persona_archivo]
+where FechaMes=' `+mes+ `' and emp_codi=`+mes,
+{  type: sequelizeMssql.QueryTypes.DELETE })
+
+
+await sequelizeMssql.query(      `
+insert into 
+  [SISTEMA_CENTRAL].[dbo].[bi_liquidaciones_variable_persona_archivo]
+  
+  SELECT  [ficha]
+      ,[codVariable]
+      ,[mes]
+      ,[valor]
+      ,[flag]
+      ,[fecha]
+      ,[emp_codi]
+  FROM [SISTEMA_CENTRAL].[dbo].sw_variablepersona
+
+  where fecha=' `+mes+ `' and emp_codi=`+mes
+  ,
+{  type: sequelizeMssql.QueryTypes.INSERT })
+
+
+
+resolve()
+
+    }catch(e){
+reject(e)
+    }
+    
+
+
+
+ 
+  })
+
+
+}
 
 
 

@@ -305,7 +305,7 @@ async function generaMapPersonas(rutsEncontrados, empresa,mes) {
         registrosPersona.forEach(registroPersona => {
           if (!(tablaMapPersonas.find(x => x["RUT_ID"] == registroPersona["RUT_ID"] && x["CENCO2_CODI"] == registroPersona["CENCO2_CODI"]))) {
 
-            tablaMapPersonas.push({ RUT: registroPersona["RUT"], RUT_ID: registroPersona["RUT_ID"], PAGINA: pagina, FICHA: registroPersona["FICHA"], CENCO2_CODI: registroPersona["CENCO2_CODI"] })
+            tablaMapPersonas.push({ RUT: registroPersona["RUT"], RUT_ID: registroPersona["RUT_ID"], PAGINA: pagina, FICHA: registroPersona["FICHA"], CENCO2_CODI: registroPersona["CENCO2_CODI"], NOMBRES: registroPersona["NOMBRES"] })
 
           } else {
             console.log("el registro ya tiene la persona ", rutId, "el el centro costo", registroPersona["CENCO2_CODI"])
@@ -324,6 +324,12 @@ async function generaMapPersonas(rutsEncontrados, empresa,mes) {
       }
 
     })
+
+    if(tablaMapPersonas.length>0){
+      //ordena tabla por nombre
+
+      tablaMapPersonas= tablaMapPersonas.sort((a, b) => (a["NOMBRES"] > b["NOMBRES"]) ? 1 : -1)
+    }
 
     resolve(tablaMapPersonas)
 
