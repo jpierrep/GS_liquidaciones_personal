@@ -371,9 +371,10 @@ async function generaFiles(tablaMapPersonas,empresa,uploadFileName,dirDestino) {
     console.log("Empezando el ..." + centro_costo)
  
     let pagesCC = tablaMapPersonas.filter(x => x["CENCO2_CODI"] == centro_costo).sort((a, b) => (a["NOMBRE_SINGLE"] > b["NOMBRE_SINGLE"]) ? 1 : -1)
-
+  
     pagesCC=tablaMapPersonas.map(x => x["PAGINA"]).join(" ")
     console.log("pagesCC", pagesCC)
+    console.log(tablaMapPersonas.map(x => x["NOMBRE_SINGLE"]).join(" "))
     
     let child = await  new Promise ( (resolve,reject)=>{
      // exec('pdftk ' + uploadFileName + ' cat ' + pagesCC + ' output ' + path_output_base + centro_costo + '.pdf',
