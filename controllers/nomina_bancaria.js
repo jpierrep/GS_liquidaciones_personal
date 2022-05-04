@@ -441,9 +441,11 @@ let rutEmpresa=empresaDetalle["RUT"]
 
   let nominaPago = await sequelizeMssql
       .query(`
-select ficha,valor
-FROM [SISTEMA_CENTRAL].[dbo].[sw_variablepersona]
+select per.ficha,valor
+FROM [SISTEMA_CENTRAL].[dbo].[sw_variablepersona] as per
+left join [SISTEMA_CENTRAL].[dbo].sw_areanegper AS area ON area.ficha = per.ficha AND '` + mesProceso + `'>= area.vigDesde and '` + mesProceso + `'< area.vigHasta and per.emp_codi=area.empresa
 where 
+not (area.codArn='001' and emp_codi=0) and not (area.codArn='005' and emp_codi=2)  and
 emp_codi='`+ empresa + `' and fecha='` + mesProceso + `'
 and codVariable='`+ variableBase + `' and valor>0
 
