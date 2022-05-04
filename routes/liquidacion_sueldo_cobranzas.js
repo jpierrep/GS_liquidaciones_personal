@@ -201,9 +201,11 @@ io.on('connection', (socket) => {
 
       let fichasVigentes = (await sequelizeMssql
         .query(`
-  select distinct ficha
-  FROM [SISTEMA_CENTRAL].[dbo].[sw_variablepersona]
-  where 
+        select distinct per.ficha
+        FROM [SISTEMA_CENTRAL].[dbo].[sw_variablepersona] as per
+        left join [SISTEMA_CENTRAL].[dbo].sw_areanegper AS area ON area.ficha = per.ficha AND '` + mesProceso + `'>= area.vigDesde and '` + mesProceso + `'< area.vigHasta and per.emp_codi=area.empresa
+        where 
+        not (area.codArn='001' and emp_codi=0) and not (area.codArn='005' and emp_codi=2)  and
   emp_codi='`+ empresa + `' and fecha='` + mesProceso + `'
   ---SOLO FILTRO PARA COBRANZAS
   --and codVariable='`+ variableBase + `' and valor>0
@@ -240,11 +242,15 @@ io.on('connection', (socket) => {
 
       let dataVariablesPersona = (await sequelizeMssql
         .query(`
-    SELECT *
-    FROM [SISTEMA_CENTRAL].[dbo].[sw_variablepersona]
+        SELECT per.*
+        FROM [SISTEMA_CENTRAL].[dbo].[sw_variablepersona] as per
+        left join [SISTEMA_CENTRAL].[dbo].sw_areanegper AS area ON area.ficha = per.ficha AND '` + mesProceso + `'>= area.vigDesde and '` + mesProceso + `'< area.vigHasta and per.emp_codi=area.empresa
+        -- where emp_codi=0 and codVariable='H303' 
+        where 
+        not (area.codArn='001' and emp_codi=0) and not (area.codArn='005' and emp_codi=2)  and
+
    -- where emp_codi=0 and codVariable='H303' 
-  
-   where 
+   
    emp_codi=`+ empresa + `
    and fecha='`+ mesProceso + `'
    ---SOLO FILTRO PARA COBRANZAS
