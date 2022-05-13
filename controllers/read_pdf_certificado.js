@@ -372,7 +372,7 @@ async function generaFiles(tablaMapPersonas,empresa,uploadFileName,dirDestino) {
  
     let pagesCC = tablaMapPersonas.filter(x => x["CENCO2_CODI"] == centro_costo)
   
-    pagesCC=(tablaMapPersonas.sort((a, b) => (a["NOMBRES"] > b["NOMBRES"]) ? 1 : -1)).map(x => x["PAGINA"]).join(" ")
+    pagesCC=(pagesCC.sort((a, b) => (a["NOMBRES"] > b["NOMBRES"]) ? 1 : -1)).map(x => x["PAGINA"]).join(" ")
     console.log("pagesCC", pagesCC)
     console.log("nombres",tablaMapPersonas.map(x => x["NOMBRES"]).join(" "))
     
