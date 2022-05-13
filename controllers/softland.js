@@ -194,7 +194,7 @@ async function getFichasVigentes(mes,empresa) {
     `+ empresaDetalle + `.softland.cwtcarg AS c ON c.CarCod = cp.carCod inner join
     `+ empresaDetalle + `.softland.sw_ccostoper AS ccp ON ccp.ficha = per.ficha AND ccp.vigHasta = '9999-12-01' inner join
  `+ empresaDetalle + `.softland.sw_areanegper as area  ON area.ficha = per.ficha AND area.vigHasta = '9999-12-01'
-    -- SOLO SI SE NECESITA FILTAR AREA where estado='V' `+ filtro_areas + `  --filtra fichas que se habilitaron para pago gratificaciones
+    -- SOLO SI SE NECESITA FILTAR AREA where estado='V'  filtro_areas    --filtra fichas que se habilitaron para pago gratificaciones
     where estado='V' 
     and ep.FechaMes=' `+mes+ `'
     order by RUT asc, FECHA_INGRESO desc,FECHA_FINIQUITO desc
