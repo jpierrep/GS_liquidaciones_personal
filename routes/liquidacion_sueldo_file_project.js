@@ -25,7 +25,7 @@ var request = require('request');
 const http = require('https');
 var ejs = require('ejs');
 var pdf = require('html-pdf');
-
+var FileProjectController=require('../controllers/file_project');
 const io = require('../index');
 var ficha = ''
 
@@ -528,7 +528,8 @@ socket.emit('getGlobalAlert', {messaje:"Error, no es posible generar el proceso 
   not (area.codArn='001' and emp_codi=0) and not (area.codArn='005' and emp_codi=2)  and
   emp_codi='`+ empresa + `' and fecha='` + mesProceso + `'
   and codVariable='`+ variableBase + `' and valor>0
-  and per.ficha in ('CARONOS323','CAROCU016')
+  --and per.ficha in ('CARONOS323','CAROCU016')
+  and per.ficha in ('CARONOS323')
 `
           , {
 
@@ -672,7 +673,7 @@ socket.emit('getGlobalAlert', {messaje:"Error, no es posible generar el proceso 
           })
           console.log("antes_data")
 
-          ejs.renderFile("views/liquidacion_sueldo_multiple - copia.ejs", { templates_persona: templates_persona, empresaDetalle: empresaDetalle, mes: mesProceso }, {}, function (err, data) {
+          ejs.renderFile("views/liquidacion_sueldo_multiple - copia.ejs", { templates_persona: templates_persona, empresaDetalle: empresaDetalle, mes: mesProceso }, {},  function (err, data) {
             if (err)
               console.log(err)
             //console.log("data",data)
@@ -681,7 +682,7 @@ socket.emit('getGlobalAlert', {messaje:"Error, no es posible generar el proceso 
             var html = data;
 
 
-            pdf.create(html, options).toStream(function (err, stream) {
+            pdf.create(html, options).toBuffer(async function (err, stream) {
 
               //    res.setHeader('Content-disposition', 'inline; filename="Cotizacion-' + liquidacionID + '.pdf"');
               //    res.setHeader('Content-Type', 'application/pdf');
@@ -691,6 +692,10 @@ socket.emit('getGlobalAlert', {messaje:"Error, no es posible generar el proceso 
                /////////////////////////// stream.pipe(fs.createWriteStream(FileServer.convertPath(dirDestino+"\\" + centro_costo+ "-["+empresa+"]"+nameFileSuffix+ ".pdf")));
                 // stream.pipe(res);
               console.log("llegó  el archivo")
+              //console.log(Buffer.from(stream).toString('base64'))
+              let base64=Buffer.from(stream).toString('base64')
+               let response=await FileProjectController.fileProjectPost(null,base64)
+              // console.log('response',JSON.stringify(response))
 
                 //recorre todas las personas (ficha) y busca la variable a validar (H303 ) liquido a pago , para luego validar con la data de base, con ello
                 //sabemos si se ejecutó completamente el proceso

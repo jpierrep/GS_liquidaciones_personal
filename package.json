@@ -13,6 +13,7 @@
   "license": "ISC",
   "dependencies": {
     "async": "^2.6.1",
+    "axios": "^1.2.0",
     "body-parser": "^1.18.3",
     "child_process": "^1.0.2",
     "connect-multiparty": "^2.1.1",
@@ -31,6 +32,7 @@
     "npm": "^6.2.0",
     "pdf-to-text": "0.0.7",
     "promise-mysql": "^3.3.1",
+    "qs": "^6.11.0",
     "read-excel-file": "^2.0.2",
     "s": "^0.1.1",
     "sequelize": "^5.5.0",
