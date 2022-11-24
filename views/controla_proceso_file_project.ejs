@@ -99,7 +99,7 @@
       <div class="col-sm-12">
         <div class="card">
           <div class="card-body">
-            <h5 class="card-title">Certificados Previred
+            <h5 class="card-title">Certificados Previred FILEPROJECT
               <a class='ui-all' style=" font-weight: normal;font-size: 1rem;" tabindex='-1' id="previred-log-modal-button"
                 data-toggle="modal" data-target="#exampleModalCenter">
                 [logs]
@@ -872,10 +872,12 @@ data.append('mes', mes);
 
  $("#previred-upload-button").attr("disabled", true);
 
+
+ ///////ACA TAMBIEN MODIFICAR EL PATH DE FILEUPLOAD SI CAMBIA EL ENDPOINT
 $.ajax({
     type: "POST",
     enctype: 'multipart/form-data',
-    url: "/readPdf/fileupload",
+    url: "/readPdf_file_project/fileupload",
     data: data,
     processData: false,
     contentType: false,
@@ -890,7 +892,7 @@ $.ajax({
         
        if (data.status=="ok"){
         $('#previred-modal-file-upload').modal('hide')
-        socket.emit('getPrevired',data.path,empresa,mes)
+        socket.emit('getPreviredFileProject',data.path,empresa,mes)
        }else{
 
          //si hay algun error el status no será OK, por lo que se debe eliminar la referencia del archivo subido, mandando triguer on chanque val('') este evento (on change) hara que se desactive

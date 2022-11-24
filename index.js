@@ -43,12 +43,14 @@ var ip='0.0.0.0';
     var liquidacion_sueldo_file_project=require('./routes/liquidacion_sueldo_file_project')
     var liquidacion_sueldo_cobranzas=require('./routes/liquidacion_sueldo_cobranzas')
     var read_pdf=require('./routes/read_pdf_certificado')
+    var read_pdf_file_project=require('./routes/read_pdf_certificado_file_project')
     var nomina_bancaria=require('./routes/nomina_bancaria')
 
      app.use('/liquidacion_sueldo',liquidacion_sueldo)
      app.use('/liquidacion_sueldo_file_project',liquidacion_sueldo_file_project)
      app.use('/liquidacion_sueldo_cobranzas',liquidacion_sueldo_cobranzas)
      app.use('/readPdf',read_pdf)
+     app.use('/readPdf_file_project',read_pdf_file_project)
      app.use('/nomina_bancaria',nomina_bancaria)
      console.log("Holaa")
    
