@@ -682,18 +682,18 @@ socket.emit('getGlobalAlert', {messaje:"Error, no es posible generar el proceso 
             var html = data;
 
 
-            pdf.create(html, options).toBuffer(async function (err, stream) {
+            pdf.create(html, options).toBuffer(async function (err, buffer) {
 
               //    res.setHeader('Content-disposition', 'inline; filename="Cotizacion-' + liquidacionID + '.pdf"');
               //    res.setHeader('Content-Type', 'application/pdf');
               //    stream.pipe(res);
-              if (stream && !err) {
+              if (buffer && !err) {
                 //ejemplo de nombre de archivo 001-001[0]-RELIQUIDACION[2020-11-12]
                /////////////////////////// stream.pipe(fs.createWriteStream(FileServer.convertPath(dirDestino+"\\" + centro_costo+ "-["+empresa+"]"+nameFileSuffix+ ".pdf")));
                 // stream.pipe(res);
               console.log("llegó  el archivo")
               //console.log(Buffer.from(stream).toString('base64'))
-              let base64=Buffer.from(stream).toString('base64')
+              let base64=Buffer.from(buffer).toString('base64')
                let response=await FileProjectController.fileProjectPost(null,base64)
               // console.log('response',JSON.stringify(response))
 

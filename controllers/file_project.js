@@ -2,7 +2,7 @@ var axios = require('axios');
 var qs = require('qs');
 
 async function fileProjectPost(dataPersona,base64) {
-
+   console.log("en servicio sube data")
     var axios = require('axios');
     var qs = require('qs');
     var data = qs.stringify({

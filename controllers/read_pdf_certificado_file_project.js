@@ -27,6 +27,7 @@ var ProcessTotal = 0
 var ProcessActual = 0
 var sequelizeMssql = require('../config/connection_mssql')
 var SoftlandController = require('./softland');
+var FileProjectController=require('../controllers/file_project');
 
 
 let empresa = 0
@@ -79,6 +80,8 @@ socket.on('getTest', async (uploadFileName) => {
 
   socket.on('getPreviredFileProject', async (uploadFileName,empresa,mes) => {
 
+    //////////////////////////////////NUEVO PROCESO
+
     //data trae la info del mes y la empresa del proceso
     console.log("se empieza a ejecutar proceso Previred: " + uploadFileName+" "+empresa+" "+mes)
 
@@ -103,13 +106,80 @@ socket.on('getTest', async (uploadFileName) => {
 		//	let uploadFileName='C:/Users/jpierre/Documents/NodeProjects/liquidaciones-sueldo/api-server/CotizacionesPersonal.pdf'
 			rutsEncontrados = await getRutsOfFile(uploadFileName,empresa)
 			
-	let tablaMapPersonas = (await generaMapPersonas(rutsEncontrados, empresa,mes))//.slice(0,5)  //para control de cantidad de la cantidad de archivos que se generaran ***********
-    console.log(tablaMapPersonas)
+	var tablaMapPersonas = (await generaMapPersonas(rutsEncontrados, empresa,mes))//.slice(0,5)  //para control de cantidad de la cantidad de archivos que se generaran ***********
+   // console.log(tablaMapPersonas)
   } catch (e) {
     console.log("no tiene formato", e)
   
   
   }
+
+  let child = await  new Promise ( (resolve,reject)=>{
+    // exec('pdftk ' + uploadFileName + ' cat ' + pagesCC + ' output ' + path_output_base + centro_costo + '.pdf',
+   // exec('pdftk ' + uploadFileName + ' cat ' + pagesCC + ' output ' + FileServer.convertPath(dirDestino+'\\' + centro_costo) + "-["+empresa+"]"+'-PREVIRED['+Utils.getDateFormat().substr(0,10)+']'+'.pdf',
+    
+   //page_%01d tien 1,page_%02d tiene 01,page_%03d tien 001 y asi sucesivamente
+  //exec('pdftk ' + uploadFileName + ' cat ' + pagesCC + ' output ' + FileServer.convertPath(dirDestino+'\\' + centro_costo) + "-["+empresa+"]"+'-PREVIRED['+Utils.getDateFormat().substr(0,10)+']'+'.pdf',
+
+   exec('pdftk  ' + uploadFileName + ' burst output  testPdfBurst/page_%01d.pdf',
+  
+     function (error, stdout, stderr) {
+       console.log('stdout: ' + stdout);
+       console.log('stderr: ' + stderr);
+     
+       
+    
+       if (error !== null) {
+         console.log('exec error: ' + error);
+  
+       }
+      
+       //
+        //entrega data para validacion
+       resolve()
+  
+     });
+    });
+/*
+  {
+    RUT: '016.877.086-3',
+    RUT_ID: 16877086,
+    PAGINA: 1541,
+    FICHA: 'CARONOS389',
+    CENCO2_CODI: '165-012',
+    NOMBRES: 'CLAUDIA ANDREA'
+  },
+  
+*/
+     console.log("termino burst (separa todo en paginas")
+     
+     //let cantIteraciones = tablaMapPersonas.length
+     let cantIteraciones =3
+     for (let i = 0; i < cantIteraciones; i++) {
+     let personaFile= tablaMapPersonas[i]
+     //filename=testPdfBurst/page_%01d.pdf
+     let filename='testPdfBurst/page_'+personaFile["PAGINA"]+'.pdf'
+     console.log("pagina buscada"+filename)
+      var buffer = fs.readFileSync(filename);
+      let base64=Buffer.from(buffer).toString('base64')
+      if(base64){
+      
+      console.log("se recibio archvio")
+      let response=await FileProjectController.fileProjectPost(null,base64)
+      console.log('response',JSON.stringify(response))
+      
+    }else{ 
+      console.log("error no se recibio archivo")
+    }
+
+     // let response=await FileProjectController.fileProjectPost(null,base64)
+      
+     }
+    // var buffer = fs.readFileSync(filename);
+  
+   console.log("todos los trabajos terminados")
+
+
 }
 
 
