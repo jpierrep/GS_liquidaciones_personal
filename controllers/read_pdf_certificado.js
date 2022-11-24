@@ -531,6 +531,37 @@ async function fileupload(req, res, next) {
 
 }
 
+async function testPdfBurst(req, res, next){
+
+ console.log("hola")
+ let child = await  new Promise ( (resolve,reject)=>{
+  // exec('pdftk ' + uploadFileName + ' cat ' + pagesCC + ' output ' + path_output_base + centro_costo + '.pdf',
+ // exec('pdftk ' + uploadFileName + ' cat ' + pagesCC + ' output ' + FileServer.convertPath(dirDestino+'\\' + centro_costo) + "-["+empresa+"]"+'-PREVIRED['+Utils.getDateFormat().substr(0,10)+']'+'.pdf',
+  exec('pdftk  testPdfBurst/testPdfBurst.pdf burst output  testPdfBurst/page_%02d.pdf',
+
+   function (error, stdout, stderr) {
+     console.log('stdout: ' + stdout);
+     console.log('stderr: ' + stderr);
+   
+     
+  
+     if (error !== null) {
+       console.log('exec error: ' + error);
+
+     }
+    
+     //
+      //entrega data para validacion
+     resolve()
+
+   });
+
+ })
+
+
+  res.status(500).send({status:"error",messaje:"error en subida de archivo"})
+}
+
 /** 
  * Funcion que extrae los ruts encontrados en el archivo subido en la ruta del input
  * @function getRutsOfFile
@@ -606,4 +637,4 @@ function replaceAll(string, omit, place, prevstring) {
 }
 
 
-module.exports = {fileupload}
+module.exports = {fileupload,testPdfBurst}

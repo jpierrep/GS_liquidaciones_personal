@@ -24,7 +24,8 @@ var express=require('express');
 var api=express.Router();
 var ReadPdfController=require('../controllers/read_pdf_certificado');
 
-
+//http://localhost:3800/readPdf/testPdfBurst
 api.post('/fileupload',ReadPdfController.fileupload);
+api.get('/testPdfBurst',ReadPdfController.testPdfBurst)
 
 module.exports=api;
