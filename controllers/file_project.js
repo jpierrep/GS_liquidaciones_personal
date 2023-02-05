@@ -6,8 +6,8 @@ async function fileProjectPost(dataPersona,base64) {
     var axios = require('axios');
     var qs = require('qs');
     var data = qs.stringify({
-     'uploadPersonDni': '9.259.110-7',
-    'uploadPersonName': 'TEST',
+     'uploadPersonDni': '1.111.111-1',
+    'uploadPersonName': 'SISTEMA CARGA MASIVA',
     'name': 'LIQUIDACION-FISCA067-0-TEST',
     'type': '89',
     'mimeType': 'application/pdf',

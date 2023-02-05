@@ -107,6 +107,13 @@ async function getFichasInfoPromiseMes(fichas, empresa, mes) {
   ,per.codBancoSuc as COD_BANCO_SUC
   ,banco.descripcion as BANCO_DESC
   ,per.RolPrivado as ROL_PRIVADO
+  ,per.direccion as DIRECCION
+  ,comuna.ComDes as COMUNA
+  ,convert(varchar,per.fechaNacimient,103) as FECHA_NAC
+  ,convert(varchar,per.fechaIngreso,103) as FECHA_INGRESO
+  ,per.sexo as SEXO
+  ,rtrim(ltrim(per.telefono1)) as TELEFONO
+
   FROM 
                            `+ empresaDetalle + `.softland.sw_personal AS per INNER JOIN
                            `+ empresaDetalle + `.softland.sw_cargoper AS cp ON cp.ficha = per.Ficha AND '` + mes + `'>= cp.vigDesde and '` + mes + `'< cp.vigHasta  INNER JOIN
@@ -122,8 +129,8 @@ async function getFichasInfoPromiseMes(fichas, empresa, mes) {
                            `+ empresaDetalle + `.softland.sw_isapre as isapre on isapre.CodIsapre=isapre_per.codIsapre LEFT OUTER JOIN
                            `+ empresaDetalle + `.softland.cwtaren AS area_desc ON area.codArn = area_desc.CodArn  LEFT OUTER JOIN
                            `+ empresaDetalle + `.softland.sw_banco_suc as banco on per.codBancoSuc=banco.codBancoSuc LEFT OUTER JOIN
-                           (SELECT ficha,count(*) as cant_cargas  FROM `+ empresaDetalle + `.softland.sw_cargas where  '` + mes + `' >= vigDesde and '` + mes + `'< vigHasta	group by ficha) cargas  on cargas.ficha=per.ficha
-  
+                           (SELECT ficha,count(*) as cant_cargas  FROM `+ empresaDetalle + `.softland.sw_cargas where  '` + mes + `' >= vigDesde and '` + mes + `'< vigHasta	group by ficha) cargas  on cargas.ficha=per.ficha LEFT OUTER JOIN
+                           `+ empresaDetalle + `.softland.cwtcomu as comuna on per.codComuna=comuna.ComCod
                            where per.ficha in (:fichas)
                            order by CENCO2_CODI asc,NOMBRES asc
                            `,

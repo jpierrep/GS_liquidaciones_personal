@@ -45,6 +45,8 @@ var ip='0.0.0.0';
     var read_pdf=require('./routes/read_pdf_certificado')
     var read_pdf_file_project=require('./routes/read_pdf_certificado_file_project')
     var nomina_bancaria=require('./routes/nomina_bancaria')
+    var nomina_bancaria_file_project=require('./routes/nomina_bancaria_file_project')
+    var nomina_personal_vigente_file_project=require('./routes/nomina_personal_vigente_file_project')
 
      app.use('/liquidacion_sueldo',liquidacion_sueldo)
      app.use('/liquidacion_sueldo_file_project',liquidacion_sueldo_file_project)
@@ -52,6 +54,8 @@ var ip='0.0.0.0';
      app.use('/readPdf',read_pdf)
      app.use('/readPdf_file_project',read_pdf_file_project)
      app.use('/nomina_bancaria',nomina_bancaria)
+     app.use('/nomina_bancaria_file_project',nomina_bancaria_file_project)
+     app.use('/nomina_personal_vigente_file_project',nomina_personal_vigente_file_project)
      console.log("Holaa")
    
     
