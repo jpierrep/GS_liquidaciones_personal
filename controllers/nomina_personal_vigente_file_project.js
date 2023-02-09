@@ -146,12 +146,12 @@ async function getNominaPersonalVigentePDF (req,res) {
   console.log("test")
 
     let variableBase='H303'
-    let mesProceso='2022-11-01'
+    let mesProceso='2023-01-01'
     let empresa=0
     let fechaPago='2022-11-30'
     let filtro='CENCO1_CODI'
     let filtroDesc='CENCO1_DESC'
-    let filtroValor=['028-000']
+    let filtroValor=['918-000']
 
 
 
