@@ -142,6 +142,79 @@ res.render("../views/nomina_bancaria", { nomina: infoPersonas,datosNomina:datosN
 
 
 
+async function getCalendarioAsistencias (req,res) {
+
+  var options = {
+    format: 'Letter',
+    header:{height: "83mm"},
+    footer: {
+        height: "18mm",
+        contents: {
+
+       //   default: '<span style="color: #444;">{{page}}</span>/<span>{{pages}}</span>'// fallback value
+       default: '<span style="color: #444;  font-size: 11px; font-weight: bold; font-family: Courier New, Courier, monospace;">Página {{page}}</span>'// fallback value    
+    }
+        },
+    orientation:'landscape',
+    border: {
+      top: "0cm",
+      right: "1cm",
+      bottom: "0cm",
+      left: "1cm"
+    },
+    timeout: 30000,
+
+  };
+
+  
+  let calendario = (await SoftlandController.getCalendariosAsistenciasPromise())//.slice(0,2);
+ // res.status(200).send(calendario)
+ let columnas=Object.keys(calendario[0])
+ console.log('columnas',columnas)
+ // res.render("../views/nomina_calendario_asistencias", { calendario:calendario,columnas:columnas });
+
+ res.render("../views/nomina_calendario_asistencias", { calendario:calendario,columnas:columnas}, async function (err, data) {
+
+  let liquidacionID = "10.010-JEAN-TEST"
+  let html = data;
+  //   console.log("HTML",html)
+  try {
+
+
+    pdf.create(html, options).toStream(function (err, stream) {
+
+      res.setHeader('Content-disposition', 'inline; filename="Cotizacion-' + liquidacionID + '.pdf"');
+      res.setHeader('Content-Type', 'application/pdf');
+      stream.pipe(res);
+
+    })
+
+
+
+
+
+
+
+  } catch (e) {
+    console.log(e)
+  }
+
+
+
+});
+
+
+}
+
+async function getCalendarioData (req,res) {
+  let calendario = (await SoftlandController.getCalendariosAsistenciasPromise()).slice(0,2);
+  res.status(200).send(calendario)
+ 
+
+}
+
+
+
 async function getNominaPersonalVigentePDF (req,res) {
   console.log("test")
 
@@ -681,5 +754,5 @@ var unique = (value, index, self) => {
 
 
 module.exports = {
-    getMontosNomina,getNominaPersonalVigentePDF
+    getMontosNomina,getNominaPersonalVigentePDF,getCalendarioAsistencias,getCalendarioData
   }

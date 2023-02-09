@@ -1,7 +1,8 @@
 var Sequelize = require('sequelize');
 
 
-var sequelize = new Sequelize('Inteligencias', 'appcontroloperacional', 'appcontroloperacional', {
+//var sequelize = new Sequelize('Inteligencias', 'appcontroloperacional', 'appcontroloperacional', {
+  var sequelize = new Sequelize('Inteligencias', 'targit', 'targit2015*', {
   host: '192.168.100.14',
   dialect: 'mssql',
 

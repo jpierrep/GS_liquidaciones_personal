@@ -145,6 +145,81 @@ async function getFichasInfoPromiseMes(fichas, empresa, mes) {
 }
 
 
+async function getCalendariosAsistenciasPromise(fichas, empresa, mes) {
+  //no depende de fechas 
+
+
+  return new Promise(async  resolve => {
+    let fichasInfo = await sequelizeMssql.query(`
+
+    select 
+  
+    *
+      from
+      (
+    
+    SELECT 
+    
+    --cc.CENCO1_DESC as CLIENTE
+    --,cc.CENCO2_CODI as CODI
+    
+    --,cc.CENCO2_DESC as INSTALACION,
+    PersonalNombre as  NOMBRE
+    ,PersonalRut as RUT
+    ,DetalleFuncFicha as FICHA
+    ,ltrim(rtrim(turnos.CODIGO_TURNO)) as CODIGO_TURNO
+           ,convert(varchar,convert(date,FECHA_ASIST),103) as fecha_asist2
+         -- ,ID_ASIST
+       -- ,CENCO_ACTIVO
+       -- ,per.DetalleFuncActivo
+       -- ,per.DetalleFuncContrato
+       -- ,per.DetalleFuncFiniquito
+      FROM [bi-server-01].[Inteligencias].[dbo].[GS_ASISTENCIASv2_BASE] as asist
+      left join [bi-server-01].Inteligencias.dbo.GS_PERSONAL_ASISTENCIASv2 as per
+      on per.Id_Detalle=asist.IdDetalle
+      left join [bi-server-01].Inteligencias.dbo.CENTROS_COSTO as cc on cc.CENCO2_CODI=per.CentroCostoCodigo collate SQL_Latin1_General_CP1_CI_AS and per.CentroCostoEmpresa=cc.EMP_CODI
+     left join [bi-server-01].Inteligencias.dbo.GS_ASISTENCIASv2_TURNOS as turnos on turnos.ID_TURNO=asist.TURNO
+    where FECHA_ASIST between '20221101' and '20221130'
+    and cc.CENCO1_DESC like '%PODER JUDICIAL JURISDICCION TEMUCO%' and cc.CENCO1_DESC not like '%miguel%'
+    and   ( convert(date,DetalleFuncFiniquito,103) is null or asist.FECHA_ASIST between DATEADD(month, DATEDIFF(month, 0, convert(date,DetalleFuncContrato,103)), 0)  and DATEADD(MM,DATEDIFF(MM, -1, convert(date,DetalleFuncFiniquito,103)),-1)
+    --and   ( DetalleFuncFiniquito in ('31/12/9997','31/12/9994') or DetalleFuncFiniquito is null
+    
+    )
+    and  TURNO>0
+    --and DetalleFuncActivo='SI'
+    
+    ) as sourceTable
+    pivot(
+    max(CODIGO_TURNO)
+    for fecha_asist2 in (
+    --[01/09/2022],[02/09/2022],[03/09/2022],[04/09/2022],[05/09/2022],[06/09/2022],[07/09/2022],[08/09/2022],[09/09/2022],[10/09/2022],[11/09/2022],[12/09/2022],[13/09/2022],[14/09/2022],[15/09/2022],[16/09/2022],[17/09/2022],[18/09/2022],[19/09/2022],[20/09/2022],[21/09/2022],[22/09/2022],[23/09/2022],[24/09/2022],[25/09/2022],[26/09/2022],[27/09/2022],[28/09/2022],[29/09/2022],[30/09/2022]
+    --[01/10/2022],[02/10/2022],[03/10/2022],[04/10/2022],[05/10/2022],[06/10/2022],[07/10/2022],[08/10/2022],[09/10/2022],[10/10/2022],[11/10/2022],[12/10/2022],[13/10/2022],[14/10/2022],[15/10/2022],[16/10/2022],[17/10/2022],[18/10/2022],[19/10/2022],[20/10/2022],[21/10/2022],[22/10/2022],[23/10/2022],[24/10/2022],[25/10/2022],[26/10/2022],[27/10/2022],[28/10/2022],[29/10/2022],[30/10/2022],[31/10/2022]
+    [01/11/2022],[02/11/2022],[03/11/2022],[04/11/2022],[05/11/2022],[06/11/2022],[07/11/2022],[08/11/2022],[09/11/2022],[10/11/2022],[11/11/2022],[12/11/2022],[13/11/2022],[14/11/2022],[15/11/2022],[16/11/2022],[17/11/2022],[18/11/2022],[19/11/2022],[20/11/2022],[21/11/2022],[22/11/2022],[23/11/2022],[24/11/2022],[25/11/2022],[26/11/2022],[27/11/2022],[28/11/2022],[29/11/2022],[30/11/2022]
+    
+    
+    )
+    ) as pivotTable
+    
+   -- order by CLIENTE,INSTALACION,
+   
+    order by NOMBRE asc
+    
+    
+    
+                           `,
+      {  type: sequelizeMssql.QueryTypes.SELECT, raw: true })
+
+
+    resolve(fichasInfo)
+
+  })
+
+
+}
+
+
+
+
 
 
 
@@ -281,8 +356,11 @@ reject(e)
 
 
 
+
+
+
 module.exports = {
-  getFichasInfoPromise, getFichasInfoPromiseMes,getFichasVigentes
+  getFichasInfoPromise, getFichasInfoPromiseMes,getFichasVigentes,getCalendariosAsistenciasPromise
 }
 
 
