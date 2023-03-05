@@ -166,13 +166,16 @@ async function getCalendarioAsistencias (req,res) {
 
   };
 
-  
+
   let calendario = (await SoftlandController.getCalendariosAsistenciasPromise())//.slice(0,2);
  // res.status(200).send(calendario)
+
+
+
  let columnas=Object.keys(calendario[0])
  console.log('columnas',columnas)
- // res.render("../views/nomina_calendario_asistencias", { calendario:calendario,columnas:columnas });
-
+res.render("../views/nomina_calendario_asistencias", { calendario:calendario,columnas:columnas });
+/*
  res.render("../views/nomina_calendario_asistencias", { calendario:calendario,columnas:columnas}, async function (err, data) {
 
   let liquidacionID = "10.010-JEAN-TEST"
@@ -202,12 +205,14 @@ async function getCalendarioAsistencias (req,res) {
 
 
 });
-
+*/
 
 }
 
 async function getCalendarioData (req,res) {
   let calendario = (await SoftlandController.getCalendariosAsistenciasPromise()).slice(0,2);
+  let columnas=Object.keys(calendario[0])
+ console.log('columnas',columnas)
   res.status(200).send(calendario)
  
 

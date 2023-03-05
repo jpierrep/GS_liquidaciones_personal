@@ -3,15 +3,17 @@ var qs = require('qs');
 
 async function fileProjectPost(dataPersona,base64) {
    console.log("en servicio sube data")
+   console.log("persona", dataPersona)
     var axios = require('axios');
     var qs = require('qs');
     var data = qs.stringify({
-     'uploadPersonDni': '1.111.111-1',
+     'uploadPersonDni': '11.111.111-1',
     'uploadPersonName': 'SISTEMA CARGA MASIVA',
-    'name': 'LIQUIDACION-FISCA067-0-TEST',
+    'name': 'LIQUIDACION-'+dataPersona.FICHA+'-0',
     'type': '89',
     'mimeType': 'application/pdf',
-    'dni': '9.259.110-7',
+    'dni': parseInt(dataPersona.RUT.split('.')[0]).toString()+'.'+dataPersona.RUT.split('.')[1]+'.'+dataPersona.RUT.split('.')[2],
+    'code':dataPersona.FICHA,
     'base64':base64
     });
     var config = {

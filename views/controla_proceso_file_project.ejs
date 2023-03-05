@@ -462,7 +462,7 @@
       let empresa = $("#empresa-select").val();
       let mes = $("#mes-select").val();      
       //se consulta si ya existe el proceso via socket, la respuesta llega en on resExistsDirDestino , si no existe se ejecuta el proceso executeProcess, si existe se levantarà popup
-      socket.emit("getExistsDirDestino", { empresa: empresa, mes: mes,proceso:procesoSelected });
+      socket.emit("getExistsDirDestinoFileProject", { empresa: empresa, mes: mes,proceso:procesoSelected });
 
      
     //previred-modal-file-upload
@@ -480,7 +480,7 @@
       procesoSelected="reliquidacion"
       let empresa = $("#empresa-select").val();
       let mes = $("#mes-select").val();      
-      socket.emit("getExistsDirDestino", { empresa: empresa, mes: mes,proceso:procesoSelected });
+      socket.emit("getExistsDirDestinoFileProject", { empresa: empresa, mes: mes,proceso:procesoSelected });
 
      
     //previred-modal-file-upload
@@ -500,7 +500,7 @@
     procesoSelected="previred"
       let empresa = $("#empresa-select").val();
       let mes = $("#mes-select").val();      
-      socket.emit("getExistsDirDestino", { empresa: empresa, mes: mes,proceso:procesoSelected });
+      socket.emit("getExistsDirDestinoFileProject", { empresa: empresa, mes: mes,proceso:procesoSelected });
   
 
     });
@@ -573,7 +573,7 @@
     })
 
 
-  socket.on('resExistsDirDestino', function (existsDirDestino) {
+  socket.on('resExistsDirDestinoFileProject', function (existsDirDestino) {
 // si existe ya la el proceso (carpeta y empresa) se backapea, si no, se ejecuta
      
     if(existsDirDestino)  $('#process-modal-backup').modal('show'); 
@@ -804,6 +804,7 @@ socket.emit("getNominasBancarias", { empresa: empresa, mes: mes,fechaPago:fechaP
 
 function bloqueaProcesos(){
 
+/*////////////DESACTIVADO
 let m=new Date()
 let mesActualInt =parseInt(m.getFullYear()+String(((m.getMonth()+1 ) > 9 ? (m.getMonth()+1) : '0' + (m.getMonth()+1))))
 
@@ -819,6 +820,7 @@ $('#reliquidacion-empieza').attr("disabled", true);
 
 }
 
+*/
 
 }
 
@@ -934,7 +936,7 @@ procesoSelected="nominabancaria"
   let empresa = $("#empresa-select").val();
   let mes = $("#mes-select").val();
   let subproceso=$("#nominas-select").val();    
-  socket.emit("getExistsDirDestino", { empresa: empresa, mes: mes,proceso:procesoSelected,subproceso:subproceso });
+  socket.emit("getExistsDirDestinoFileProject", { empresa: empresa, mes: mes,proceso:procesoSelected,subproceso:subproceso });
 
 /*
  var empresa = $("#empresa-select").val();

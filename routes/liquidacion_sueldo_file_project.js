@@ -244,43 +244,17 @@ io.on('connection', (socket) => {
 
   });
 
-  socket.on("getExistsDirDestino", function (dataUser) {
-    //dataUser["mes"],empresa:dataUser["empresa"]
-    //mes,proceso,empresa
-  let mes=dataUser["mes"]
-  let empresa=dataUser["empresa"]
-  let proceso=dataUser["proceso"]
-  let dirDestino=FileServer.getDirDestinoProceso(proceso,mes,empresa)
-  
-  if (proceso=='nominabancaria'){
-  let subproceso=dataUser["subproceso"]
- 
-  let  VariablesNominasBancarias = require('../config/' + constants.NOMINAS_BANCARIAS_VARIABLES["FILENAME"])
-  let variableNominaDetalle=VariablesNominasBancarias.find(x=>x["COD_VARIABLE"]==subproceso)
- dirDestino=FileServer.convertPath( dirDestino+"\\"+subproceso+"-["+variableNominaDetalle["NOMBRE_NOMINA"].replace(/\s/g, '-')+"]\\CLIENTE")
-  console.log(dirDestino,' carpeta subproceso nomina')
+  socket.on("getExistsDirDestinoFileProject", function (dataUser) {
+   console.log("en  getExistsDirDestinoFileProject" )
 
-  }
+    socket.emit("resExistsDirDestinoFileProject", false);
 
-  let existsDirDestino=false
-  
-  //validar si existen archivos tambien en el dir destino con la empresa
-  //files=fs.readdirSync(oldPath).filter(file=>/\.pdf$/.test(file))
-  
-  console.log("verificando la carpeta y la empresa")
-
-  if(fs.existsSync(dirDestino)) {
-    //existe la empresa
-  let files=fs.readdirSync(dirDestino).filter(file=>file.includes("["+empresa+"]"))
-    if(files.length>0) existsDirDestino=true
-  }
-  
- 
-
-   socket.emit("resExistsDirDestino", existsDirDestino);
+  })
 
 
-  });
+
+
+
 
 
   socket.on("getFileName", async (proceso, empresa) => {
@@ -445,10 +419,12 @@ io.on('connection', (socket) => {
       //let formatDate = (m.getFullYear() > 9 ? m.getFullYear() : '0' + m.getFullYear()) + separador + ((m.getMonth() + 1) 
       let m=new Date()
       let mesActualInt =parseInt(m.getFullYear()+String(((m.getMonth()+1 ) > 9 ? (m.getMonth()+1) : '0' + (m.getMonth()+1))))
+      /*///////////////////////
       if (parseInt(mesProceso.substr(0,7).replace('-',''))< mesActualInt){ 
         socket.emit('getGlobalAlert', {messaje:"Error, no es posible generar el proceso para el mes solicitado",type:'error'})
         return 
       }
+      */
 
     } if (tipoProceso == "reliquidacion") {
 
@@ -529,7 +505,7 @@ socket.emit('getGlobalAlert', {messaje:"Error, no es posible generar el proceso 
   emp_codi='`+ empresa + `' and fecha='` + mesProceso + `'
   and codVariable='`+ variableBase + `' and valor>0
   --and per.ficha in ('CARONOS323','CAROCU016')
-  and per.ficha in ('CARONOS323')
+  and per.ficha in ('PJVALPO085','PJVALPO108')
 `
           , {
 
@@ -603,23 +579,27 @@ socket.emit('getGlobalAlert', {messaje:"Error, no es posible generar el proceso 
       }
 
 
-      let distinctCC = infoPersonas.map(x => { return x.CENCO2_CODI }).filter(unique)//.slice(0, 3)
+      let distinctPersonas = infoPersonas.map(x => { return x.FICHA }).filter(unique)//.slice(0, 3)
+    
+      
       // distinctCC = ["958-007"]
       //   distinctCC = ["129-001"]
       //distinctCC = ["162-009"]
 
-      console.log(distinctCC.length)
+   //   console.log(distinctCC.length)
 
 
       let path = ""
       // let batch = 1
       // let cantIteraciones = parseInt(distinctCC.length / batch) + 1 //si tiene decimales 
-      let cantIteraciones = distinctCC.length
-      console.log("total registros:", distinctCC.length, "cantidad iteraciones", cantIteraciones)
+      let cantIteraciones = distinctPersonas.length
+      console.log("total registros:", distinctPersonas.length, "cantidad iteraciones", cantIteraciones)
 
       for (let i = 0; i < cantIteraciones; i++) {
 
-        let centro_costo = distinctCC[i]
+       // let centro_costo = distinctCC[i]
+        let personaFicha=distinctPersonas[i]
+        let persona = infoPersonas.find(x => x.FICHA == personaFicha)
 
         await (new Promise(async (resolves, rejects) => {
 
@@ -627,7 +607,7 @@ socket.emit('getGlobalAlert', {messaje:"Error, no es posible generar el proceso 
           //  let getFilesPromises = distinctCC.slice(i * batch, (i * batch) + batch).map(async centro_costo => {
 
 
-          let filename = centro_costo + ".pdf"
+          let filename = personaFicha + ".pdf"
 
           //await getLiquidacionCentroCosto(null, centro_costo, mes, empresa, path + filename)
           //desde aca es centro de costo
@@ -644,12 +624,13 @@ socket.emit('getGlobalAlert', {messaje:"Error, no es posible generar el proceso 
             timeout: 100000,
           };
 
-          let infoPersonasCC = infoPersonas.filter(x => x.CENCO2_CODI == centro_costo)
+          //let infoPersonasCC = infoPersonas.filter(x => x.CENCO2_CODI == centro_costo)
+        
           var templates_persona = []
 
-          let fichasCC = infoPersonasCC.map(x => x.FICHA).filter(unique)
-          console.log('fichasCC', fichasCC)
-
+         // let fichasCC = infoPersonasCC.map(x => x.FICHA).filter(unique)
+         // console.log('fichasCC', fichasCC)
+          let fichasCC =[personaFicha]
           fichasCC.map(ficha => {
 
             let dataVariablesPersonaCC = dataVariablesPersona.filter(x => x.ficha == ficha)
@@ -663,7 +644,7 @@ socket.emit('getGlobalAlert', {messaje:"Error, no es posible generar el proceso 
             filledTemplate = fillTemplate(templateBase, dataVariablesPersonaCC)
 
             template = formatTemplate(filledTemplate)
-            let persona = infoPersonasCC.find(x => x.FICHA == ficha)
+           //SE DECLARA ARRIBA let persona = infoPersonas.find(x => x.FICHA == ficha)
 
             // console.log(persona)
             //se añade la infor de una persona //CAMBIAR A LA PERSONA CORRESPONDIENTE (BUSCAR EN INFOPERSONA)
@@ -694,7 +675,7 @@ socket.emit('getGlobalAlert', {messaje:"Error, no es posible generar el proceso 
               console.log("llegó  el archivo")
               //console.log(Buffer.from(stream).toString('base64'))
               let base64=Buffer.from(buffer).toString('base64')
-               let response=await FileProjectController.fileProjectPost(null,base64)
+               let response=await FileProjectController.fileProjectPost(persona,base64)
               // console.log('response',JSON.stringify(response))
 
                 //recorre todas las personas (ficha) y busca la variable a validar (H303 ) liquido a pago , para luego validar con la data de base, con ello
@@ -719,14 +700,14 @@ socket.emit('getGlobalAlert', {messaje:"Error, no es posible generar el proceso 
                 //return next()
               } else {
                 rejects()
-                console.log("error en stream, " + centro_costo, err)
+                console.log("error en stream, " + personaFicha, err)
 
                 if (tipoProceso == "liquidacion") {
-                  StatusLiquidacion.msgs[0] = "falloo el centro " + centro_costo + " " + err
+                  StatusLiquidacion.msgs[0] = "falloo el centro " + personaFicha + " " + err
                   // StatusLiquidacion.percent = parseInt((i + 1) / distinctCC.length * 100)
                   io.emit('getStatusLiquidacion', StatusLiquidacion)
                 } if (tipoProceso == "reliquidacion") {
-                  StatusReliquidacion.msgs[0] = "falloo el centro " + centro_costo + " " + err
+                  StatusReliquidacion.msgs[0] = "falloo el centro " + personaFicha + " " + err
                   // StatusLiquidacion.percent = parseInt((i + 1) / distinctCC.length * 100)
                   io.emit('getStatusReliquidacion', StatusReliquidacion)
                 }
@@ -749,12 +730,12 @@ socket.emit('getGlobalAlert', {messaje:"Error, no es posible generar el proceso 
         console.log("todos los trabajos terminados iteracion ", i)
         //aca esta ok, asi que emitimos evento    
         if (tipoProceso == "liquidacion") {
-          StatusLiquidacion.msgs[0] = centro_costo
-          StatusLiquidacion.percent = parseInt((i + 1) / distinctCC.length * 100)
+          StatusLiquidacion.msgs[0] = personaFicha
+          StatusLiquidacion.percent = parseInt((i + 1) / distinctPersonas.length * 100)
           io.emit('getStatusLiquidacion', StatusLiquidacion)
         } if (tipoProceso == "reliquidacion") {
-          StatusReliquidacion.msgs[0] = centro_costo
-          StatusReliquidacion.percent = parseInt((i + 1) / distinctCC.length * 100)
+          StatusReliquidacion.msgs[0] = personaFicha
+          StatusReliquidacion.percent = parseInt((i + 1) / distinctPersonas.length * 100)
           io.emit('getStatusReliquidacion', StatusReliquidacion)
         }
 
