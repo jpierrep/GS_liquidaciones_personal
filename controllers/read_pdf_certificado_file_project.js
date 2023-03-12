@@ -153,8 +153,8 @@ socket.on('getTest', async (uploadFileName) => {
 */
      console.log("termino burst (separa todo en paginas")
      
-     //let cantIteraciones = tablaMapPersonas.length
-     let cantIteraciones =3
+   //  let cantIteraciones = tablaMapPersonas.length
+     let cantIteraciones =10
      for (let i = 0; i < cantIteraciones; i++) {
      let personaFile= tablaMapPersonas[i]
      //filename=testPdfBurst/page_%01d.pdf
@@ -165,8 +165,13 @@ socket.on('getTest', async (uploadFileName) => {
       if(base64){
       
       console.log("se recibio archvio")
-      let response=await FileProjectController.fileProjectPost(null,base64)
+      let response=await FileProjectController.fileProjectPost(personaFile,base64)
       console.log('response',JSON.stringify(response))
+
+      		//envia evento de completitud del archivo
+				StatusPrevired.msgs[0] = personaFile.FICHA
+				StatusPrevired.percent =(( i + 1) / cantIteraciones* 100)
+				io.emit('getStatusPrevired', StatusPrevired)
       
     }else{ 
       console.log("error no se recibio archivo")

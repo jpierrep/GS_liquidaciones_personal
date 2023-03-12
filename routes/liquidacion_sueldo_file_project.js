@@ -505,7 +505,7 @@ socket.emit('getGlobalAlert', {messaje:"Error, no es posible generar el proceso 
   emp_codi='`+ empresa + `' and fecha='` + mesProceso + `'
   and codVariable='`+ variableBase + `' and valor>0
   --and per.ficha in ('CARONOS323','CAROCU016')
-  and per.ficha in ('PJVALPO085','PJVALPO108')
+  --and per.ficha in ('PJVALPO085','PJVALPO108')
 `
           , {
 
@@ -579,7 +579,7 @@ socket.emit('getGlobalAlert', {messaje:"Error, no es posible generar el proceso 
       }
 
 
-      let distinctPersonas = infoPersonas.map(x => { return x.FICHA }).filter(unique)//.slice(0, 3)
+      let distinctPersonas = infoPersonas.map(x => { return x.FICHA }).filter(unique)//.slice(0, 100)
     
       
       // distinctCC = ["958-007"]
