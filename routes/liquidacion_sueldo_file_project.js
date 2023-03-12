@@ -595,6 +595,15 @@ socket.emit('getGlobalAlert', {messaje:"Error, no es posible generar el proceso 
       let cantIteraciones = distinctPersonas.length
       console.log("total registros:", distinctPersonas.length, "cantidad iteraciones", cantIteraciones)
 
+      let processInfo={
+        name:"LIQUIDACION",
+        type:40,
+        referencialDate:mesProceso.substr(0,7)+'-30',
+        monthInsacom: mesProceso.substr(5,2),
+        yearInsacom:mesProceso.substr(0,4)
+      
+      }
+
       for (let i = 0; i < cantIteraciones; i++) {
 
        // let centro_costo = distinctCC[i]
@@ -675,7 +684,7 @@ socket.emit('getGlobalAlert', {messaje:"Error, no es posible generar el proceso 
               console.log("llegó  el archivo")
               //console.log(Buffer.from(stream).toString('base64'))
               let base64=Buffer.from(buffer).toString('base64')
-               let response=await FileProjectController.fileProjectPost(persona,base64)
+               let response=await FileProjectController.fileProjectPost(processInfo,persona,base64)
               // console.log('response',JSON.stringify(response))
 
                 //recorre todas las personas (ficha) y busca la variable a validar (H303 ) liquido a pago , para luego validar con la data de base, con ello

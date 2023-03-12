@@ -99,6 +99,26 @@ socket.on('getTest', async (uploadFileName) => {
   });
 
   async function getPreviredFileProject(uploadFileName,empresa,mes){
+
+    let carpetaBurst='pdfBurstPrevired'
+
+    if(fs.existsSync(carpetaBurst))
+    {
+    //recrea carpeta Burst
+    try {
+      
+      fs.rmdirSync(carpetaBurst, { recursive: true });
+      fs.mkdirSync(carpetaBurst);
+     
+      console.log('Carpeta recreada exitosamente!');
+    } catch (err) {
+      console.error(err);
+    }
+
+  }else{
+    fs.mkdirSync(carpetaBurst);
+  }
+
     let rutsEncontrados
 
     try {
@@ -121,7 +141,7 @@ socket.on('getTest', async (uploadFileName) => {
    //page_%01d tien 1,page_%02d tiene 01,page_%03d tien 001 y asi sucesivamente
   //exec('pdftk ' + uploadFileName + ' cat ' + pagesCC + ' output ' + FileServer.convertPath(dirDestino+'\\' + centro_costo) + "-["+empresa+"]"+'-PREVIRED['+Utils.getDateFormat().substr(0,10)+']'+'.pdf',
 
-   exec('pdftk  ' + uploadFileName + ' burst output  testPdfBurst/page_%01d.pdf',
+   exec('pdftk  ' + uploadFileName + ' burst output  pdfBurstPrevired/page_%01d.pdf',
   
      function (error, stdout, stderr) {
        console.log('stdout: ' + stdout);
@@ -151,6 +171,15 @@ socket.on('getTest', async (uploadFileName) => {
   },
   
 */
+let processInfo={
+  name:"PREVIRED",
+  type:77,
+  referencialDate:mes.substr(0,7)+'-30',
+  monthInsacom: mes.substr(5,2),
+  yearInsacom:mes.substr(0,4)
+
+}
+console.log(processInfo)
      console.log("termino burst (separa todo en paginas")
      
    //  let cantIteraciones = tablaMapPersonas.length
@@ -165,7 +194,9 @@ socket.on('getTest', async (uploadFileName) => {
       if(base64){
       
       console.log("se recibio archvio")
-      let response=await FileProjectController.fileProjectPost(personaFile,base64)
+
+
+      let response=await FileProjectController.fileProjectPost(processInfo,personaFile,base64)
       console.log('response',JSON.stringify(response))
 
       		//envia evento de completitud del archivo
@@ -188,6 +219,16 @@ socket.on('getTest', async (uploadFileName) => {
 }
 
 
+
+async function recreaCarpeta() {
+  try {
+    await fs.rmdir('mi_carpeta', { recursive: true });
+    fs.mkdir
+    console.log('Carpeta eliminada exitosamente!');
+  } catch (err) {
+    console.error(err);
+  }
+}
 
 
 /** 

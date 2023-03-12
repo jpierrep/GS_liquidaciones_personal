@@ -1,7 +1,7 @@
 var axios = require('axios');
 var qs = require('qs');
 
-async function fileProjectPost(dataPersona, base64) {
+async function fileProjectPost(processInfo,dataPersona, base64) {
   console.log("en servicio sube data")
   //  console.log("persona", dataPersona)
   var axios = require('axios');
@@ -9,12 +9,16 @@ async function fileProjectPost(dataPersona, base64) {
   var data = qs.stringify({
     'uploadPersonDni': '11.111.111-1',
     'uploadPersonName': 'SISTEMA CARGA MASIVA',
-    'name': 'LIQUIDACION-' + dataPersona.FICHA,
-    'type': '89',
+    'name': processInfo.name+'-' + dataPersona.FICHA,
+    'type': processInfo.type,
     'mimeType': 'application/pdf',
     'dni': parseInt(dataPersona.RUT.split('.')[0]).toString() + '.' + dataPersona.RUT.split('.')[1] + '.' + dataPersona.RUT.split('.')[2],
     'code': dataPersona.FICHA,
-    'base64': base64
+    'base64': base64,
+    'monthIsacom':processInfo.monthInsacom,
+    'yearIsacom':processInfo.yearInsacom,
+    'referencialDate':processInfo.referencialDate,
+
   });
   var config = {
     method: 'post',
