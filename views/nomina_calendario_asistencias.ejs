@@ -54,20 +54,20 @@ img{
 
 <tr >
 <td >Centro Costo</td>
-<td >: 918-001</td>
+<td ><%= infoCC.CENCO2_CODI %></td>
 <td >Nombre</td>
-<td >: CENTRO JUSTICIA VALPARAISO</td>
+<td >: <%= infoCC.CENCO2_DESC.substr(0,23) %></td>
 <td >Cliente</td>
-<td >: PODER JUDICIAL JURIDICCION VALP</td>
+<td >: <%= infoCC.CENCO1_DESC %></td>
 
 </tr>
 <tr >
   <td >Nº de Registros</td>
-  <td >: test</td>
+  <td >: <%= cantRegistros %></td>
   <td > Mes</td>
-  <td >: 02/20233</td>
+  <td >: <%= mesFormat %></td>
   <td >Fecha Actual</td>
-  <td >: test</td>
+  <td >: <%= fechaActual %></td>
   
   </tr>
 
@@ -102,7 +102,7 @@ img{
   <td style="font-size: 12px;font-weight: bold;  text-align: left;padding-bottom: 4px;">NOMBRE %></td>
   <td style="font-size: 12px;font-weight: bold;  text-align: left;padding-bottom: 4px;">FICHA</td>
 <% 
-columnas = columnas.filter(elemento => elemento !== "RUT"&& elemento !== "FICHA"&& elemento !== "NOMBRE")
+columnas = columnas.filter(elemento => elemento !== "RUT"&& elemento !== "FICHA"&& elemento !== "NOMBRE"&& elemento !== "CENCO2_CODI")
 
 for (var j = 0;j < columnas.length;j++){ %>
 
@@ -124,6 +124,7 @@ for (var j = 0;j < columnas.length;j++){ %>
               delete calendario[i]['NOMBRE']
               delete calendario[i]['FICHA']
               delete calendario[i]['RUT']
+              delete calendario[i]['CENCO2_CODI']
               for (var j = 0;j < columnas.length;j++){ %>
                
                 <td ><%= calendario[i][columnas[j]] %></td>

@@ -86,7 +86,28 @@ FROM
 }
 
 
+async function getCentrosCostosPromise( empresa) {
 
+  return new Promise(async  resolve => {
+    let centrosCostos = await sequelizeMssql.query(`
+    SELECT  [EMP_CODI]
+    ,[CENCO1_CODI]
+    ,[CENCO1_DESC]
+    ,[CENCO2_CODI]
+    ,[CENCO2_DESC]
+FROM [SISTEMA_CENTRAL].[dbo].[bi_centros_costo]
+where emp_codi=`+ empresa 
+
+                           ,
+      { type: sequelizeMssql.QueryTypes.SELECT, raw: true })
+
+
+    resolve(centrosCostos)
+
+  })
+
+
+}
 
 
 async function getFichasInfoPromiseMes(fichas, empresa, mes) {
@@ -145,65 +166,75 @@ async function getFichasInfoPromiseMes(fichas, empresa, mes) {
 }
 
 
-async function getCalendariosAsistenciasPromise(fichas, empresa, mes) {
+async function getCalendariosAsistenciasPromise(empresa, mes) {
+
+  //empresa=0
+  //mes='2021-01-01'
+  let formatoPivotDias=obtenerDiasDelMes(mes.substr(5,2),mes.substr(0,4))
+  console.log(formatoPivotDias)
   //no depende de fechas 
 
 
   return new Promise(async  resolve => {
     let fichasInfo = await sequelizeMssql.query(`
-
     select 
   
    
-   pivotTable.*
-      from
-      (
-    
-    SELECT 
-    
-    --cc.CENCO1_DESC as CLIENTE
-    --,cc.CENCO2_CODI as CODI
-    
-    --,cc.CENCO2_DESC as INSTALACION,
-    PersonalNombre as  NOMBRE
-    ,PersonalRut as RUT
-    ,DetalleFuncFicha as FICHA
-    ,ltrim(rtrim(turnos.CODIGO_TURNO)) as CODIGO_TURNO
-           ,convert(int,SUBSTRING(convert(varchar,convert(date,FECHA_ASIST),103),1,2)) as fecha_asist2
-         -- ,ID_ASIST
-       -- ,CENCO_ACTIVO
-       -- ,per.DetalleFuncActivo
-       -- ,per.DetalleFuncContrato
-       -- ,per.DetalleFuncFiniquito
-      FROM [bi-server-01].[Inteligencias].[dbo].[GS_ASISTENCIASv2_BASE] as asist
-      left join [bi-server-01].Inteligencias.dbo.GS_PERSONAL_ASISTENCIASv2 as per
-      on per.Id_Detalle=asist.IdDetalle
-      left join [bi-server-01].Inteligencias.dbo.CENTROS_COSTO as cc on cc.CENCO2_CODI=per.CentroCostoCodigo collate SQL_Latin1_General_CP1_CI_AS and per.CentroCostoEmpresa=cc.EMP_CODI
-     left join [bi-server-01].Inteligencias.dbo.GS_ASISTENCIASv2_TURNOS as turnos on turnos.ID_TURNO=asist.TURNO
-    where FECHA_ASIST between '20221101' and '20221130'
-    and cc.CENCO1_DESC like '%PODER JUDICIAL JURISDICCION TEMUCO%' and cc.CENCO1_DESC not like '%miguel%'
-    and   ( convert(date,DetalleFuncFiniquito,103) is null or asist.FECHA_ASIST between DATEADD(month, DATEDIFF(month, 0, convert(date,DetalleFuncContrato,103)), 0)  and DATEADD(MM,DATEDIFF(MM, -1, convert(date,DetalleFuncFiniquito,103)),-1)
-    --and   ( DetalleFuncFiniquito in ('31/12/9997','31/12/9994') or DetalleFuncFiniquito is null
-    
-    )
-    and  TURNO>0
-    --and DetalleFuncActivo='SI'
-    
-    ) as sourceTable
-    pivot(
-    max(CODIGO_TURNO)
-    for fecha_asist2 in (
-    --[01/09/2022],[02/09/2022],[03/09/2022],[04/09/2022],[05/09/2022],[06/09/2022],[07/09/2022],[08/09/2022],[09/09/2022],[10/09/2022],[11/09/2022],[12/09/2022],[13/09/2022],[14/09/2022],[15/09/2022],[16/09/2022],[17/09/2022],[18/09/2022],[19/09/2022],[20/09/2022],[21/09/2022],[22/09/2022],[23/09/2022],[24/09/2022],[25/09/2022],[26/09/2022],[27/09/2022],[28/09/2022],[29/09/2022],[30/09/2022]
-    --[01/10/2022],[02/10/2022],[03/10/2022],[04/10/2022],[05/10/2022],[06/10/2022],[07/10/2022],[08/10/2022],[09/10/2022],[10/10/2022],[11/10/2022],[12/10/2022],[13/10/2022],[14/10/2022],[15/10/2022],[16/10/2022],[17/10/2022],[18/10/2022],[19/10/2022],[20/10/2022],[21/10/2022],[22/10/2022],[23/10/2022],[24/10/2022],[25/10/2022],[26/10/2022],[27/10/2022],[28/10/2022],[29/10/2022],[30/10/2022],[31/10/2022]
-    [1],[2],[3],[4],[5],[6],[7],[8],[9],[10],[11],[12],[13],[14],[15],[16],[17],[18],[19],[20],[21],[22],[23],[24],[25],[26],[27],[28],[29],[30]
-    
-    
-    )
-    ) as pivotTable
-    
-   -- order by CLIENTE,INSTALACION,
+    pivotTable.*
+       from
+       (
+     
+     SELECT 
+     
+     --cc.CENCO1_DESC as CLIENTE
+     --,cc.CENCO2_CODI as CODI
+     
+     --,cc.CENCO2_DESC as INSTALACION,
+     LTRIM(RTRIM(per.CentroCostoCodigo)) as CENCO2_CODI
+   ,PersonalNombre as  NOMBRE
+     ,PersonalRut as RUT
+     ,DetalleFuncFicha as FICHA
    
-    order by pivotTable.NOMBRE asc
+     ,ltrim(rtrim(turnos.CODIGO_TURNO)) as CODIGO_TURNO
+            ,convert(int,SUBSTRING(convert(varchar,convert(date,FECHA_ASIST),103),1,2)) as fecha_asist2
+        
+          -- ,ID_ASIST
+        -- ,CENCO_ACTIVO
+        -- ,per.DetalleFuncActivo
+        -- ,per.DetalleFuncContrato
+        -- ,per.DetalleFuncFiniquito
+       FROM [bi-server-01].[Inteligencias].[dbo].[GS_ASISTENCIASv2_BASE] as asist
+       left join [bi-server-01].Inteligencias.dbo.GS_PERSONAL_ASISTENCIASv2 as per
+       on per.Id_Detalle=asist.IdDetalle
+       left join [bi-server-01].Inteligencias.dbo.CENTROS_COSTO as cc on cc.CENCO2_CODI=per.CentroCostoCodigo collate SQL_Latin1_General_CP1_CI_AS and per.CentroCostoEmpresa=cc.EMP_CODI
+      left join [bi-server-01].Inteligencias.dbo.GS_ASISTENCIASv2_TURNOS as turnos on turnos.ID_TURNO=asist.TURNO
+     -- where FECHA_ASIST between '20221101' and '20221130'
+      where FECHA_ASIST between ' `+ mes + `' and eomonth(' `+ mes+ `')
+
+   and cc.CENCO1_DESC like '%PODER JUDICIAL JURISDICCION TEMUCO%' and cc.CENCO1_DESC not like '%miguel%'
+     and   ( convert(date,DetalleFuncFiniquito,103) is null or asist.FECHA_ASIST between DATEADD(month, DATEDIFF(month, 0, convert(date,DetalleFuncContrato,103)), 0)  and DATEADD(MM,DATEDIFF(MM, -1, convert(date,DetalleFuncFiniquito,103)),-1)
+     --and   ( DetalleFuncFiniquito in ('31/12/9997','31/12/9994') or DetalleFuncFiniquito is null
+     and per.CentroCostoEmpresa= `+ empresa + `
+     )
+     and  TURNO>0
+     --and DetalleFuncActivo='SI'
+     
+     ) as sourceTable
+     pivot(
+     max(CODIGO_TURNO)
+     for fecha_asist2 in (
+     --[01/09/2022],[02/09/2022],[03/09/2022],[04/09/2022],[05/09/2022],[06/09/2022],[07/09/2022],[08/09/2022],[09/09/2022],[10/09/2022],[11/09/2022],[12/09/2022],[13/09/2022],[14/09/2022],[15/09/2022],[16/09/2022],[17/09/2022],[18/09/2022],[19/09/2022],[20/09/2022],[21/09/2022],[22/09/2022],[23/09/2022],[24/09/2022],[25/09/2022],[26/09/2022],[27/09/2022],[28/09/2022],[29/09/2022],[30/09/2022]
+     --[01/10/2022],[02/10/2022],[03/10/2022],[04/10/2022],[05/10/2022],[06/10/2022],[07/10/2022],[08/10/2022],[09/10/2022],[10/10/2022],[11/10/2022],[12/10/2022],[13/10/2022],[14/10/2022],[15/10/2022],[16/10/2022],[17/10/2022],[18/10/2022],[19/10/2022],[20/10/2022],[21/10/2022],[22/10/2022],[23/10/2022],[24/10/2022],[25/10/2022],[26/10/2022],[27/10/2022],[28/10/2022],[29/10/2022],[30/10/2022],[31/10/2022]
+     --[1],[2],[3],[4],[5],[6],[7],[8],[9],[10],[11],[12],[13],[14],[15],[16],[17],[18],[19],[20],[21],[22],[23],[24],[25],[26],[27],[28],[29],[30]
+     
+     `+ formatoPivotDias + `
+     )
+     ) as pivotTable
+     
+    -- order by CLIENTE,INSTALACION,
+    
+     order by CENCO2_CODI asc,  NOMBRE asc
+     
     
     
     
@@ -348,7 +379,17 @@ reject(e)
 
 }
 
+function obtenerDiasDelMes(mes, año) {
+  const fecha = new Date(año, mes - 1, 1);
+  const cantidadDias = new Date(año, mes, 0).getDate();
 
+  let dias = '[';
+  for (let dia = 1; dia <= cantidadDias; dia++) {
+    dias += dia + '],[';
+  }
+
+  return dias.slice(0, -2); // Eliminar la última coma y el espacio
+}
 
 
 
@@ -362,7 +403,7 @@ reject(e)
 
 
 module.exports = {
-  getFichasInfoPromise, getFichasInfoPromiseMes,getFichasVigentes,getCalendariosAsistenciasPromise
+  getFichasInfoPromise, getFichasInfoPromiseMes,getFichasVigentes,getCalendariosAsistenciasPromise,getCentrosCostosPromise
 }
 
 

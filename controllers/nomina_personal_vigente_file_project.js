@@ -143,6 +143,9 @@ res.render("../views/nomina_bancaria", { nomina: infoPersonas,datosNomina:datosN
 
 
 async function getCalendarioAsistencias (req,res) {
+  let empresa=0
+  let mes='2022-11-01'
+  let cenco2_codi='923-023'
 
   var options = {
     format: 'Letter',
@@ -167,16 +170,23 @@ async function getCalendarioAsistencias (req,res) {
   };
 
 
-  let calendario = (await SoftlandController.getCalendariosAsistenciasPromise())//.slice(0,2);
- // res.status(200).send(calendario)
+  let calendario = (await SoftlandController.getCalendariosAsistenciasPromise(empresa,mes))//.slice(0,2);
+  let centrosCosto = await SoftlandController.getCentrosCostosPromise(empresa)
+  // res.status(200).send(calendario)
 
-
-
- let columnas=Object.keys(calendario[0])
+ let calendarioCC=calendario.filter(x=>x["CENCO2_CODI"]==cenco2_codi)
+ let cantRegistros=calendarioCC.length
+ let infoCC=centrosCosto.find(x=>x["CENCO2_CODI"]==cenco2_codi)
+ console.log('infoCC',infoCC)
+let columnas=Object.keys(calendario[0])
+ 
  console.log('columnas',columnas)
 //res.render("../views/nomina_calendario_asistencias", { calendario:calendario,columnas:columnas });
+let fechaHora=Utils.getDateFormat('-')
+let fechaActual=fechaHora.substr(8,2)+"/"+fechaHora.substr(5,2)+"/"+fechaHora.substr(0,4)
+let mesFormat=mes.substr(5,2)+"/"+mes.substr(0,4)
 
- res.render("../views/nomina_calendario_asistencias", { calendario:calendario,columnas:columnas}, async function (err, data) {
+ res.render("../views/nomina_calendario_asistencias", { calendario:calendarioCC,columnas:columnas,infoCC:infoCC,fechaActual:fechaActual,mesFormat:mesFormat,cantRegistros:cantRegistros}, async function (err, data) {
 
   let liquidacionID = "10.010-JEAN-TEST"
   let html = data;
@@ -210,7 +220,9 @@ async function getCalendarioAsistencias (req,res) {
 }
 
 async function getCalendarioData (req,res) {
-  let calendario = (await SoftlandController.getCalendariosAsistenciasPromise())//.slice(0,2);
+  let empresa=0
+  let mes='2022-12-01'
+  let calendario = (await SoftlandController.getCalendariosAsistenciasPromise(empresa,mes))//.slice(0,2);
   //let columnas=Object.keys(calendario[0])
 
   calendario[0]["NOMBRES"]="hola"
