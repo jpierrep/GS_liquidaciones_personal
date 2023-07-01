@@ -174,8 +174,8 @@ async function getCalendarioAsistencias (req,res) {
 
  let columnas=Object.keys(calendario[0])
  console.log('columnas',columnas)
-res.render("../views/nomina_calendario_asistencias", { calendario:calendario,columnas:columnas });
-/*
+//res.render("../views/nomina_calendario_asistencias", { calendario:calendario,columnas:columnas });
+
  res.render("../views/nomina_calendario_asistencias", { calendario:calendario,columnas:columnas}, async function (err, data) {
 
   let liquidacionID = "10.010-JEAN-TEST"
@@ -205,20 +205,80 @@ res.render("../views/nomina_calendario_asistencias", { calendario:calendario,col
 
 
 });
-*/
+
 
 }
 
 async function getCalendarioData (req,res) {
-  let calendario = (await SoftlandController.getCalendariosAsistenciasPromise()).slice(0,2);
-  let columnas=Object.keys(calendario[0])
- console.log('columnas',columnas)
+  let calendario = (await SoftlandController.getCalendariosAsistenciasPromise())//.slice(0,2);
+  //let columnas=Object.keys(calendario[0])
+
+  calendario[0]["NOMBRES"]="hola"
+  console.log('cal',calendario[0])
+ // let columnas=ordenarClavesJSON(calendario[0]);
+ //console.log('columnas',columnas)
+ const ordenClaves = ['NOMBRE', 'RUT', 'FICHA','1','2'];
+
+const jsonConOrden = reordenarClavesJSON(calendario[0], ordenClaves);
+console.log(jsonConOrden);
   res.status(200).send(calendario)
  
 
 }
+const reordenarClavesJSON = (jsonObj, ordenClaves) => {
+  const nuevoJSON = {};
 
+  // Recorrer el array de claves en el orden deseado
+  ordenClaves.forEach(key => {
+    if (jsonObj.hasOwnProperty(key)) {
+      nuevoJSON[key] = jsonObj[key];
+    }
+  });
 
+  return nuevoJSON;
+};
+
+const ordenarClavesJSON = (jsonObj) => {
+  const keys = Object.keys(jsonObj);
+
+  // Ordenar las claves
+  keys.sort((a, b) => {
+    const esNumericoA = !isNaN(parseFloat(a));
+    const esNumericoB = !isNaN(parseFloat(b));
+
+    if (esNumericoA && esNumericoB) {
+      // Ambas claves son numéricas
+      return parseFloat(a) - parseFloat(b);
+    } else if (esNumericoA) {
+      // La clave A es numérica y la clave B es de texto
+      return -1;
+    } else if (esNumericoB) {
+      // La clave B es numérica y la clave A es de texto
+      return 1;
+    } else {
+      // Ambas claves son de texto
+      return a.localeCompare(b);
+    }
+  });
+
+  const nuevoJSON = {};
+
+  // Asignar los valores al nuevo objeto en el orden de las claves ordenadas
+  keys.forEach(key => {
+    nuevoJSON[key] = jsonObj[key];
+  });
+
+  return nuevoJSON;
+};
+function getOrderedKeys(obj) {
+  const orderedKeys = [];
+  for (const key in obj) {
+    if (obj.hasOwnProperty(key)) {
+      orderedKeys.push(key);
+    }
+  }
+  return orderedKeys;
+}
 
 async function getNominaPersonalVigentePDF (req,res) {
   console.log("test")
