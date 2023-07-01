@@ -182,12 +182,12 @@ let processInfo={
 console.log(processInfo)
      console.log("termino burst (separa todo en paginas")
      
-   //  let cantIteraciones = tablaMapPersonas.length
-     let cantIteraciones =10
+     let cantIteraciones = tablaMapPersonas.length
+    // let cantIteraciones =2
      for (let i = 0; i < cantIteraciones; i++) {
      let personaFile= tablaMapPersonas[i]
      //filename=testPdfBurst/page_%01d.pdf
-     let filename='testPdfBurst/page_'+personaFile["PAGINA"]+'.pdf'
+     let filename=carpetaBurst+'/page_'+personaFile["PAGINA"]+'.pdf'
      console.log("pagina buscada"+filename)
       var buffer = fs.readFileSync(filename);
       let base64=Buffer.from(buffer).toString('base64')

@@ -9,20 +9,24 @@ async function fileProjectPost(processInfo,dataPersona, base64) {
   var data = qs.stringify({
     'uploadPersonDni': '11.111.111-1',
     'uploadPersonName': 'SISTEMA CARGA MASIVA',
-    'name': processInfo.name+'-' + dataPersona.FICHA,
+    'name': processInfo.name+'-' + dataPersona.FICHA+'.pdf',
     'type': processInfo.type,
     'mimeType': 'application/pdf',
     'dni': parseInt(dataPersona.RUT.split('.')[0]).toString() + '.' + dataPersona.RUT.split('.')[1] + '.' + dataPersona.RUT.split('.')[2],
     'code': dataPersona.FICHA,
     'base64': base64,
-    'monthIsacom':processInfo.monthInsacom,
-    'yearIsacom':processInfo.yearInsacom,
-    'referencialDate':processInfo.referencialDate,
+    'month':processInfo.monthInsacom,
+    'year':processInfo.yearInsacom,
+    //'referencialDate':processInfo.referencialDate,
 
   });
+  //console.log(data)
+ // url: 'http://192.168.100.130:1338/api/1/file/create?', prod
+ // url: 'http://192.168.100.133:1338/api/1/file/create?', test
   var config = {
     method: 'post',
-    url: 'http://192.168.100.133:1338/api/1/file/create?',
+   
+     url: 'http://192.168.100.130:1338/api/1/file/create?',
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded',
       'Cookie': 'sails.sid=s%3Aee6Dh3DiJW5znC1v0JdK6CZ2mhDAu9kU.ugFOC0Az%2BbYZdlcBFuaF3mxtzDCwvMuPt0timGMee5I'

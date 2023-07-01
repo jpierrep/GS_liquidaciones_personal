@@ -579,7 +579,7 @@ socket.emit('getGlobalAlert', {messaje:"Error, no es posible generar el proceso 
       }
 
 
-      let distinctPersonas = infoPersonas.map(x => { return x.FICHA }).filter(unique)//.slice(0, 100)
+      let distinctPersonas = infoPersonas.map(x => { return x.FICHA }).filter(unique)//.slice(0, 2) // controlamos la cantidad de fichas que se suben
     
       
       // distinctCC = ["958-007"]
