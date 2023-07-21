@@ -557,6 +557,8 @@ res.render("../views/nomina_personal_vigente", { nomina: infoPersonas,datosNomin
 
 async function getNominaPersonalVigentePromise (req,res) {
 
+  return new Promise(async (resolve, reject) => {
+
   console.log("test")
 
     let variableBase='H303'
@@ -593,18 +595,7 @@ async function getNominaPersonalVigentePromise (req,res) {
   }
 
 
-  let fichasNominaPago = nominaPago.map(x => { return x.ficha }).filter(unique)//.slice(0, 3)
-
-let infoPersonas = (await SoftlandController.getFichasInfoPromiseMes(fichasNominaPago, empresa, mesProceso))
-
-let distinctCC= infoPersonas.map(x => { return x["CENCO2_CODI"] }).filter(unique)//.slice(0,5)
-console.log("DISTINCCC",distinctCC)
-
-
-infoPersonas=infoPersonas.filter(x=>x[filtro]==filtroValor)
-
-
-var options = {
+  var options = {
     format: 'Letter',
     header:{height: "83mm"},
     footer: {
@@ -626,70 +617,107 @@ var options = {
 
   };
 
+  let fichasNominaPago = nominaPago.map(x => { return x.ficha }).filter(unique)//.slice(0, 3)
 
 
-      //datos variables nominas (fecha, nombre, etc)
-      var empresaDetalle = constants.EMPRESAS.find(x => x.ID == empresa)
-      let variableNominaDetalle=VariablesNominasBancarias.find(x=>x["COD_VARIABLE"]==variableBase)
-      console.log(variableNominaDetalle)
+
+     //datos variables nominas (fecha, nombre, etc)
+     var empresaDetalle = constants.EMPRESAS.find(x => x.ID == empresa)
+     let variableNominaDetalle=VariablesNominasBancarias.find(x=>x["COD_VARIABLE"]==variableBase)
+     console.log(variableNominaDetalle)
+   
+
+   let rutEmpresa=empresaDetalle["RUT"]
+    let fechaHora=Utils.getDateFormat('-')
+     console.log(fechaHora)
+     //2021/06/14/23/27/38 retorna 
+   
+     let fechaActual=fechaHora.substr(8,2)+"/"+fechaHora.substr(5,2)+"/"+fechaHora.substr(0,4)
+     let horaActual=fechaHora.substr(11,10).replace(/-/g, ':');
+
+
+     let datosNominaHeader={FECHA_ACTUAL:fechaActual,HORA_ACTUAL:horaActual,RUT_EMPRESA:rutEmpresa,NOMBRE_NOMINA:""}
+   
+
+
+
+  let infoPersonas = (await SoftlandController.getFichasInfoPromiseMes(fichasNominaPago, empresa, mesProceso))
+
+
+
+
+let distinctCC= infoPersonas.map(x => { return x["CENCO2_CODI"] }).filter(unique).slice(0,5)
+console.log("DISTINCCC",distinctCC)
+
+let centrosCosto = await SoftlandController.getCentrosCostosPromise(empresa)
+let cantIteraciones = distinctCC.length
+
+
+
+for (let i = 0; i < cantIteraciones; i++) {
+
+  let cenco2_codi = distinctCC[i]
+
+
+    await (new Promise(async (resolves, rejects) => {
+
+      let infoPersonasNomina=infoPersonas.filter(x=>x["CENCO2_CODI"]==cenco2_codi)
+
+      let infoCC=centrosCosto.find(x=>x["CENCO2_CODI"]==cenco2_codi)
     
-
-    let rutEmpresa=empresaDetalle["RUT"]
-     let fechaHora=Utils.getDateFormat('-')
-      console.log(fechaHora)
-      //2021/06/14/23/27/38 retorna 
-    
-      let fechaActual=fechaHora.substr(8,2)+"/"+fechaHora.substr(5,2)+"/"+fechaHora.substr(0,4)
-      let horaActual=fechaHora.substr(11,10).replace(/-/g, ':');
+      let cantRegistros=infoPersonasNomina.length
+      let datosNomina={NUM_REGISTROS:cantRegistros}
+ 
+ 
+ 
+ //res.status(200).send(infoPersonas)
+ 
+ ejs.renderFile("views/nomina_personal_vigente.ejs", { nomina: infoPersonasNomina,datosNomina:datosNomina,datosNominaHeader:datosNominaHeader,infoCC:infoCC },{},   function (err, data) {
+ 
+     let liquidacionID = "10.010-JEAN-TEST"
+     let html = data;
+     //   console.log("HTML",html)
+     try {
+ 
+ 
+       pdf.create(html, options).toStream(function (err, stream) {
+ 
+     //    res.setHeader('Content-disposition', 'inline; filename="Cotizacion-' + liquidacionID + '.pdf"');
+     //    res.setHeader('Content-Type', 'application/pdf');
+         //stream.pipe(fs.createWriteStream("testCalendario/"+cenco2_codi+".pdf"))
+         stream.pipe(fs.createWriteStream("testNominaPersonal/"+cenco2_codi+".pdf"))
+         resolves()
+ 
+       })
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+     } catch (e) {
+       console.log(e)
+       rejects()
+     }
+ 
+ 
+ 
+   });
  
 
-      let datosNominaHeader={FECHA_ACTUAL:fechaActual,HORA_ACTUAL:horaActual,RUT_EMPRESA:rutEmpresa,NOMBRE_NOMINA:""}
-    
-     let nombreNomina= variableBase+"-"+ infoPersonas.find(x=>x[filtro]==filtroValor)[filtroDesc]
+     }))
+
+
      
-    
-     let cantRegistros=infoPersonas.length
-     let datosNomina={NUM_REGISTROS:cantRegistros,NOMBRE_NOMINA:nombreNomina}
-
-
-
-//res.status(200).send(infoPersonas)
-
-ejs.renderFile("views/nomina_personal_vigente.ejs", { nomina: infoPersonas,datosNomina:datosNomina,datosNominaHeader:datosNominaHeader },{},   function (err, data) {
-
-    let liquidacionID = "10.010-JEAN-TEST"
-    let html = data;
-    //   console.log("HTML",html)
-    try {
-
-
-      pdf.create(html, options).toStream(function (err, stream) {
-
-    //    res.setHeader('Content-disposition', 'inline; filename="Cotizacion-' + liquidacionID + '.pdf"');
-    //    res.setHeader('Content-Type', 'application/pdf');
-        //stream.pipe(fs.createWriteStream("testCalendario/"+cenco2_codi+".pdf"))
-        stream.pipe(fs.createWriteStream("hola.pdf"))
-
-      })
-
-
-
-
-
-
-
-    } catch (e) {
-      console.log(e)
     }
 
+    console.log("todos los trabajos terminados")
+    resolve()
+       return
 
 
-  });
-
-
-
-
-
+      })
   
 
 }
