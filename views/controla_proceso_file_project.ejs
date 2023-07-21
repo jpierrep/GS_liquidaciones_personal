@@ -208,11 +208,63 @@
         </div>
       </div>
 
-      <!--    FIN  CALENDARIOS ASISTENCIA    -->
+      
 
     </div>
 
   </div>
+
+  <!--    FIN  CALENDARIOS ASISTENCIA    -->
+
+
+
+
+  <div class="container">
+    <div class="row">
+
+      <div class="col-sm-12">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">Nomina Personal FILEPROJECT
+              <a class='ui-all' style=" font-weight: normal;font-size: 1rem;" tabindex='-1' id="liquidacion-log-modal-button"
+                data-toggle="modal" data-target="#exampleModalCenter">
+                [logs]
+              </a>
+            </h5>
+
+            <p class="card-text">Genera archivos Nomina Personal Mensual.</p>
+            <div class="row">
+              <div class="col-1">
+                <button type="button" id="nominaPersonal-empieza" class="btn btn-primary" disabled>Ejecutar</button>
+              </div>
+              <div class="col-8 " style="padding:10px;margin: auto">
+
+                <div name="nominaPersonal-loader" class=" progress">
+                  <div id='nominaPersonal-progress' class="progress-bar progress-bar-striped progress-bar-animated " role="progressbar"
+                    aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%">0%</div>
+
+                </div>
+
+              </div>
+              <div class="col-1">
+                <span name=" nominaPersonal-loader " id="nominaPersonal-cc-status"> </span>
+              </div>
+            </div>
+
+
+
+          </div>
+
+        </div>
+      </div>
+
+      
+
+    </div>
+
+  </div>
+
+  <!--    FIN  NOMINA PERSONAL   -->
 
   <!-- Modal -->
   <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
@@ -497,7 +549,25 @@
     */
 
 
+   
+    $('#nominaPersonal-empieza').on("click", function () {
+      
+     
+      procesoSelected="nominaPersonal"
+      let empresa = $("#empresa-select").val();
+      let mes = $("#mes-select").val();      
+      //se consulta si ya existe el proceso via socket, la respuesta llega en on resExistsDirDestino , si no existe se ejecuta el proceso executeProcess, si existe se levantarà popup
+      socket.emit("getExistsDirDestinoFileProject", { empresa: empresa, mes: mes,proceso:procesoSelected });
 
+     
+    //previred-modal-file-upload
+    console.log("test Nomina Personal")
+    //proceso=reliquidacion
+    //mes=mes select
+    //
+
+
+    });
     
     $('#calendarioAsistencia-empieza').on("click", function () {
       
@@ -763,6 +833,35 @@
     });
 
 
+    socket.on('getStatusNominaPersonal', function (data) {
+      if (!data.isExecuting) {
+        
+        $("#mes-select").attr("disabled", false);
+        $("#empresa-select").attr("disabled", false);
+
+        $("[name='nominaPersonal-loader']").hide()
+        $('#nominaPersonal-empieza').attr("disabled", false);
+        $('#nominaPersonal-cc-status').text("")
+      }
+
+      else {
+        $("#mes-select").attr("disabled", true);
+        $("#empresa-select").attr("disabled", true);
+        //muestra en el select la empresa que se está ejecutando
+        $("#empresa-select").val(data.userParams.empresa);
+        $("#mes-select").val(data.userParams.mes);
+
+        $("[name='nominaPersonal-loader']").show()
+        $('#nominaPersonal-empieza').attr("disabled", true);
+        $('#nominaPersonal-cc-status').text(data.msgs[0])
+        $('#nominaPersonal-progress').attr('style', "width:" + data.percent + "%")
+        $('#nominaPersonal-progress').attr('aria-valuenow', data.percent)
+        $('#nominaPersonal-progress').text(data.percent + "%")
+      }
+    });
+
+
+
     socket.on('getStatusPrevired', function (data) {
 
 if (!data.isExecuting) {
@@ -895,6 +994,14 @@ var empresa = $("#empresa-select").val();
 var mes = $("#mes-select").val();
 $("[name='calendarioAsistencia-loader']").show()
 socket.emit("getCalendarioAsistencia", { empresa: empresa, mes: mes });
+
+
+}if(procesoSelected=="nominaPersonal"){
+
+var empresa = $("#empresa-select").val();
+var mes = $("#mes-select").val();
+$("[name='nominaPersonal-loader']").show()
+socket.emit("getNominaPersonal", { empresa: empresa, mes: mes });
 
 
 }

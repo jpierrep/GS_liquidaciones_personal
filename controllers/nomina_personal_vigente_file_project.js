@@ -580,6 +580,18 @@ var StatusCalendarioAsistenciaTemplate = {
 var StatusCalendarioAsistencia = JSON.parse(JSON.stringify(StatusCalendarioAsistenciaTemplate))
 
 
+//Nomina Personal
+
+var StatusNominaPersonalTemplate = {
+
+  isExecuting: false,
+  percent: 0,
+  msgs: []
+}
+
+var StatusNominaPersonal = JSON.parse(JSON.stringify(StatusNominaPersonalTemplate))
+
+
 
 
 /** 
@@ -592,6 +604,7 @@ var StatusCalendarioAsistencia = JSON.parse(JSON.stringify(StatusCalendarioAsist
 
 io.on('connection', (socket) => {
   socket.emit('getStatusCalendarioAsistencia', StatusCalendarioAsistencia)
+  socket.emit('getStatusNominaPersonal', StatusNominaPersonal)
 
 
   socket.on('getTest', async (uploadFileName) => {
@@ -604,7 +617,26 @@ io.on('connection', (socket) => {
   });
   
     
+  socket.on('getNominaPersonal', async (data) => {
+    let empresa=data.empresa
+    let mes=data.mes
+    //////////////////////////////////NUEVO PROCESO
 
+    //data trae la info del mes y la empresa del proceso
+    console.log("se empieza a ejecutar proceso Nomina Personal: " +empresa+" "+mes)
+
+  
+    StatusNominaPersonal = JSON.parse(JSON.stringify(StatusCalendarioAsistenciaTemplate))
+    StatusNominaPersonal.isExecuting = true
+    //StatusCalendarioAsistencia.userParams={mes:mes,empresa:empresa}
+   // StatusPrevired.userParams={mes:dataUser["mes"],empresa:dataUser["empresa"]}
+
+    io.emit('getStatusNominaPersonal', StatusNominaPersonal)
+    await getNominaPersonalFileProject(empresa,mes)
+    StatusNominaPersonal.isExecuting = 0
+    io.emit('getStatusNominaPersonal', StatusNominaPersonal)
+
+  });
 
 
 
@@ -633,6 +665,13 @@ io.on('connection', (socket) => {
       
       await getCalendarioAsistenciasPromise()
      // console.log("todos los trabajos terminados")
+    }
+
+
+    async function getNominaPersonalFileProject(empresa,mes){
+      
+      
+      console.log("todos los trabajos terminados")
     }
 
 
