@@ -555,6 +555,149 @@ res.render("../views/nomina_personal_vigente", { nomina: infoPersonas,datosNomin
 }
 
 
+async function getNominaPersonalVigentePromise (req,res) {
+
+  console.log("test")
+
+    let variableBase='H303'
+    let mesProceso='2023-01-01'
+    let empresa=0
+    let fechaPago='2022-11-30'
+    let filtro='CENCO1_CODI'
+    let filtroDesc='CENCO1_DESC'
+    let filtroValor=['918-000']
+
+
+    let nominaPago = await sequelizeMssql
+        .query(`
+  select ficha,valor
+  FROM [SISTEMA_CENTRAL].[dbo].[sw_variablepersona]
+  where 
+  emp_codi='`+ empresa + `' and fecha='` + mesProceso + `'
+  and codVariable='`+ variableBase + `' and valor>0
+
+`
+          , {
+
+            model: VariablesFicha,
+            mapToModel: true, // pass true here if you have any mapped fields
+            raw: true
+          })
+
+    console.log(nominaPago.length)
+
+
+  //distinct cc
+  let unique = (value, index, self) => {
+    return self.indexOf(value) == index;
+  }
+
+
+  let fichasNominaPago = nominaPago.map(x => { return x.ficha }).filter(unique)//.slice(0, 3)
+
+let infoPersonas = (await SoftlandController.getFichasInfoPromiseMes(fichasNominaPago, empresa, mesProceso))
+
+let distinctCC= infoPersonas.map(x => { return x["CENCO2_CODI"] }).filter(unique)//.slice(0,5)
+console.log("DISTINCCC",distinctCC)
+
+
+infoPersonas=infoPersonas.filter(x=>x[filtro]==filtroValor)
+
+
+var options = {
+    format: 'Letter',
+    header:{height: "83mm"},
+    footer: {
+        height: "18mm",
+        contents: {
+
+       //   default: '<span style="color: #444;">{{page}}</span>/<span>{{pages}}</span>'// fallback value
+       default: '<span style="color: #444;  font-size: 11px; font-weight: bold; font-family: Courier New, Courier, monospace;">Página {{page}}</span>'// fallback value    
+    }
+        },
+    orientation:'landscape',
+    border: {
+      top: "0cm",
+      right: "1cm",
+      bottom: "0cm",
+      left: "1cm"
+    },
+    timeout: 30000,
+
+  };
+
+
+
+      //datos variables nominas (fecha, nombre, etc)
+      var empresaDetalle = constants.EMPRESAS.find(x => x.ID == empresa)
+      let variableNominaDetalle=VariablesNominasBancarias.find(x=>x["COD_VARIABLE"]==variableBase)
+      console.log(variableNominaDetalle)
+    
+
+    let rutEmpresa=empresaDetalle["RUT"]
+     let fechaHora=Utils.getDateFormat('-')
+      console.log(fechaHora)
+      //2021/06/14/23/27/38 retorna 
+    
+      let fechaActual=fechaHora.substr(8,2)+"/"+fechaHora.substr(5,2)+"/"+fechaHora.substr(0,4)
+      let horaActual=fechaHora.substr(11,10).replace(/-/g, ':');
+ 
+
+      let datosNominaHeader={FECHA_ACTUAL:fechaActual,HORA_ACTUAL:horaActual,RUT_EMPRESA:rutEmpresa,NOMBRE_NOMINA:""}
+    
+     let nombreNomina= variableBase+"-"+ infoPersonas.find(x=>x[filtro]==filtroValor)[filtroDesc]
+     
+    
+     let cantRegistros=infoPersonas.length
+     let datosNomina={NUM_REGISTROS:cantRegistros,NOMBRE_NOMINA:nombreNomina}
+
+
+
+//res.status(200).send(infoPersonas)
+
+ejs.renderFile("views/nomina_personal_vigente.ejs", { nomina: infoPersonas,datosNomina:datosNomina,datosNominaHeader:datosNominaHeader },{},   function (err, data) {
+
+    let liquidacionID = "10.010-JEAN-TEST"
+    let html = data;
+    //   console.log("HTML",html)
+    try {
+
+
+      pdf.create(html, options).toStream(function (err, stream) {
+
+    //    res.setHeader('Content-disposition', 'inline; filename="Cotizacion-' + liquidacionID + '.pdf"');
+    //    res.setHeader('Content-Type', 'application/pdf');
+        //stream.pipe(fs.createWriteStream("testCalendario/"+cenco2_codi+".pdf"))
+        stream.pipe(fs.createWriteStream("hola.pdf"))
+
+      })
+
+
+
+
+
+
+
+    } catch (e) {
+      console.log(e)
+    }
+
+
+
+  });
+
+
+
+
+
+  
+
+}
+
+
+
+
+
 var StatusNominasBancariasTemplate = {
 
   isExecuting: false,
@@ -670,7 +813,7 @@ io.on('connection', (socket) => {
 
     async function getNominaPersonalFileProject(empresa,mes){
       
-      
+      await getNominaPersonalVigentePromise()
       console.log("todos los trabajos terminados")
     }
 
@@ -912,5 +1055,5 @@ var unique = (value, index, self) => {
 
 
 module.exports = {
-    getMontosNomina,getNominaPersonalVigentePDF,getCalendarioAsistencias,getCalendarioData
+    getMontosNomina,getNominaPersonalVigentePDF,getCalendarioAsistencias,getCalendarioData,getNominaPersonalVigentePromise
   }
