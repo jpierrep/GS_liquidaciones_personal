@@ -211,11 +211,12 @@ async function getCalendariosAsistenciasPromise(empresa, mes) {
      -- where FECHA_ASIST between '20221101' and '20221130'
       where FECHA_ASIST between ' `+ mes + `' and eomonth(' `+ mes+ `')
 
-   and cc.CENCO1_DESC like '%PODER JUDICIAL JURISDICCION TEMUCO%' and cc.CENCO1_DESC not like '%miguel%'
+   --and cc.CENCO1_DESC like '%PODER JUDICIAL JURISDICCION TEMUCO%' and cc.CENCO1_DESC not like '%miguel%'
      and   ( convert(date,DetalleFuncFiniquito,103) is null or asist.FECHA_ASIST between DATEADD(month, DATEDIFF(month, 0, convert(date,DetalleFuncContrato,103)), 0)  and DATEADD(MM,DATEDIFF(MM, -1, convert(date,DetalleFuncFiniquito,103)),-1)
      --and   ( DetalleFuncFiniquito in ('31/12/9997','31/12/9994') or DetalleFuncFiniquito is null
+        )
+        
      and per.CentroCostoEmpresa= `+ empresa + `
-     )
      and  TURNO>0
      --and DetalleFuncActivo='SI'
      

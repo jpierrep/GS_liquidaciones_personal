@@ -141,6 +141,105 @@ res.render("../views/nomina_bancaria", { nomina: infoPersonas,datosNomina:datosN
 }
 
 
+async function getCalendarioAsistenciasPromise () {
+
+return new Promise(async (resolve, reject) => {
+  let empresa=0
+  let mes='2023-01-01'
+  let cenco2_codi='923-001'
+
+  var options = {
+    format: 'Letter',
+    header:{height: "83mm"},
+    footer: {
+        height: "18mm",
+        contents: {
+
+       //   default: '<span style="color: #444;">{{page}}</span>/<span>{{pages}}</span>'// fallback value
+       default: '<span style="color: #444;  font-size: 11px; font-weight: bold; font-family: Courier New, Courier, monospace;">Página {{page}}</span>'// fallback value    
+    }
+        },
+    orientation:'landscape',
+    border: {
+      top: "0cm",
+      right: "1cm",
+      bottom: "0cm",
+      left: "1cm"
+    },
+    timeout: 30000,
+
+  };
+
+
+  let calendario = (await SoftlandController.getCalendariosAsistenciasPromise(empresa,mes))//.slice(0,2);
+  let distinctCC= calendario.map(x => { return x["CENCO2_CODI"] }).filter(unique)//.slice(0,5)
+  console.log("DISTINCCC",distinctCC)
+
+  let centrosCosto = await SoftlandController.getCentrosCostosPromise(empresa)
+  let cantIteraciones = distinctCC.length
+
+  for (let i = 0; i < cantIteraciones; i++) {
+
+   let cenco2_codi = distinctCC[i]
+ 
+
+     await (new Promise(async (resolves, rejects) => {
+  // res.status(200).send(calendario)
+
+  let calendarioCC=calendario.filter(x=>x["CENCO2_CODI"]==cenco2_codi)
+  let cantRegistros=calendarioCC.length
+  let infoCC=centrosCosto.find(x=>x["CENCO2_CODI"]==cenco2_codi)
+  console.log('infoCC',cenco2_codi,infoCC)
+ let columnas=Object.keys(calendario[0])
+
+ let fechaHora=Utils.getDateFormat('-')
+let fechaActual=fechaHora.substr(8,2)+"/"+fechaHora.substr(5,2)+"/"+fechaHora.substr(0,4)
+let mesFormat=mes.substr(5,2)+"/"+mes.substr(0,4)
+//ejs.renderFile("views/liquidacion_sueldo_multiple - copia.ejs", { templates_persona: templates_persona, empresaDetalle: empresaDetalle, mes: mesProceso }, {},  function (err, data) {
+  ejs.renderFile("views/nomina_calendario_asistencias.ejs", { calendario:calendarioCC,columnas:columnas,infoCC:infoCC,fechaActual:fechaActual,mesFormat:mesFormat,cantRegistros:cantRegistros},{},  function (err, data) {
+
+  let liquidacionID = "10.010-JEAN-TEST"
+  let html = data;
+ 
+  try {
+
+
+    pdf.create(html, options).toStream(function (err, stream) {
+
+     // res.setHeader('Content-disposition', 'inline; filename="Cotizacion-' + liquidacionID + '.pdf"');
+     // res.setHeader('Content-Type', 'application/pdf');
+      //stream.pipe(res);
+stream.pipe(fs.createWriteStream("testCalendario/"+cenco2_codi+".pdf"))
+//console.log("TEST")
+resolves()
+    })
+
+
+
+  } catch (e) {
+    console.log(e)
+    rejects()
+  }
+
+
+
+});
+  
+
+
+
+     }))
+
+  }
+
+console.log("todos los trabajos terminados")
+   resolve()
+      return
+
+})
+
+}
+
 
 async function getCalendarioAsistencias (req,res) {
   let empresa=0
@@ -509,8 +608,9 @@ io.on('connection', (socket) => {
 
 
 
-    socket.on('getCalendarioAsistencia', async (empresa,mes) => {
-
+    socket.on('getCalendarioAsistencia', async (data) => {
+      let empresa=data.empresa
+      let mes=data.mes
       //////////////////////////////////NUEVO PROCESO
   
       //data trae la info del mes y la empresa del proceso
@@ -530,7 +630,9 @@ io.on('connection', (socket) => {
     });
 
     async function getCalendarioAsistenciaFileProject(empresa,mes){
-      console.log("todos los trabajos terminados")
+      
+      await getCalendarioAsistenciasPromise()
+     // console.log("todos los trabajos terminados")
     }
 
 
