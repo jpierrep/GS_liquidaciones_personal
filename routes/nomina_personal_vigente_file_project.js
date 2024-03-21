@@ -7,6 +7,7 @@ var NominaPersonalVigenteController=require('../controllers/nomina_personal_vige
 api.get('/testPDF',NominaPersonalVigenteController.getNominaPersonalVigentePDF);
 api.get('/testCalendario',NominaPersonalVigenteController.getCalendarioAsistencias);
 api.get('/testCalendarioData',NominaPersonalVigenteController.getCalendarioData);
+api.get('/testMottermost',NominaPersonalVigenteController.testMottermost);
 //api.get('/testFiles',NominaBancariaController.getMontosNominaFiles);
 
 module.exports=api;

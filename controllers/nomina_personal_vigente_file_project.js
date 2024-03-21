@@ -140,12 +140,12 @@ res.render("../views/nomina_bancaria", { nomina: infoPersonas,datosNomina:datosN
 
 }
 
-
-async function getCalendarioAsistenciasPromise () {
+/////CALENDARIO DE ASISTENCIA
+async function getCalendarioAsistenciasPromise (empresa,mes) {
 
 return new Promise(async (resolve, reject) => {
-  let empresa=0
-  let mes='2023-01-01'
+  //let empresa=0
+ // let mes='2023-01-01'
   let cenco2_codi='923-001'
 
   var options = {
@@ -172,7 +172,7 @@ return new Promise(async (resolve, reject) => {
 
 
   let calendario = (await SoftlandController.getCalendariosAsistenciasPromise(empresa,mes))//.slice(0,2);
-  let distinctCC= calendario.map(x => { return x["CENCO2_CODI"] }).filter(unique)//.slice(0,5)
+  let distinctCC= calendario.map(x => { return x["CENCO2_CODI"] }).filter(unique).slice(0,5)
   console.log("DISTINCCC",distinctCC)
 
   let centrosCosto = await SoftlandController.getCentrosCostosPromise(empresa)
@@ -316,6 +316,15 @@ let mesFormat=mes.substr(5,2)+"/"+mes.substr(0,4)
 });
 
 
+}
+
+async function testMottermost (req,res) {
+console.log("test ")
+res.setHeader('Content-Type','application/json')
+//res.setHeader('Authorization','Token 44j9ywm9mjyk5ej537ghuoi83w')
+res.status(200).send({response_type:"in_channel",text:"hola a todos",attachments:[{text:"hola a todos"}]})
+
+return
 }
 
 async function getCalendarioData (req,res) {
@@ -554,16 +563,16 @@ res.render("../views/nomina_personal_vigente", { nomina: infoPersonas,datosNomin
 
 }
 
-
-async function getNominaPersonalVigentePromise (req,res) {
+///////NOMINA PERSONAL VIGENTE
+async function getNominaPersonalVigentePromise (empresa,mesProceso) {
 
   return new Promise(async (resolve, reject) => {
 
   console.log("test")
 
     let variableBase='H303'
-    let mesProceso='2023-01-01'
-    let empresa=0
+    //let mesProceso='2023-01-01'
+    //let empresa=0
     let fechaPago='2022-11-30'
     let filtro='CENCO1_CODI'
     let filtroDesc='CENCO1_DESC'
@@ -634,9 +643,9 @@ async function getNominaPersonalVigentePromise (req,res) {
    
      let fechaActual=fechaHora.substr(8,2)+"/"+fechaHora.substr(5,2)+"/"+fechaHora.substr(0,4)
      let horaActual=fechaHora.substr(11,10).replace(/-/g, ':');
+     let mesFormat=mesProceso.substr(5,2)+"/"+mesProceso.substr(0,4)
 
-
-     let datosNominaHeader={FECHA_ACTUAL:fechaActual,HORA_ACTUAL:horaActual,RUT_EMPRESA:rutEmpresa,NOMBRE_NOMINA:""}
+     let datosNominaHeader={MES_FORMAT:mesFormat,FECHA_ACTUAL:fechaActual,HORA_ACTUAL:horaActual,RUT_EMPRESA:rutEmpresa,NOMBRE_NOMINA:""}
    
 
 
@@ -646,7 +655,7 @@ async function getNominaPersonalVigentePromise (req,res) {
 
 
 
-let distinctCC= infoPersonas.map(x => { return x["CENCO2_CODI"] }).filter(unique).slice(0,5)
+let distinctCC= infoPersonas.map(x => { return x["CENCO2_CODI"] }).filter(unique)//.slice(0,5)/////
 console.log("DISTINCCC",distinctCC)
 
 let centrosCosto = await SoftlandController.getCentrosCostosPromise(empresa)
@@ -834,14 +843,14 @@ io.on('connection', (socket) => {
 
     async function getCalendarioAsistenciaFileProject(empresa,mes){
       
-      await getCalendarioAsistenciasPromise()
+      await getCalendarioAsistenciasPromise(empresa,mes)
      // console.log("todos los trabajos terminados")
     }
 
 
     async function getNominaPersonalFileProject(empresa,mes){
       
-      await getNominaPersonalVigentePromise()
+      await getNominaPersonalVigentePromise(empresa,mes)
       console.log("todos los trabajos terminados")
     }
 
@@ -1083,5 +1092,5 @@ var unique = (value, index, self) => {
 
 
 module.exports = {
-    getMontosNomina,getNominaPersonalVigentePDF,getCalendarioAsistencias,getCalendarioData,getNominaPersonalVigentePromise
+    getMontosNomina,getNominaPersonalVigentePDF,getCalendarioAsistencias,getCalendarioData,getNominaPersonalVigentePromise,testMottermost
   }
