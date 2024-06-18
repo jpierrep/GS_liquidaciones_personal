@@ -28,6 +28,7 @@ var ProcessActual = 0
 var sequelizeMssql = require('../config/connection_mssql')
 var SoftlandController = require('./softland');
 var FileProjectController=require('../controllers/file_project');
+const pdfParse = require('pdf-parse');
 
 
 let empresa = 0
@@ -183,7 +184,14 @@ console.log(processInfo)
      console.log("termino burst (separa todo en paginas")
      
      let cantIteraciones = tablaMapPersonas.length
-    // let cantIteraciones =2
+     console.log(cantIteraciones)
+    
+    ///////////////////////
+    //cantIteraciones =1
+    /////////////////////
+     cantIteraciones =2
+
+
      for (let i = 0; i < cantIteraciones; i++) {
      let personaFile= tablaMapPersonas[i]
      //filename=testPdfBurst/page_%01d.pdf
@@ -195,8 +203,11 @@ console.log(processInfo)
       
       console.log("se recibio archvio")
 
+      //ENVIA A BIBLIOTECA DIGITAL
+     // let response=await FileProjectController.fileProjectPost(processInfo,personaFile,base64)
 
-      let response=await FileProjectController.fileProjectPost(processInfo,personaFile,base64)
+        //GUARDA LOG DEL ARCHIVO
+      let response=await getDataOfFile( filename,empresa,personaFile["RUT"])
       console.log('response',JSON.stringify(response))
 
       		//envia evento de completitud del archivo
@@ -780,6 +791,109 @@ function replaceAll(string, omit, place, prevstring) {
     return string;
   prevstring = string.replace(omit, place);
   return replaceAll(prevstring, omit, place, string)
+}
+
+
+async function getDataOfFile(pdf_path,empresa,rut) {
+  let mes='2024-04-01'
+console.log("dentro ",empresa,rut)
+
+  const config = {
+    user: 'targit',
+    password: 'targit2020*',
+    server: '192.168.100.112',
+    database: 'Inteligencias',
+    options: {
+        encrypt: true, // Usar true si usas Azure SQL
+        enableArithAbort: true
+    }
+};
+let option = null
+  return new Promise(async (resolve, reject) => {
+
+    
+    let texto = await extractTextFromPDF(pdf_path);
+   // console.log(texto)
+    //pdfUtil.pdfToText(pdf_path, option,async  function (err, data) {
+    
+    //  console.log(data)
+      //console.log("errr", err)
+		//	if (err||!data) { reject("Error al leer el archivo")
+		//	return
+		//	};
+     
+      //let texto=data;
+
+      const regex = /Planilla([\s\S]*?)Tipos de Pago/;
+    const match = texto.match(regex);
+    
+    if (match) {
+             console.log(` Se insertara ${rut}, ${empresa}`)
+
+        const bloqueInteres = match[1].trim();
+       // console.log("Texto entre 'Planilla' y 'Tipos de Pago':");
+      //  console.log(bloqueInteres);
+        const regex2 = /(.*?)\$(\d+\.\d+)\$(\d+\.\d+)(\d{2}\/\d{2}\/\d{4})(\d{16})/g;
+
+      
+
+        const matches = bloqueInteres.matchAll(regex2);
+        try {
+          // Conectarse a SQL Server
+          await sql.connect(config);
+        for (const match of matches) {
+            const institucion = match[1].trim();
+            const remuneracion_imponible = match[2].replace(/\./g, '');
+            const monto_cotizado = match[3].replace(/\./g, '');
+            const fecha_pago = match[4];
+            const numero_folio = match[5];
+        /*
+            console.log("Institución: ", institucion);
+            console.log("Remuneración Imponible: ", remuneracion_imponible);
+            console.log("Monto Cotizado: ", monto_cotizado);
+            console.log("Fecha de Pago: ", fecha_pago);
+            console.log("Número de Folio: ", numero_folio);
+            console.log("-----------------------------");
+         */
+
+           // console.log(`INSERT INTO RRHH_PREVIRED_FOLIO_PERSONA (rut, empresa,mes,institucion,remuneracion_imponible,monto_cotizado,fecha_pago,numero_folio) VALUES (${rut}, ${empresa}, ${institucion}, ${remuneracion_imponible}, ${monto_cotizado}, ${fecha_pago}, ${numero_folio})`)
+            // Inserción de datos en la tabla
+         await sql.query`INSERT INTO RRHH_PREVIRED_FOLIO_PERSONA (rut, empresa,mes,institucion,remuneracion_imponible,monto_cotizado,fecha_pago,numero_folio) VALUES (${rut}, ${empresa},${mes}, ${institucion}, ${remuneracion_imponible}, ${monto_cotizado}, ${fecha_pago}, ${numero_folio})`;
+      //   console.log('Datos insertados exitosamente.');  
+        }
+
+        
+    } catch (err) {
+        console.error('Error insertando datos:', err);
+        reject({"insert":"error"})
+    } finally {
+        // Cerrar la conexión
+        await sql.close();
+             console.log('Datos insertados exitosamente.');  
+    }
+
+
+    } else {
+        console.log("No se encontró el bloque de interés.");
+    }
+	
+
+
+
+
+      resolve({"insert":"ok"})
+
+    //})
+  
+  })
+
+}
+
+async function extractTextFromPDF(pdfPath) {
+  const dataBuffer = fs.readFileSync(pdfPath);
+  const data = await pdfParse(dataBuffer);
+
+  return data.text;
 }
 
 

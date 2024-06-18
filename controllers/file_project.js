@@ -20,7 +20,7 @@ async function fileProjectPost(processInfo,dataPersona, base64) {
     //'referencialDate':processInfo.referencialDate,
 
   });
-  //console.log(data)
+  //console.log("data es",data)
  // url: 'http://192.168.100.130:1338/api/1/file/create?', prod
  // url: 'http://192.168.100.133:1338/api/1/file/create?', test
   var config = {
@@ -49,10 +49,11 @@ async function fileProjectPost(processInfo,dataPersona, base64) {
    */
   try {
     let response = await axios(config)
-    console.log(response.data)
+    console.log("response",response.data)
     return response.data
   } catch (e) {
     //console.log('execpcion error',e)
+    console.log("response", e)
     console.log("execpcion data", e.response.data)
     return e.response.data
 
