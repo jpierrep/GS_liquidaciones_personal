@@ -182,6 +182,16 @@ let processInfo={
 }
 console.log(processInfo)
      console.log("termino burst (separa todo en paginas")
+
+
+
+//genera proceso de lectura y analisis del archivo completo
+     generaProcesoArchivoCompleto(rutsEncontrados,empresa,'2024-02-01',carpetaBurst);
+
+
+
+     ////GENERA SUBIDA POR PERSONA ACTIVA ---tiene que ser separado pues  debemos discriminar cuando se hace un analisis compleot del archivo o cuando se sube
+     ///ya que el archivo puede cambiar o cargarse varias veces, pero no subirse mas de un archivo por persona // si queda alguno que falte lo subiran manual
      
      let cantIteraciones = tablaMapPersonas.length
      console.log(cantIteraciones)
@@ -207,8 +217,8 @@ console.log(processInfo)
      // let response=await FileProjectController.fileProjectPost(processInfo,personaFile,base64)
 
         //GUARDA LOG DEL ARCHIVO
-      let response=await getDataOfFile( filename,empresa,personaFile["RUT"])
-      console.log('response',JSON.stringify(response))
+     // let response=await getDataOfFile( filename,empresa,personaFile["RUT"],mes)
+      //console.log('response',JSON.stringify(response))
 
       		//envia evento de completitud del archivo
 				StatusPrevired.msgs[0] = personaFile.FICHA
@@ -472,6 +482,119 @@ async function generaMapPersonas(rutsEncontrados, empresa,mes) {
 
       tablaMapPersonas= tablaMapPersonas.sort((a, b) => (a["NOMBRE_SINGLE"] > b["NOMBRE_SINGLE"]) ? 1 : -1)
     }
+
+    resolve(tablaMapPersonas)
+
+
+
+
+  })
+
+}
+
+
+
+
+async function generaProcesoArchivoCompleto(rutsEncontrados,empresa,mes,carpetaBurst){
+
+
+  return new Promise(async (resolve, reject) => {
+
+     
+    var tablaMapPersonas = (await generaMapPersonasArchivoCompleto(rutsEncontrados))
+       let cantIteraciones = tablaMapPersonas.length
+       console.log("iteranciones arch completo",cantIteraciones)
+      
+      ///////////////////////
+      //cantIteraciones =1
+      /////////////////////
+     cantIteraciones =10
+  
+  
+       for (let i = 0; i < cantIteraciones; i++) {
+       let personaFile= tablaMapPersonas[i]
+       //filename=testPdfBurst/page_%01d.pdf
+       let filename=carpetaBurst+'/page_'+personaFile["PAGINA"]+'.pdf'
+       console.log("pagina buscada"+filename)
+        
+        //console.log("se recibio archvio")
+  
+        //ENVIA A BIBLIOTECA DIGITAL
+       // let response=await FileProjectController.fileProjectPost(processInfo,personaFile,base64)
+  
+          //GUARDA LOG DEL ARCHIVO
+        let response=await getDataOfFile( filename,empresa,personaFile["RUT"])
+        console.log('response',JSON.stringify(response))
+  
+            //envia evento de completitud del archivo
+          //StatusPrevired.msgs[0] = personaFile.FICHA
+          //StatusPrevired.percent =(( i + 1) / cantIteraciones* 100)
+          //io.emit('getStatusPrevired', StatusPrevired)
+    
+  
+       // let response=await FileProjectController.fileProjectPost(null,base64)
+        
+       }
+      // var buffer = fs.readFileSync(filename);
+    
+     console.log("todos los trabajos terminados")
+
+     resolve()
+
+
+
+
+})
+
+}
+
+
+
+
+
+
+
+
+
+
+
+async function generaMapPersonasArchivoCompleto(rutsEncontrados) {
+
+  return new Promise(async (resolve, reject) => {
+    
+    //añadir marcador de inprogress
+    inProgress = 1
+    ProcessTotal = rutsEncontrados.length
+   // var personalVigente =require('../data.json')
+
+
+
+    //option to extract text from page 0 to 10
+    var option = null
+    //var option = {from: 0, to: 19};
+
+
+    //segun los ruts incluidos en el archivo (ruts encontrados armar json) encontrar todas las fichas activas asociada al rut 
+    //y con ellas los centros costo correspondientes
+    let tablaMapPersonas = [
+      { RUT: '8.849.245-5', PAGINA: 1 },
+      { RUT: '8.849.245-6', PAGINA: 4 },
+      { RUT: '8.849.245-5', PAGINA: 15 },
+      { RUT: '8.849.245-5', PAGINA: 7 },
+    ]
+
+
+    tablaMapPersonas = []
+
+
+    rutsEncontrados.forEach((rutEncontrado, index) => {
+      let pagina = index + 1
+      let rutId = convierteRutID(rutEncontrado)
+  
+            tablaMapPersonas.push({ RUT: rutEncontrado, RUT_ID: rutId, PAGINA: pagina})
+
+    })
+
 
     resolve(tablaMapPersonas)
 
@@ -794,8 +917,8 @@ function replaceAll(string, omit, place, prevstring) {
 }
 
 
-async function getDataOfFile(pdf_path,empresa,rut) {
-  let mes='2024-04-01'
+async function getDataOfFile(pdf_path,empresa,rut,mes) {
+  
 console.log("dentro ",empresa,rut)
 
   const config = {
@@ -830,9 +953,9 @@ let option = null
     if (match) {
              console.log(` Se insertara ${rut}, ${empresa}`)
 
-        const bloqueInteres = match[1].trim();
-       // console.log("Texto entre 'Planilla' y 'Tipos de Pago':");
-      //  console.log(bloqueInteres);
+        const bloqueInteres = concatenaTextPrevired(match[1].trim());
+        console.log("Texto entre 'Planilla' y 'Tipos de Pago':");
+       console.log(bloqueInteres);
         const regex2 = /(.*?)\$(\d+\.\d+)\$(\d+\.\d+)(\d{2}\/\d{2}\/\d{4})(\d{16})/g;
 
       
@@ -847,16 +970,16 @@ let option = null
             const monto_cotizado = match[3].replace(/\./g, '');
             const fecha_pago = match[4];
             const numero_folio = match[5];
-        /*
+        
             console.log("Institución: ", institucion);
             console.log("Remuneración Imponible: ", remuneracion_imponible);
             console.log("Monto Cotizado: ", monto_cotizado);
             console.log("Fecha de Pago: ", fecha_pago);
             console.log("Número de Folio: ", numero_folio);
             console.log("-----------------------------");
-         */
+         
 
-           // console.log(`INSERT INTO RRHH_PREVIRED_FOLIO_PERSONA (rut, empresa,mes,institucion,remuneracion_imponible,monto_cotizado,fecha_pago,numero_folio) VALUES (${rut}, ${empresa}, ${institucion}, ${remuneracion_imponible}, ${monto_cotizado}, ${fecha_pago}, ${numero_folio})`)
+           console.log(`INSERT INTO RRHH_PREVIRED_FOLIO_PERSONA (rut, empresa,mes,institucion,remuneracion_imponible,monto_cotizado,fecha_pago,numero_folio) VALUES (${rut}, ${empresa}, ${institucion}, ${remuneracion_imponible}, ${monto_cotizado}, ${fecha_pago}, ${numero_folio})`)
             // Inserción de datos en la tabla
          await sql.query`INSERT INTO RRHH_PREVIRED_FOLIO_PERSONA (rut, empresa,mes,institucion,remuneracion_imponible,monto_cotizado,fecha_pago,numero_folio) VALUES (${rut}, ${empresa},${mes}, ${institucion}, ${remuneracion_imponible}, ${monto_cotizado}, ${fecha_pago}, ${numero_folio})`;
       //   console.log('Datos insertados exitosamente.');  
@@ -894,6 +1017,54 @@ async function extractTextFromPDF(pdfPath) {
   const data = await pdfParse(dataBuffer);
 
   return data.text;
+}
+
+function concatenaTextPrevired(text){
+//para aquellos textos que vienen en mas de una linea
+/*
+en el texto PRINCIPAL COMPAÑIA DE SEGUROS DE VIDA
+CHILE S.A. (APVI)
+Febrero 2024REM$3.107.003$1.842.82508/03/20242053202402000996
+COLMENAFebrero 2024REM$3.107.003$297.06308/03/20242024202402083254
+INSTITUTO DE SEGURIDAD DEL TRABAJO ISTFebrero 2024REM$3.107.003$28.89508/03/20242082202402024565 dame el codigo para analizar en node js, si la linea no contiene el signo "$" concatenarla a la siguiente linea que si tenga el signo "$"
+*/
+// Separar el texto en líneas
+const lines = text.split('\n');
+
+// Inicializar variables para almacenar las líneas procesadas
+let processedLines = [];
+let buffer = '';
+
+for (let i = 0; i < lines.length; i++) {
+  const line = lines[i].trim(); // Eliminar espacios en blanco al inicio y al final
+
+  if (line.includes('$')) {
+    // Si la línea contiene "$", agregar el contenido del buffer y la línea actual a processedLines
+    if (buffer) {
+      processedLines.push(buffer + ' ' + line);
+      buffer = '';
+    } else {
+      processedLines.push(line);
+    }
+  } else {
+    // Si la línea no contiene "$", agregarla al buffer
+    buffer += ' ' + line;
+  }
+}
+
+// Si el buffer no está vacío al final, agregarlo a processedLines
+if (buffer) {
+  processedLines.push(buffer);
+}
+
+// Unir las líneas procesadas en un solo texto
+const result = processedLines.join('\n');
+
+// Imprimir el resultado
+//console.log(result);
+return result
+
+
 }
 
 
