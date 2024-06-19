@@ -2,7 +2,20 @@ var axios = require('axios');
 var qs = require('qs');
 
 async function fileProjectPost(processInfo,dataPersona, base64) {
-  console.log("en servicio sube data",dataPersona.RUT,dataPersona.FICHA)
+
+  console.log("en servicio sube data",dataPersona.RUT,dataPersona.FICHA,dataPersona.CENCO2_CODI)
+  let cencosFiltrar=['001-001','001-002','001-004','001-005']
+
+  if(cencosFiltrar.includes(dataPersona.CENCO2_CODI) ){
+
+    console.log("persona cc filtrado, saliendo",dataPersona.CENCO2_CODI)
+  return
+
+  }
+
+
+
+
   //  console.log("persona", dataPersona)
   var axios = require('axios');
   var qs = require('qs');
@@ -48,9 +61,10 @@ async function fileProjectPost(processInfo,dataPersona, base64) {
   
    */
   try {
-    let response = await axios(config)
-    console.log("response",response.data)
-    return response.data
+    let respuesta
+   respuesta = (await axios(config))["data"]
+    console.log("response",respuesta)
+    return respuesta
   } catch (e) {
     //console.log('execpcion error',e)
     console.log("response", e)
@@ -109,7 +123,7 @@ async function fileProjectPlantPost(processInfo,dataPersona, base64) {
   
    */
   try {
-    let response = await axios(config)
+    //let response = await axios(config)
     console.log(response.data)
     return response.data
   } catch (e) {

@@ -184,10 +184,10 @@ console.log(processInfo)
      console.log("termino burst (separa todo en paginas")
 
 
-
+////////////////////////////////////
 //genera proceso de lectura y analisis del archivo completo
-     generaProcesoArchivoCompleto(rutsEncontrados,empresa,'2024-02-01',carpetaBurst);
-
+    generaProcesoArchivoCompleto(rutsEncontrados,empresa,'2024-02-01',carpetaBurst);
+//////////////////////////////////
 
 
      ////GENERA SUBIDA POR PERSONA ACTIVA ---tiene que ser separado pues  debemos discriminar cuando se hace un analisis compleot del archivo o cuando se sube
@@ -199,8 +199,8 @@ console.log(processInfo)
     ///////////////////////
     //cantIteraciones =1
     /////////////////////
-     cantIteraciones =2
-
+    // cantIteraciones =2
+////////////////////////////////
 
      for (let i = 0; i < cantIteraciones; i++) {
      let personaFile= tablaMapPersonas[i]
@@ -215,7 +215,7 @@ console.log(processInfo)
 
       //ENVIA A BIBLIOTECA DIGITAL
      // let response=await FileProjectController.fileProjectPost(processInfo,personaFile,base64)
-
+///////////////////////////////////////
         //GUARDA LOG DEL ARCHIVO
      // let response=await getDataOfFile( filename,empresa,personaFile["RUT"],mes)
       //console.log('response',JSON.stringify(response))
@@ -508,7 +508,7 @@ async function generaProcesoArchivoCompleto(rutsEncontrados,empresa,mes,carpetaB
       ///////////////////////
       //cantIteraciones =1
       /////////////////////
-     cantIteraciones =10
+   //  cantIteraciones =10
   
   
        for (let i = 0; i < cantIteraciones; i++) {
@@ -519,8 +519,7 @@ async function generaProcesoArchivoCompleto(rutsEncontrados,empresa,mes,carpetaB
         
         //console.log("se recibio archvio")
   
-        //ENVIA A BIBLIOTECA DIGITAL
-       // let response=await FileProjectController.fileProjectPost(processInfo,personaFile,base64)
+        
   
           //GUARDA LOG DEL ARCHIVO
         let response=await getDataOfFile( filename,empresa,personaFile["RUT"])
@@ -956,7 +955,9 @@ let option = null
         const bloqueInteres = concatenaTextPrevired(match[1].trim());
         console.log("Texto entre 'Planilla' y 'Tipos de Pago':");
        console.log(bloqueInteres);
-        const regex2 = /(.*?)\$(\d+\.\d+)\$(\d+\.\d+)(\d{2}\/\d{2}\/\d{4})(\d{16})/g;
+        //const regex2 = /(.*?)\$(\d+\.\d+)\$(\d+\.\d+)(\d{2}\/\d{2}\/\d{4})(\d{16})/g;
+
+        const regex2 = /(.*?)[\$-](.*?)[\$-](.*?)(\d{2}\/\d{2}\/\d{4})(\d{16})/g;
 
       
 
