@@ -186,7 +186,7 @@ console.log(processInfo)
 
 ////////////////////////////////////
 //genera proceso de lectura y analisis del archivo completo
-    generaProcesoArchivoCompleto(rutsEncontrados,empresa,'2024-02-01',carpetaBurst);
+    generaProcesoArchivoCompleto(rutsEncontrados,empresa,mes,carpetaBurst);
 //////////////////////////////////
 
 
@@ -522,7 +522,7 @@ async function generaProcesoArchivoCompleto(rutsEncontrados,empresa,mes,carpetaB
         
   
           //GUARDA LOG DEL ARCHIVO
-        let response=await getDataOfFile( filename,empresa,personaFile["RUT"])
+        let response=await getDataOfFile( filename,empresa,mes,personaFile["RUT"],personaFile["PAGINA"])
         console.log('response',JSON.stringify(response))
   
             //envia evento de completitud del archivo
@@ -531,7 +531,7 @@ async function generaProcesoArchivoCompleto(rutsEncontrados,empresa,mes,carpetaB
           //io.emit('getStatusPrevired', StatusPrevired)
     
   
-       // let response=await FileProjectController.fileProjectPost(null,base64)
+       
         
        }
       // var buffer = fs.readFileSync(filename);
@@ -916,7 +916,7 @@ function replaceAll(string, omit, place, prevstring) {
 }
 
 
-async function getDataOfFile(pdf_path,empresa,rut,mes) {
+async function getDataOfFile(pdf_path,empresa,mes,rut,pagina) {
   
 console.log("dentro ",empresa,rut)
 
@@ -980,9 +980,9 @@ let option = null
             console.log("-----------------------------");
          
 
-           console.log(`INSERT INTO RRHH_PREVIRED_FOLIO_PERSONA (rut, empresa,mes,institucion,remuneracion_imponible,monto_cotizado,fecha_pago,numero_folio) VALUES (${rut}, ${empresa}, ${institucion}, ${remuneracion_imponible}, ${monto_cotizado}, ${fecha_pago}, ${numero_folio})`)
+           console.log(`INSERT INTO RRHH_PREVIRED_FOLIO_PERSONA (rut, empresa,mes,pagina,institucion,remuneracion_imponible,monto_cotizado,fecha_pago,numero_folio) VALUES (${rut}, ${empresa},${mes},${pagina}, ${institucion}, ${remuneracion_imponible}, ${monto_cotizado}, ${fecha_pago}, ${numero_folio})`)
             // Inserción de datos en la tabla
-         await sql.query`INSERT INTO RRHH_PREVIRED_FOLIO_PERSONA (rut, empresa,mes,institucion,remuneracion_imponible,monto_cotizado,fecha_pago,numero_folio) VALUES (${rut}, ${empresa},${mes}, ${institucion}, ${remuneracion_imponible}, ${monto_cotizado}, ${fecha_pago}, ${numero_folio})`;
+         await sql.query`INSERT INTO RRHH_PREVIRED_FOLIO_PERSONA (rut, empresa,mes,pagina,institucion,remuneracion_imponible,monto_cotizado,fecha_pago,numero_folio) VALUES (${rut}, ${empresa},${mes},${pagina}, ${institucion}, ${remuneracion_imponible}, ${monto_cotizado}, ${fecha_pago}, ${numero_folio})`;
       //   console.log('Datos insertados exitosamente.');  
         }
 
