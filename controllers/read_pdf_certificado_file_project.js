@@ -183,10 +183,20 @@ let processInfo={
 console.log(processInfo)
      console.log("termino burst (separa todo en paginas")
 
+let procesoCompleto=1
+if (procesoCompleto==0){
+  console.log(" procesocompleto=0 solo se hace el log del archivo ")
+await generaProcesoArchivoCompleto(rutsEncontrados,empresa,mes,carpetaBurst);
+console.log("todos los trabajos terminados")
+return
 
+}
+
+//si procesocompleto=1 se hace el log del archivo y la subida a la biblioteca digital
+console.log(" procesocompleto=1 se hace el log del archivo y la subida a la biblioteca digital")
 ////////////////////////////////////
 //genera proceso de lectura y analisis del archivo completo
-    generaProcesoArchivoCompleto(rutsEncontrados,empresa,mes,carpetaBurst);
+   await generaProcesoArchivoCompleto(rutsEncontrados,empresa,mes,carpetaBurst);
 //////////////////////////////////
 
 
@@ -214,7 +224,7 @@ console.log(processInfo)
       console.log("se recibio archvio")
 
       //ENVIA A BIBLIOTECA DIGITAL
-     // let response=await FileProjectController.fileProjectPost(processInfo,personaFile,base64)
+     let response=await FileProjectController.fileProjectPost(processInfo,personaFile,base64)
 ///////////////////////////////////////
         //GUARDA LOG DEL ARCHIVO
      // let response=await getDataOfFile( filename,empresa,personaFile["RUT"],mes)
@@ -222,7 +232,7 @@ console.log(processInfo)
 
       		//envia evento de completitud del archivo
 				StatusPrevired.msgs[0] = personaFile.FICHA
-				StatusPrevired.percent =(( i + 1) / cantIteraciones* 100)
+				StatusPrevired.percent =parseInt((( i + 1) / cantIteraciones* 100))
 				io.emit('getStatusPrevired', StatusPrevired)
       
     }else{ 
@@ -500,6 +510,14 @@ async function generaProcesoArchivoCompleto(rutsEncontrados,empresa,mes,carpetaB
 
   return new Promise(async (resolve, reject) => {
 
+
+   
+      await sequelizeMssql.query(      `
+      delete from [SISTEMA_CENTRAL].[dbo].[bi_biblioteca_digital_previred]
+where mes=' `+mes+ `' and empresa=`+empresa,
+{  type: sequelizeMssql.QueryTypes.DELETE })
+console.log("se elimino la data del mes [SISTEMA_CENTRAL].[dbo].[bi_biblioteca_digital_previred] mes ${mes} empresa ${empresa}")
+
      
     var tablaMapPersonas = (await generaMapPersonasArchivoCompleto(rutsEncontrados))
        let cantIteraciones = tablaMapPersonas.length
@@ -530,7 +548,9 @@ async function generaProcesoArchivoCompleto(rutsEncontrados,empresa,mes,carpetaB
           //StatusPrevired.percent =(( i + 1) / cantIteraciones* 100)
           //io.emit('getStatusPrevired', StatusPrevired)
     
-  
+  				StatusPrevired.msgs[0] = personaFile.FICHA
+				StatusPrevired.percent =parseInt((( i + 1) / cantIteraciones* 100))
+				io.emit('getStatusPrevired', StatusPrevired)
        
         
        }
@@ -922,9 +942,9 @@ console.log("dentro ",empresa,rut)
 
   const config = {
     user: 'targit',
-    password: 'targit2020*',
-    server: '192.168.100.112',
-    database: 'Inteligencias',
+    password: 'targit2015*',
+    server: '192.168.100.14',
+    database: 'SISTEMA_CENTRAL',
     options: {
         encrypt: true, // Usar true si usas Azure SQL
         enableArithAbort: true
@@ -980,9 +1000,9 @@ let option = null
             console.log("-----------------------------");
          
 
-           console.log(`INSERT INTO RRHH_PREVIRED_FOLIO_PERSONA (rut, empresa,mes,pagina,institucion,remuneracion_imponible,monto_cotizado,fecha_pago,numero_folio) VALUES (${rut}, ${empresa},${mes},${pagina}, ${institucion}, ${remuneracion_imponible}, ${monto_cotizado}, ${fecha_pago}, ${numero_folio})`)
+           console.log(`INSERT INTO bi_biblioteca_digital_previred (rut, empresa,mes,pagina,institucion,remuneracion_imponible,monto_cotizado,fecha_pago,numero_folio) VALUES (${rut}, ${empresa},${mes},${pagina}, ${institucion}, ${remuneracion_imponible}, ${monto_cotizado}, ${fecha_pago}, ${numero_folio})`)
             // Inserción de datos en la tabla
-         await sql.query`INSERT INTO RRHH_PREVIRED_FOLIO_PERSONA (rut, empresa,mes,pagina,institucion,remuneracion_imponible,monto_cotizado,fecha_pago,numero_folio) VALUES (${rut}, ${empresa},${mes},${pagina}, ${institucion}, ${remuneracion_imponible}, ${monto_cotizado}, ${fecha_pago}, ${numero_folio})`;
+         await sql.query`INSERT INTO bi_biblioteca_digital_previred (rut, empresa,mes,pagina,institucion,remuneracion_imponible,monto_cotizado,fecha_pago,numero_folio) VALUES (${rut}, ${empresa},${mes},${pagina}, ${institucion}, ${remuneracion_imponible}, ${monto_cotizado}, ${fecha_pago}, ${numero_folio})`;
       //   console.log('Datos insertados exitosamente.');  
         }
 
