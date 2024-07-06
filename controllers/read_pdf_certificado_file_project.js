@@ -79,7 +79,7 @@ socket.emit('getStatusPrevired', StatusPrevired)
 socket.on('getTest', async (uploadFileName) => {
 })
 
-  socket.on('getPreviredFileProject', async (uploadFileName,empresa,mes) => {
+  socket.on('getPreviredFileProject', async (uploadFileName,empresa,mes,procesoSoloArchivo) => {
 
     //////////////////////////////////NUEVO PROCESO
 
@@ -93,14 +93,14 @@ socket.on('getTest', async (uploadFileName) => {
    // StatusPrevired.userParams={mes:dataUser["mes"],empresa:dataUser["empresa"]}
 
     io.emit('getStatusPrevired', StatusPrevired)
-    await getPreviredFileProject(uploadFileName,empresa,mes)
+    await getPreviredFileProject(uploadFileName,empresa,mes,procesoSoloArchivo)
     StatusPrevired.isExecuting = 0
     io.emit('getStatusPrevired', StatusPrevired)
 
   });
 
-  async function getPreviredFileProject(uploadFileName,empresa,mes){
-
+  async function getPreviredFileProject(uploadFileName,empresa,mes,procesoSoloArchivo){
+    console.log("el procesoSoloArchivo es",procesoSoloArchivo)
     let carpetaBurst='pdfBurstPrevired'
 
     if(fs.existsSync(carpetaBurst))
@@ -183,17 +183,17 @@ let processInfo={
 console.log(processInfo)
      console.log("termino burst (separa todo en paginas")
 
-let procesoCompleto=1
-if (procesoCompleto==0){
-  console.log(" procesocompleto=0 solo se hace el log del archivo ")
+//let procesoSoloArchivo=1
+if (procesoSoloArchivo){
+  console.log(" procesoSoloArchivo=1 solo se hace el log del archivo ")
 await generaProcesoArchivoCompleto(rutsEncontrados,empresa,mes,carpetaBurst);
 console.log("todos los trabajos terminados")
 return
 
 }
 
-//si procesocompleto=1 se hace el log del archivo y la subida a la biblioteca digital
-console.log(" procesocompleto=1 se hace el log del archivo y la subida a la biblioteca digital")
+//si procesoSoloArchivo=1 se hace el log del archivo y la subida a la biblioteca digital
+console.log(" procesoSoloArchivo=0 se hace el log del archivo y la subida a la biblioteca digital")
 ////////////////////////////////////
 //genera proceso de lectura y analisis del archivo completo
    await generaProcesoArchivoCompleto(rutsEncontrados,empresa,mes,carpetaBurst);

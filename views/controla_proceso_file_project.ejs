@@ -315,19 +315,21 @@
 
 
            <!-- <form  action="/readPdf/fileupload" method="post" enctype="multipart/form-data" >-->
-  <form  id="fileUploadForm" method="post" enctype="multipart/form-data" >
-    
-    <div class="input-group">
-        <div class="custom-file">
-          <input type="file" class="custom-file-input" name="filetoupload"  accept=".pdf" id="previred-upload-archivo">
-          <label class="custom-file-label" for="inputGroupFile04">Seleccionar archivo...</label>
-        </div>
-        <div class="input-group-append">
-         <!--  <button class="btn btn-outline-secondary" id="previred-upload-button" type="submit">Cargar</button> -->
-        </div>
-      </div>
-  
-    </form>
+            <form id="fileUploadForm" method="post" enctype="multipart/form-data">
+              <div class="input-group">
+                  <div class="custom-file">
+                      <input type="file" class="custom-file-input" name="filetoupload" accept=".pdf" id="previred-upload-archivo">
+                      <label class="custom-file-label" for="inputGroupFile04">Seleccionar archivo...</label>
+                  </div>
+                  <div class="input-group-append">
+                      <!-- <button class="btn btn-outline-secondary" id="previred-upload-button" type="submit">Cargar</button> -->
+                  </div>
+              </div>
+              <div class="checkbox-container">
+                  <input type="checkbox" id="proceso-solo-archivo-checkbox">
+                  <label for="proceso-solo-archivo-checkbox">Solo cargar datos del archivo</label>
+              </div>
+          </form>
 
  
 
@@ -1086,8 +1088,10 @@ var data = new FormData(form);
 //añadimos a la data la empresa y el mes 
  let empresa=$("#empresa-select").val()
  let mes=$("#mes-select").val()
+ let procesoSoloArchivo=$("#proceso-solo-archivo-checkbox").prop('checked')
 data.append('empresa',empresa );
 data.append('mes', mes);
+data.append('procesoSoloArchivo', procesoSoloArchivo);
 
  $("#previred-upload-button").attr("disabled", true);
 
@@ -1111,7 +1115,7 @@ $.ajax({
         
        if (data.status=="ok"){
         $('#previred-modal-file-upload').modal('hide')
-        socket.emit('getPreviredFileProject',data.path,empresa,mes)
+        socket.emit('getPreviredFileProject',data.path,empresa,mes,procesoSoloArchivo)
        }else{
 
          //si hay algun error el status no será OK, por lo que se debe eliminar la referencia del archivo subido, mandando triguer on chanque val('') este evento (on change) hara que se desactive
