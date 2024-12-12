@@ -474,6 +474,9 @@
       bloqueaProcesos()
       //valores del select
       $('#mes-select').empty()
+
+/*
+
       $('#mes-select').append(`<option selected value="`+mesActual+`">`+mesActual.substr(0,7)+`</option>`); 
       $('#mes-select').append(`<option  value="`+mesAnterior+`"> `+mesAnterior.substr(0,7)+`</option>`); 
       $('#mes-select').append(`<option  value="2024-03-01">2024-03 </option>`); 
@@ -484,6 +487,17 @@
       $('#mes-select').append(`<option  value="2023-08-01">2023-08 </option>`); 
       $('#mes-select').append(`<option  value="2023-07-01">2023-07 </option>`); 
       $('#mes-select').append(`<option  value="2023-06-01">2023-06 </option>`); 
+
+      */
+
+
+      const meses = obtenerUltimosMeses(12);
+
+            meses.forEach(mes => {
+                const [año, mesNum, dia] = mes.split('-');
+                const texto = `${año}-${mesNum}`;
+                $('#mes-select').append(`<option value="${mes}">${texto}</option>`);
+            });
 
       //saveFile("Example.txt", "data:attachment/text", "Hello, world.");
       //socket.emit("getFile","holaaaa");
@@ -1066,6 +1080,22 @@ function cambiaSelectEmpresa(){
       window.URL.revokeObjectURL(url);
       a.remove();
     }
+
+
+    function obtenerUltimosMeses(cantidad) {
+    const meses = [];
+    const fechaActual = new Date();
+    
+    for (let i = 0; i < cantidad; i++) {
+        const fecha = new Date(fechaActual.getFullYear(), fechaActual.getMonth() - i, 1);
+        const año = fecha.getFullYear();
+        const mes = String(fecha.getMonth() + 1).padStart(2, '0');
+        const dia = String(fecha.getDate()).padStart(2, '0');
+        meses.push(`${año}-${mes}-${dia}`);
+    }
+    
+    return meses;
+}
 
 
 

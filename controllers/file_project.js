@@ -62,7 +62,7 @@ async function fileProjectPost(processInfo,dataPersona, base64) {
    */
   try {
     let respuesta
-   ////////respuesta = (await axios(config))["data"]
+   respuesta = (await axios(config))["data"]
     console.log("response",respuesta)
     return respuesta
   } catch (e) {
